@@ -4,6 +4,7 @@ import { useUex } from '../data/useUex'
 import { formatAge } from '../domain/freshness'
 import { useI18n, type Lang } from '../i18n/i18n'
 import { Tabs, type TabItem } from '../ui/components'
+import { ErrorBoundary } from '../ui/ErrorBoundary'
 
 export type MainTab = 'home' | 'trade' | 'ships' | 'mining' | 'salvage' | 'fleet' | 'settings'
 export type TradeTab = 'commodities' | 'locations' | 'harvestables' | 'finder' | 'routes' | 'currencies'
@@ -108,7 +109,9 @@ export default function App({ screens = {} }: { screens?: Screens }) {
     <div className="app">
       <Header />
       <Tabs items={mainTabs} active={nav.main} onChange={(k) => go({ main: k })} />
-      <main className="main">{content}</main>
+      <main className="main">
+        <ErrorBoundary key={`${nav.main}/${nav.trade}`}>{content}</ErrorBoundary>
+      </main>
       <Footer />
     </div>
   )

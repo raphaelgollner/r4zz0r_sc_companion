@@ -27,7 +27,10 @@ export function RoutesView({
   const { t } = useI18n()
   const [budgetText, setBudgetText] = useState(prefs.budget > 0 ? formatAuec(prefs.budget) : '')
   useEffect(() => {
-    if (parseAmount(budgetText) !== prefs.budget) setBudgetText(prefs.budget > 0 ? formatAuec(prefs.budget) : '')
+    // Só reescreve o campo quando o orçamento mudou por fora (ex.: AJUSTES); texto inválido digitado fica como está.
+    const typed = parseAmount(budgetText)
+    const typedBudget = Number.isFinite(typed) ? typed : 0
+    if (typedBudget !== prefs.budget) setBudgetText(prefs.budget > 0 ? formatAuec(prefs.budget) : '')
     // só reage a mudanças externas do orçamento
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefs.budget])

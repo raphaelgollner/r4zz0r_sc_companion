@@ -10,9 +10,23 @@ export const formatPercent = (n: number) => (ok(n) ? `${pct.format(n)}%` : '—'
 export const formatDecimal = (n: number) => (ok(n) ? dec2.format(n) : '—')
 
 
-/** Lê um valor digitado ("1.200.000", "1200000") como número; vazio ou inválido → NaN. */
+/**
+ * Lê um valor digitado como número, aceitando formato pt-BR ("1.200.000,50") e EN ("1,200,000").
+ * Vazio ou inválido → NaN.
+ */
 export function parseAmount(text: string): number {
-  const clean = text.trim().replace(/\./g, '').replace(',', '.')
-  if (clean === '' || !/^-?\d+(\.\d+)?$/.test(clean)) return NaN
-  return Number(clean)
+  let t = text.trim().replace(/\s/g, '')
+  if (t === '') return NaN
+  const hasDot = t.includes('.')
+  const hasComma = t.includes(',')
+  if (hasDot && hasComma) {
+    // o separador que aparece por último é o decimal
+    t = t.lastIndexOf(',') > t.lastIndexOf('.') ? t.replace(/\./g, '').replace(',', '.') : t.replace(/,/g, '')
+  } else if (hasComma) {
+    t = /^-?\d{1,3}(,\d{3})+$/.test(t) ? t.replace(/,/g, '') : t.replace(',', '.')
+  } else if (hasDot && /^-?\d{1,3}(\.\d{3})+$/.test(t)) {
+    t = t.replace(/\./g, '')
+  }
+  if (!/^-?\d+(\.\d+)?$/.test(t)) return NaN
+  return Number(t)
 }

@@ -38,4 +38,9 @@ describe('HomeView', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Atualizar tudo' }))
     expect(onRefreshAll).toHaveBeenCalled()
   })
+
+  test('botão Atualizar tudo fica desabilitado enquanto atualiza', () => {
+    render(<I18nProvider initial="pt"><HomeView {...base} prefs={DEFAULT_PREFS} refreshing onSetup={() => {}} onRefreshAll={() => {}} /></I18nProvider>)
+    expect(screen.getByRole('button', { name: 'Atualizar tudo' })).toBeDisabled()
+  })
 })

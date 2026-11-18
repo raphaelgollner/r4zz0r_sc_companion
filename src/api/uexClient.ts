@@ -12,6 +12,9 @@ export class UexError extends Error {
   }
 }
 
+/** Tempo máximo de uma requisição antes de desistir e mostrar "Tentar de novo". */
+const REQUEST_TIMEOUT_MS = 20_000
+
 const defaultLimiter = createRateLimiter({ maxPerWindow: 100, windowMs: 60_000 })
 
 export interface UexDeps {
@@ -38,8 +41,10 @@ export async function fetchUex<T>(
   return limiter.schedule(async () => {
     let res: Response
     try {
-      res = await fetchFn(url)
+      res = await fetchFn(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
     } catch (e) {
+      const name = e instanceof Error || e instanceof DOMException ? e.name : ''
+      if (name === 'TimeoutError' || name === 'AbortError') throw new UexError('timeout')
       throw new UexError('network', e instanceof Error ? e.message : String(e))
     }
     if (!res.ok) throw new UexError(`http_${res.status}`)
@@ -50,6 +55,8 @@ export async function fetchUex<T>(
       throw new UexError('invalid_json')
     }
     if (body.status !== 'ok') throw new UexError(body.status ?? 'unknown')
+    // Resposta sem dados não pode ir para o cache: as telas esperam lista/objeto.
+    if (body.data === null || typeof body.data !== 'object') throw new UexError('invalid_data')
     return body.data as T
   })
 }

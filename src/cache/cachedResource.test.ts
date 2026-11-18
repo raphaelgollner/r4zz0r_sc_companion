@@ -55,4 +55,17 @@ describe('getResource', () => {
   test('peekResource sem nada gravado devolve null', async () => {
     expect(await peekResource('nada', memoryStore())).toBeNull()
   })
+
+  test('chamadas simultâneas para o mesmo recurso fazem uma só busca', async () => {
+    const store = memoryStore()
+    let resolve!: (v: string) => void
+    const fetcher = vi.fn(() => new Promise<string>((r) => (resolve = r)))
+    const a = getResource('k', 1000, fetcher, store, () => 0)
+    const b = getResource('k', 1000, fetcher, store, () => 0)
+    await new Promise((r) => setTimeout(r, 0))
+    resolve('v')
+    expect((await a).data).toBe('v')
+    expect((await b).data).toBe('v')
+    expect(fetcher).toHaveBeenCalledTimes(1)
+  })
 })

@@ -21,6 +21,7 @@ export function HomeView({
   now,
   prefs,
   cache,
+  refreshing = false,
   onSetup,
   onRefreshAll,
 }: {
@@ -31,6 +32,7 @@ export function HomeView({
   now: number
   prefs: Prefs
   cache: CacheInfo[]
+  refreshing?: boolean
   onSetup: () => void
   onRefreshAll: () => void
 }) {
@@ -99,7 +101,7 @@ export function HomeView({
             ]}
           />
           <div style={{ marginTop: 14 }}>
-            <button className="btn" onClick={onRefreshAll}>
+            <button className="btn" onClick={onRefreshAll} disabled={refreshing}>
               {t('home.refreshAll')}
             </button>
           </div>

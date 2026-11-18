@@ -70,4 +70,20 @@ describe('RoutesView', () => {
     render(<Harness initial={{ shipId: 2, budget: 1000 }} />)
     expect(screen.getByText('Essa nave não tem carga em SCU.')).toBeInTheDocument()
   })
+
+  test('orçamento em formato EN não some nem é lido errado', async () => {
+    render(<Harness initial={{ shipId: 1 }} />)
+    const input = screen.getByLabelText('Dinheiro disponível (aUEC)')
+    await userEvent.type(input, '5,000,000')
+    expect(input).toHaveValue('5,000,000')
+    expect(screen.getAllByRole('article').length).toBeGreaterThan(0)
+  })
+
+  test('texto inválido fica no campo em vez de sumir', async () => {
+    render(<Harness initial={{ shipId: 1 }} />)
+    const input = screen.getByLabelText('Dinheiro disponível (aUEC)')
+    await userEvent.type(input, '5000k')
+    expect(input).toHaveValue('5000k')
+    expect(screen.getByText('Informe quanto você tem para investir.')).toBeInTheDocument()
+  })
 })

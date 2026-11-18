@@ -40,6 +40,7 @@ export function HomeScreen({ onSetup }: { onSetup: () => void }) {
           now={Date.now()}
           prefs={prefs}
           cache={all.map(([resource, s]) => ({ resource, fetchedAt: s.fetchedAt }))}
+          refreshing={all.some(([, s]) => s.loading)}
           onSetup={onSetup}
           onRefreshAll={() => refreshAll(true)}
         />

@@ -27,3 +27,14 @@ describe('parseAmount', () => {
     expect(parseAmount('abc')).toBeNaN()
   })
 })
+
+describe('parseAmount com vírgula de milhar (formato EN)', () => {
+  test('vírgula seguida de 3 dígitos é milhar', () => {
+    expect(parseAmount('1,200,000')).toBe(1_200_000)
+    expect(parseAmount('1,200')).toBe(1_200)
+  })
+  test('formato pt-BR com decimais', () => {
+    expect(parseAmount('1.200.000,50')).toBe(1_200_000.5)
+    expect(parseAmount('1,5')).toBe(1.5)
+  })
+})
