@@ -20,6 +20,8 @@ export function progressStore(): KVStore {
 interface ProgressValue {
   data: ProgressData
   ready: boolean
+  /** true quando não deu para ler o progresso salvo: nada é gravado para não sobrescrever. */
+  loadFailed: boolean
   apply: (fn: (d: ProgressData) => ProgressData) => void
 }
 
@@ -31,6 +33,8 @@ export function ProgressProvider({ store, children }: { store?: KVStore; childre
   const kv = useMemo(() => store ?? (defaultStore ??= progressStore()), [store])
   const [data, setData] = useState<ProgressData>(EMPTY_PROGRESS)
   const [ready, setReady] = useState(false)
+  const [loadFailed, setLoadFailed] = useState(false)
+  const loadFailedRef = useRef(false)
   const dataRef = useRef(data)
 
   useEffect(() => {
@@ -43,7 +47,8 @@ export function ProgressProvider({ store, children }: { store?: KVStore; childre
         setData(loaded)
       })
       .catch(() => {
-        // sem armazenamento: começa vazio
+        loadFailedRef.current = true
+        if (active) setLoadFailed(true)
       })
       .finally(() => active && setReady(true))
     return () => {
@@ -53,6 +58,7 @@ export function ProgressProvider({ store, children }: { store?: KVStore; childre
 
   const apply = useCallback(
     (fn: (d: ProgressData) => ProgressData) => {
+      if (loadFailedRef.current) return
       const next = fn(dataRef.current)
       dataRef.current = next
       setData(next)
@@ -63,7 +69,7 @@ export function ProgressProvider({ store, children }: { store?: KVStore; childre
     [kv],
   )
 
-  const value = useMemo(() => ({ data, ready, apply }), [data, ready, apply])
+  const value = useMemo(() => ({ data, ready, loadFailed, apply }), [data, ready, loadFailed, apply])
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>
 }
 

@@ -6,13 +6,20 @@ export function Dialog({ title, onClose, children }: { title: string; onClose: (
   const { t } = useI18n()
   const ref = useRef<HTMLDivElement>(null)
   const titleId = useId()
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
 
+  // Foca a janela só ao abrir e devolve o foco a quem a abriu ao fechar.
   useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null
     ref.current?.focus()
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onCloseRef.current()
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      opener?.focus?.()
+    }
+  }, [])
 
   return (
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>

@@ -56,11 +56,12 @@ interface FormState {
   at: string
 }
 
-const emptyForm = (): FormState => ({ editingId: null, kind: 'in', value: '', category: 'trade', description: '', at: toLocalInput(Date.now()) })
+/** `at` vazio = "agora": a data é pega na hora de salvar. */
+const emptyForm = (): FormState => ({ editingId: null, kind: 'in', value: '', category: 'trade', description: '', at: '' })
 
 export function ProgressView() {
   const { t, lang } = useI18n()
-  const { data, ready, apply } = useProgress()
+  const { data, ready, loadFailed, apply } = useProgress()
   const now = useNow()
   const [photoError, setPhotoError] = useState(false)
   const [editingBalance, setEditingBalance] = useState(false)
@@ -87,6 +88,12 @@ export function ProgressView() {
   const sessions = useMemo(() => [...data.sessions].sort((a, b) => b.startedAt - a.startedAt), [data.sessions])
 
   if (!ready) return <p className="loading">{t('load.loading')}</p>
+  if (loadFailed)
+    return (
+      <div className="load-error" role="alert">
+        {t('progress.loadFailed')}
+      </div>
+    )
 
   const onPhoto = async (file: File | undefined) => {
     if (!file) return
@@ -102,7 +109,7 @@ export function ProgressView() {
   const save = () => {
     if (!canSave) return
     const amount = form.kind === 'in' ? formValue : -formValue
-    const at = new Date(form.at).getTime() || Date.now()
+    const at = (form.at && new Date(form.at).getTime()) || Date.now()
     const fields = { amount, category: form.category, description: form.description.trim(), at }
     if (form.editingId) apply((d) => updateTx(d, form.editingId!, fields))
     else apply((d) => addTx(d, fields, newId()))
@@ -142,7 +149,15 @@ export function ProgressView() {
               <div className="row" style={{ gap: 8 }}>
                 <label className="btn file-btn">
                   {t('progress.changePhoto')}
-                  <input type="file" accept="image/*" aria-label={t('progress.changePhoto')} onChange={(e) => onPhoto(e.target.files?.[0])} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    aria-label={t('progress.changePhoto')}
+                    onChange={(e) => {
+                      onPhoto(e.target.files?.[0])
+                      e.target.value = ''
+                    }}
+                  />
                 </label>
                 {data.profile.photo && (
                   <button className="btn-link" onClick={() => apply((d) => setProfile(d, { photo: null }))}>
@@ -216,7 +231,13 @@ export function ProgressView() {
                 </span>
               </div>
               <div>
-                <button className="btn" onClick={() => apply((d) => endSession(d, Date.now()))}>
+                <button
+                  className="btn"
+                  onClick={() => {
+                    apply((d) => endSession(d, Date.now()))
+                    if (filter === 'active') setFilter('all')
+                  }}
+                >
                   {t('progress.end')}
                 </button>
               </div>
@@ -266,7 +287,7 @@ export function ProgressView() {
               </label>
               <label className="field">
                 {t('progress.date')}
-                <input className="input" type="datetime-local" value={form.at} onChange={(e) => setForm({ ...form, at: e.target.value })} />
+                <input className="input" type="datetime-local" value={form.at || toLocalInput(now)} onChange={(e) => setForm({ ...form, at: e.target.value })} />
               </label>
             </div>
             <div className="row">

@@ -4,6 +4,7 @@ import { describe, expect, test } from 'vitest'
 import { TerminalsContext } from '../data/terminals'
 import { terminal } from '../test/fixtures'
 import { TerminalName } from './TerminalName'
+import { Tooltip } from './Tooltip'
 
 const map = new Map([[1, terminal(1, { star_system_name: 'Stanton', planet_name: 'ArcCorp', space_station_name: 'ARC-L1 Wide Forest Station' })]])
 const renderName = (id: number) =>
@@ -38,10 +39,14 @@ describe('TerminalName', () => {
     expect(screen.queryByRole('tooltip')).toBeNull()
   })
 
-  test('foco pelo teclado também mostra', async () => {
-    renderName(1)
+  test('Tooltip focável mostra a dica pelo teclado', async () => {
+    render(
+      <Tooltip content="dica" focusable>
+        <span>alvo</span>
+      </Tooltip>,
+    )
     await userEvent.tab()
-    expect(screen.getByRole('tooltip')).toBeInTheDocument()
+    expect(screen.getByRole('tooltip')).toHaveTextContent('dica')
   })
 
   test('terminal desconhecido mostra só o nome, sem tooltip', async () => {
@@ -49,5 +54,20 @@ describe('TerminalName', () => {
     expect(screen.getByText('ARC-L1')).toBeInTheDocument()
     await userEvent.hover(screen.getByText('ARC-L1'))
     expect(screen.queryByRole('tooltip')).toBeNull()
+  })
+})
+
+describe('foco do teclado', () => {
+  test('TerminalName não cria parada de Tab por padrão', async () => {
+    render(
+      <TerminalsContext.Provider value={map}>
+        <button>antes</button>
+        <TerminalName id={1} fallback="ARC-L1" />
+        <button>depois</button>
+      </TerminalsContext.Provider>,
+    )
+    await userEvent.tab()
+    await userEvent.tab()
+    expect(screen.getByRole('button', { name: 'depois' })).toHaveFocus()
   })
 })
