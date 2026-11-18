@@ -3,6 +3,7 @@ import type { Commodity, CommodityStatus, PriceRow } from '../../data/types'
 import { formatAuec } from '../../domain/format'
 import { useI18n } from '../../i18n/i18n'
 import { DataTable, FreshnessBadge, StatusBadge, type Column } from '../../ui/components'
+import { TerminalName } from '../../ui/TerminalName'
 import { usePrefsFreshness } from './freshnessPrefs'
 
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -88,7 +89,7 @@ export function PriceTable({
 
   const columns: Column<PriceRow>[] = [
     label === 'terminal'
-      ? { key: 'name', header: t('col.terminal'), render: (r) => r.terminal_name, sortValue: (r) => r.terminal_name }
+      ? { key: 'name', header: t('col.terminal'), render: (r) => <TerminalName id={r.id_terminal} fallback={r.terminal_name} />, sortValue: (r) => r.terminal_name }
       : { key: 'name', header: t('col.commodity'), render: (r) => r.commodity_name, sortValue: (r) => r.commodity_name },
     { key: 'buy', header: t('col.buy'), align: 'right', render: (r) => (r.price_buy > 0 ? formatAuec(r.price_buy) : dash), sortValue: (r) => r.price_buy },
     { key: 'stock', header: t('col.stock'), align: 'right', render: (r) => (r.price_buy > 0 && stock(r) > 0 ? formatAuec(stock(r)) : dash), sortValue: stock },

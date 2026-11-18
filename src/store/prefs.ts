@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import type { Vehicle } from '../data/types'
 
 export interface Prefs {
   shipId: number | null
@@ -8,6 +9,8 @@ export interface Prefs {
   sortBy: 'profit' | 'roi'
   warnHours: number
   staleDays: number
+  /** SCU digitado pelo usuário por nave (ex.: Galaxy com módulo de carga). */
+  scuOverrides: Record<number, number>
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -18,9 +21,16 @@ export const DEFAULT_PREFS: Prefs = {
   sortBy: 'profit',
   warnHours: 24,
   staleDays: 7,
+  scuOverrides: {},
 }
 
 const KEY = 'tayko.prefs'
+
+/** SCU que vale para a nave: o digitado pelo usuário ou o do UEX. */
+export function effectiveScu(prefs: Prefs, ship: Vehicle | null): number {
+  if (!ship) return 0
+  return prefs.scuOverrides[ship.id] ?? ship.scu
+}
 
 export function loadPrefs(): Prefs {
   try {

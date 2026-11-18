@@ -1,4 +1,5 @@
 import { HomeScreen } from '../features/home/HomeScreen'
+import { ProgressView } from '../features/progress/ProgressView'
 import { SettingsView } from '../features/settings/SettingsView'
 import { ShipsScreen } from '../features/ships/ShipsScreen'
 import { clearCache } from '../data/useUex'
@@ -16,6 +17,7 @@ import type { Screens } from './App'
 export const screens: Screens = {
   home: (go) => <HomeScreen onSetup={() => go({ main: 'trade', trade: 'routes' })} />,
   ships: () => <ShipsScreen />,
+  progress: () => <ProgressView />,
   settings: () => <SettingsView version={__APP_VERSION__} onClearCache={() => clearCache()} />,
   trade: {
     commodities: () => <CommoditiesScreen />,

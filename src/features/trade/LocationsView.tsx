@@ -3,6 +3,7 @@ import type { PriceRow, Terminal } from '../../data/types'
 import { buildLocationTree, type LocationNode } from '../../domain/locations'
 import { useI18n } from '../../i18n/i18n'
 import { Panel, SectionLabel } from '../../ui/components'
+import { locationPath } from '../../domain/location'
 import { PriceTable } from './shared'
 
 function Node({
@@ -33,6 +34,7 @@ function Node({
                 className="tree-leaf"
                 style={{ paddingLeft: (depth + 1) * 16 + 14 }}
                 aria-current={t.id === selectedId || undefined}
+                title={locationPath(t).join(' › ')}
                 onClick={() => onPick(t)}
               >
                 {t.displayname}

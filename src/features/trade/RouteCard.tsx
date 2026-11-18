@@ -2,6 +2,8 @@ import { formatAuec, formatPercent, formatScu } from '../../domain/format'
 import type { RouteOption } from '../../domain/routes'
 import { useI18n } from '../../i18n/i18n'
 import { FreshnessBadge } from '../../ui/components'
+import { TerminalName } from '../../ui/TerminalName'
+import { Tooltip } from '../../ui/Tooltip'
 
 export function RouteCard({
   route: r,
@@ -21,7 +23,8 @@ export function RouteCard({
       <header>
         <h3>{r.commodityName}</h3>
         <span className="route-path">
-          {r.buy.terminal_name} <span className="arrow">→</span> {r.sell.terminal_name}
+          <TerminalName id={r.buy.id_terminal} fallback={r.buy.terminal_name} /> <span className="arrow">→</span>{' '}
+          <TerminalName id={r.sell.id_terminal} fallback={r.sell.terminal_name} />
         </span>
       </header>
       <dl>
@@ -41,7 +44,9 @@ export function RouteCard({
         <dt>{t('routes.load')}</dt>
         <dd>
           <span className="num">{formatScu(r.qty)}</span>{' '}
-          <span className="limit">({t('routes.limit', { what: t(`routes.limit.${r.limitedBy}`) })})</span>
+          <Tooltip content={t(`routes.limitWhy.${r.limitedBy}`)}>
+            <span className="limit">({t('routes.limit', { what: t(`routes.limit.${r.limitedBy}`) })})</span>
+          </Tooltip>
           {' = '}
           <span className="num">{formatAuec(r.cost)} aUEC</span>
         </dd>

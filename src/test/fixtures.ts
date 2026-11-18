@@ -34,11 +34,11 @@ export function vehicle(id: number, name: string, scu: number, extra: Partial<Ve
 export const STATUS: CommodityStatus = {
   buy: [
     { code: 1, name: 'Out of Stock (Empty)', name_short: 'Out Stock', colors: 'red' },
-    { code: 4, name: 'Medium Inventory', name_short: 'Medium', colors: 'blue' },
+    { code: 4, name: 'Medium Inventory', name_short: 'Medium', colors: 'blue', percentage: '44-57%' },
   ],
   sell: [
     { code: 1, name: 'Out of Stock (Empty)', name_short: 'Out Stock', colors: 'red' },
-    { code: 4, name: 'Medium Inventory', name_short: 'Medium', colors: 'blue' },
+    { code: 4, name: 'Medium Inventory', name_short: 'Medium', colors: 'blue', percentage: '44-57%' },
   ],
 }
 
@@ -53,3 +53,9 @@ export const PRICES: PriceRow[] = [
   price(30, 8, { price_buy: 5900, scu_buy: 200, terminal_name: 'ArcCorp 141', commodity_name: 'Gold' }),
   price(36, 12, { price_sell: 526545, scu_sell: 20, terminal_name: 'TDD Area 18', commodity_name: 'Hadanite' }),
 ]
+
+export const TERMINALS = new Map([
+  [8, terminal(8, { displayname: 'ArcCorp 141', planet_name: 'ArcCorp', moon_name: 'Wala', outpost_name: 'ArcCorp Mining Area 141' })],
+  [12, terminal(12, { displayname: 'TDD Area 18', planet_name: 'ArcCorp', city_name: 'Area 18' })],
+  [13, terminal(13, { displayname: 'Lorville CBD', planet_name: 'Hurston', city_name: 'Lorville' })],
+])

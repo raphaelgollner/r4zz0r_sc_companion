@@ -1,12 +1,12 @@
-import { useMemo } from 'react'
 import logo from '../../assets/logo.png'
 import type { Commodity, PriceRow, Terminal, Vehicle } from '../../data/types'
 import { formatAge } from '../../domain/freshness'
-import { computeRoutes } from '../../domain/routes'
 import { useI18n } from '../../i18n/i18n'
 import type { Prefs } from '../../store/prefs'
 import { DataTable, Panel, SectionLabel } from '../../ui/components'
 import { RouteCard } from '../trade/RouteCard'
+import { RouteControls } from '../trade/RouteControls'
+import { useRouteResult } from '../trade/useRouteResult'
 
 export interface CacheInfo {
   resource: string
@@ -20,6 +20,8 @@ export function HomeView({
   terminals,
   now,
   prefs,
+  onPrefs,
+  balance = null,
   cache,
   refreshing = false,
   onSetup,
@@ -31,27 +33,15 @@ export function HomeView({
   terminals: Terminal[]
   now: number
   prefs: Prefs
+  onPrefs: (patch: Partial<Prefs>) => void
+  balance?: number | null
   cache: CacheInfo[]
   refreshing?: boolean
   onSetup: () => void
   onRefreshAll: () => void
 }) {
   const { t, lang } = useI18n()
-  const ship = vehicles.find((v) => v.id === prefs.shipId) ?? null
-  const terminalMap = useMemo(() => new Map(terminals.map((x) => [x.id, x])), [terminals])
-  const result = useMemo(
-    () =>
-      ship
-        ? computeRoutes(
-            prices,
-            commodities,
-            terminalMap,
-            { shipScu: ship.scu, budget: prefs.budget, excludeIllegal: prefs.excludeIllegal, originSystem: prefs.originSystem || undefined, sortBy: prefs.sortBy },
-            5,
-          )
-        : null,
-    [ship, prices, commodities, terminalMap, prefs],
-  )
+  const { result, message, ship } = useRouteResult(vehicles, commodities, prices, terminals, prefs, t, 5)
 
   return (
     <div className="home">
@@ -70,6 +60,9 @@ export function HomeView({
             {t('home.topRoutes')}
             {ship && ` · ${ship.name_full}`}
           </SectionLabel>
+          <div className="home-controls">
+            <RouteControls vehicles={vehicles} terminals={terminals} prefs={prefs} onPrefs={onPrefs} balance={balance} compact />
+          </div>
           {result?.ok && result.routes.length > 0 ? (
             <div className="stack">
               {result.routes.map((r) => (
@@ -78,7 +71,7 @@ export function HomeView({
             </div>
           ) : (
             <div className="stack" style={{ alignItems: 'flex-start' }}>
-              <p className="muted">{!ship ? t('routes.needShip') : result && !result.ok ? t('routes.needBudget') : t('routes.none')}</p>
+              <p className="muted">{message}</p>
               <button className="btn primary" onClick={onSetup}>
                 {t('home.setup')}
               </button>

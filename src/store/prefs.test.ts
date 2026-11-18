@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest'
-import { DEFAULT_PREFS, loadPrefs, savePrefs } from './prefs'
+import { DEFAULT_PREFS, effectiveScu, loadPrefs, savePrefs } from './prefs'
 
 describe('prefs', () => {
   beforeEach(() => localStorage.clear())
@@ -7,7 +7,7 @@ describe('prefs', () => {
   test('sem nada salvo devolve o padrão', () => {
     expect(loadPrefs()).toEqual(DEFAULT_PREFS)
     expect(DEFAULT_PREFS).toEqual({
-      shipId: null, budget: 0, excludeIllegal: true, originSystem: '', sortBy: 'profit', warnHours: 24, staleDays: 7,
+      shipId: null, budget: 0, excludeIllegal: true, originSystem: '', sortBy: 'profit', warnHours: 24, staleDays: 7, scuOverrides: {},
     })
   })
 
@@ -25,4 +25,12 @@ describe('prefs', () => {
     localStorage.setItem('tayko.prefs', JSON.stringify({ budget: 10 }))
     expect(loadPrefs()).toEqual({ ...DEFAULT_PREFS, budget: 10 })
   })
+})
+
+describe('effectiveScu', () => {
+  const galaxy = { id: 7, name: 'Galaxy', name_full: 'RSI Galaxy', scu: 64, is_cargo: 1, is_mining: 0, is_salvage: 0, is_ground_vehicle: 0 }
+  test('sem override usa o SCU do UEX', () => expect(effectiveScu(DEFAULT_PREFS, galaxy)).toBe(64))
+  test('com override usa o valor digitado', () => expect(effectiveScu({ ...DEFAULT_PREFS, scuOverrides: { 7: 192 } }, galaxy)).toBe(192))
+  test('sem nave é 0', () => expect(effectiveScu(DEFAULT_PREFS, null)).toBe(0))
+  test('padrão tem scuOverrides vazio', () => expect(DEFAULT_PREFS.scuOverrides).toEqual({}))
 })
