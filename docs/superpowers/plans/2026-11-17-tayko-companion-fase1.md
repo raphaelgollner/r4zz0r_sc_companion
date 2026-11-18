@@ -18,7 +18,7 @@
 - Limite: no máximo 100 requisições por 60 s (UEX permite 120).
 - TTL: `commodities` 1 h; `commodities_prices_all` 30 min; `commodities_status`, `vehicles`, `terminals`, `planets`, `moons`, `currencies_index_history` 12 h; `currencies_index` 1 h.
 - Frescor: "envelhecendo" (laranja) após 24 h (configurável), "velho" (vermelho) após 7 dias (configurável).
-- Título da janela e do app: `TAYKO CORP COMPANION`. Abas em inglês; todo o resto do texto em pt-BR.
+- Título da janela e do app: `TAYKO CORP COMPANION`. Interface em **pt-BR e en** (padrão pt-BR), todo texto via `t()`. **Nunca traduzir nomes de produtos** (commodities, naves, fabricantes, terminais, locais): vêm do UEX como estão. Abas principais — pt: INÍCIO, TRADE, NAVES, MINERAÇÃO, SALVAGE, FROTA, AJUSTES; en: HOME, TRADE, SHIPS, MINING, SALVAGE, FLEET, SETTINGS. Sub-abas de TRADE com os nomes do UEX nos dois idiomas.
 - Crédito visível: "Dados: UEX Corp" e "Star Citizen® é marca registrada da Cloud Imperium Games. App não oficial."
 - Tokens visuais: `--gold #F4C430`, `--gold-light #FFD700`, `--gold-dark #C9A22B`, `--orange #FF8C00`, `--accent #FF6B00`, `--black #0A0A0F`, `--dark-gray #1A1A1A`, `--mid-gray #2A2A2A`, `--light-gray #3A3A3A`, `--white #E8E8E8`, `--glow-gold rgba(244,196,48,.5)`, `--profit #3DDC84`, `--danger #FF4D4D`. Fontes Orbitron (títulos, caixa alta) e Exo 2 (texto), embutidas. Chanfro: `clip-path: polygon(0 0, 90% 0, 100% 10%, 100% 100%, 10% 100%, 0 90%)` (em painéis largos usar valores em px: `polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))`). Rótulos de seção `// NOME`.
 - Números em pt-BR (`1.200.000`), com `tabular-nums`.
@@ -183,12 +183,13 @@ Regras (do spec §7.1):
 ### Task 7: Tema, componentes base e casca do app
 
 **Files:**
-- Create: `src/ui/theme.css`, `src/ui/fonts.ts`, `src/ui/Panel.tsx`, `src/ui/SectionLabel.tsx`, `src/ui/Tabs.tsx`, `src/ui/DataTable.tsx`, `src/ui/FreshnessBadge.tsx`, `src/ui/StatusBadge.tsx`, `src/ui/LoadState.tsx`, `src/app/App.tsx`, `src/app/Header.tsx`, `src/app/Footer.tsx`, `src/app/App.test.tsx`
+- Create: `src/i18n/dict.ts`, `src/i18n/i18n.tsx`, `src/i18n/i18n.test.tsx`, `src/ui/theme.css`, `src/ui/fonts.ts`, `src/ui/Panel.tsx`, `src/ui/SectionLabel.tsx`, `src/ui/Tabs.tsx`, `src/ui/DataTable.tsx`, `src/ui/FreshnessBadge.tsx`, `src/ui/StatusBadge.tsx`, `src/ui/LoadState.tsx`, `src/app/App.tsx`, `src/app/Header.tsx`, `src/app/Footer.tsx`, `src/app/App.test.tsx`
 - Modify: `src/main.tsx`, `index.html` (`lang="pt-BR"`, título)
 
 **Interfaces:**
 - Consumes: `useUex`, `formatAge`, `ageLevel`.
 - Produces:
+  - i18n: `type Lang = 'pt' | 'en'`; `dict.ts` exporta `pt` e `en` com as mesmas chaves (`en: Record<keyof typeof pt, string>`, o compilador acusa chave faltando); `I18nProvider({ initial?: Lang, children })`; `useI18n(): { lang: Lang; setLang(l: Lang): void; t(key: keyof typeof pt, vars?: Record<string, string | number>): string }` com interpolação `{nome}`; idioma salvo em localStorage `tayko.lang` (try/catch). `formatAge` recebe `lang` opcional (en: "now", "5 min ago", "3 h ago", "3 days ago", "unknown date"). Números continuam em formato pt-BR nos dois idiomas *(decisão: é o formato do usuário)*.
   - `Panel({ title?, children, glow? })` — chanfrado, borda `--light-gray`, título em Orbitron.
   - `SectionLabel({ children })` → `// TEXTO` em `--gold`, caixa alta, `letter-spacing: .2em`.
   - `Tabs<K extends string>({ items: { key: K; label: string; disabled?: boolean; hint?: string }[]; active: K; onChange(k: K) })`
@@ -198,7 +199,7 @@ Regras (do spec §7.1):
   - `LoadState({ loading, error, onRetry, children })` — erro mostra "Não foi possível carregar os dados do UEX" + botão "Tentar de novo"; com dados e erro mostra faixa de aviso acima do conteúdo.
   - `App` — Header (logo + `TAYKO CORP COMPANION` em Orbitron dourado com brilho), abas principais `HOME | TRADE | MINING | SALVAGE | FLEET | SETTINGS` (MINING, SALVAGE, FLEET desabilitadas com dica "Fase 2"/"Fase 3"), sub-abas de TRADE: `Commodities | Locations | Harvestables | Price Finder | Routes | Currencies Index`. Footer: "Dados: UEX Corp · atualizado {formatAge}" + aviso CIG das Global Constraints. Estado de navegação em `useState`, sem router.
 
-- [ ] **Step 1: Testes que falham** (`App.test.tsx`, com `UexProvider` usando `memoryStore` e `fetchFn` falso): mostra o título `TAYKO CORP COMPANION`; clicar em TRADE mostra as 6 sub-abas; MINING está desabilitada; footer contém "Dados: UEX Corp".
+- [ ] **Step 1: Testes que falham** (`App.test.tsx`, com `UexProvider` usando `memoryStore` e `fetchFn` falso): mostra o título `TAYKO CORP COMPANION`; clicar em TRADE mostra as 6 sub-abas; MINERAÇÃO está desabilitada; footer contém "Dados: UEX Corp"; botão de idioma troca para EN e a aba vira "SHIPS" e o footer "Data: UEX Corp". `i18n.test.tsx`: `t` com interpolação; idioma salvo e restaurado; `formatAge(..., 'en')`.
 - [ ] **Step 2:** FAIL. **Step 3:** Implementar. `theme.css` define os tokens no `:root`, `body` com fundo `--black` e grade sutil (`background-image` com linhas `--dark-gray` a cada 40px), scrollbar escura. **Step 4:** PASS.
 - [ ] **Step 5:** Verificação visual: `npm run tauri dev` → fundo escuro, logo transparente sem halo branco, títulos em Orbitron, abas funcionando.
 - [ ] **Step 6:** Commit `feat: tema Tayko e casca do app`.
@@ -245,11 +246,29 @@ Regras (do spec §7.1):
 
 - [ ] **Step 1: Testes que falham**
   - `prefs.test.ts`: salva e lê; JSON corrompido → padrão; campos faltando completados com o padrão.
-  - `routes.ui.test.tsx`: escolher Caterpillar (576 SCU) e orçamento 1.200.000 → card mostra `COMPRA`, `LEVA 434 SCU (limite: estoque)`, `VENDE`, `LUCRO ≈ 630.602 aUEC`, e a idade dos dois preços; demanda desconhecida mostra "demanda desconhecida"; orçamento vazio mostra "Informe quanto você tem para investir."; nave com 0 SCU mostra "Essa nave não tem carga em SCU."; lista de naves só tem `scu > 0`.
+  - `routes.ui.test.tsx`: escolher Caterpillar (576 SCU) e orçamento 5.000.000 → card mostra `COMPRA`, `LEVA 434 SCU (limite: estoque)`, `VENDE`, `LUCRO ≈ 630.602 aUEC`, e a idade dos dois preços; demanda desconhecida mostra "demanda desconhecida"; orçamento vazio mostra "Informe quanto você tem para investir."; nave com 0 SCU mostra "Essa nave não tem carga em SCU."; lista de naves só tem `scu > 0`.
 - [ ] **Step 2:** FAIL. **Step 3:** Implementar. Layout do card conforme o esboço do spec §6; o limitador vai em destaque (`--orange`). Campo de orçamento aceita "1.200.000" ou "1200000". HOME: logo grande, `// VISÃO GERAL`, top 5 rotas com a nave/orçamento salvos (sem nave salva: botão "Configurar calculadora" que abre TRADE › Routes), painel de cache (cada recurso com `formatAge` do `fetchedAt`) e botão "Atualizar tudo". **Step 4:** PASS.
 - [ ] **Step 5:** Commit `feat: calculadora de rotas e HOME`.
 
-### Task 11: SETTINGS e instalador
+### Task 11: NAVES / SHIPS
+
+**Files:**
+- Create: `src/domain/ships.ts`, `src/domain/ships.test.ts`, `src/features/ships/ShipsView.tsx`, `src/features/ships/ShipsScreen.tsx`, `src/features/ships/ships.test.tsx`
+- Modify: `src/data/types.ts`, `src/data/ttl.ts` (recursos `vehicles_purchases_prices_all` e `vehicles_rentals_prices_all`, TTL 12 h), `src/app/App.tsx` (habilita a aba)
+
+**Interfaces:**
+- Produces:
+  - `types.ts`: `Vehicle` ganha `crew: string`, `pad_type: string | null`, `company_name: string`, `url_photo: string | null`, e as flags `is_military, is_bomber, is_exploration, is_passenger, is_racing, is_refinery, is_refuel, is_repair, is_medical, is_science, is_research, is_stealth, is_starter, is_construction, is_datarunner, is_interdiction, is_carrier, is_spaceship`; `VehiclePrice` (`id, id_vehicle, id_terminal, price_buy, date_modified, vehicle_name, terminal_name`); `VehicleRent` (mesmo com `price_rent`).
+  - `ships.ts`: `type ShipRole = 'cargo' | 'mining' | 'salvage' | 'ground' | 'combat' | 'exploration' | 'passenger' | 'racing' | 'refinery' | 'refuel' | 'repair' | 'medical' | 'science' | 'stealth' | 'starter' | 'construction' | 'datarunner' | 'interdiction' | 'carrier'`; `shipRoles(v: Vehicle): ShipRole[]` (combat = is_military ou is_bomber; science = is_science ou is_research; ground = is_ground_vehicle; os demais 1:1 com a flag; ordem da lista acima); `interface ShipOffers { buy: VehiclePrice[]; rent: VehicleRent[]; minBuy: number | null; minRent: number | null }`; `shipOffers(vehicleId, purchases, rentals): ShipOffers` (ignora preço 0, ordena crescente); `searchShips(vehicles, query, role?: ShipRole): Vehicle[]` (busca em `name`, `name_full`, `company_name`, sem diferenciar maiúsculas/acentos).
+  - Rótulos dos tipos via `t('role.<ShipRole>')` (traduzidos; são categorias, não produtos).
+
+- [ ] **Step 1: Testes que falham**
+  - `ships.test.ts`: Caterpillar com `is_cargo 1, is_military 0` → `['cargo']`; nave `is_military 1, is_bomber 1` → `['combat']` (sem repetição); `shipOffers` ordena compra crescente, ignora 0, `minBuy` null sem oferta; `searchShips('drake')` acha pelo fabricante; `searchShips('', 'mining')` só naves de mineração.
+  - `ships.test.tsx`: tabela com Nave, Fabricante, Tipo (chips), SCU, Tripulação, Pad, Compra a partir de, Aluguel a partir de; nave sem oferta mostra "Não vendida in-game"; clicar abre detalhe com foto (`url_photo`), lista de terminais de compra/aluguel com preço e idade; em EN os cabeçalhos mudam e o nome da nave não.
+- [ ] **Step 2:** FAIL. **Step 3:** Implementar. **Step 4:** PASS.
+- [ ] **Step 5:** Commit `feat: aba NAVES`.
+
+### Task 12: SETTINGS e instalador
 
 **Files:**
 - Create: `src/features/settings/SettingsScreen.tsx`, `src/features/settings/settings.test.tsx`
@@ -260,7 +279,7 @@ Regras (do spec §7.1):
 **Interfaces:**
 - Consumes: `usePrefs`, `clearCache`.
 
-- [ ] **Step 1: Testes que falham**: alterar "Avisar dado envelhecendo após (h)" para 12 muda o badge de um preço de 13 h para laranja; "Limpar cache" chama `clearCache` e mostra "Cache limpo."; seção "Sobre" mostra versão do app, "Dados: UEX Corp (uexcorp.space)" e o aviso CIG.
+- [ ] **Step 1: Testes que falham**: seletor de idioma PT-BR/EN; alterar "Avisar dado envelhecendo após (h)" para 12 muda o badge de um preço de 13 h para laranja; "Limpar cache" chama `clearCache` e mostra "Cache limpo."; seção "Sobre" mostra versão do app, "Dados: UEX Corp (uexcorp.space)" e o aviso CIG.
 - [ ] **Step 2:** FAIL. **Step 3:** Implementar. **Step 4:** PASS.
 - [ ] **Step 5:** `npm test` → todos passam. `npm run tauri build` → gera instalador NSIS em `src-tauri/target/release/bundle/nsis/`. Instalar, abrir, conferir: dados carregam, fechar e reabrir mostra cache na hora, desligar a internet e reabrir mostra os dados do cache com aviso.
 - [ ] **Step 6:** Ler os termos de uso do UEX (uexcorp.space/about/terms) e relatar ao usuário qualquer exigência (crédito, uso de marca, limites) antes de distribuir o instalador para a org.
