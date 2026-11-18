@@ -9,6 +9,9 @@ import type {
   RefineryMethod,
   RefineryYield,
   Terminal,
+  Item,
+  ItemAttribute,
+  ItemPrice,
   Vehicle,
   VehiclePrice,
   VehicleRent,
@@ -20,6 +23,9 @@ import { OresView } from './OresView'
 import { RefineriesView } from './RefineriesView'
 import { DistanceFetcher } from './DistanceFetcher'
 import { PlannerView } from './PlannerView'
+import { EQUIPMENT_CATEGORY, EquipmentView, type EquipmentKind } from './EquipmentView'
+import { QUERY_TTL } from '../../data/ttl'
+import { useUexQuery } from '../../data/useUex'
 import { useMinerPrefs } from '../../store/minerPrefs'
 import { refineryMatrix } from '../../domain/mining'
 
@@ -133,6 +139,19 @@ export function PlannerScreen() {
           />
         </>
       )}
+    </Loaded>
+  )
+}
+
+export function EquipmentScreen() {
+  const [kind, setKind] = useState<EquipmentKind>('lasers')
+  const params = { id_category: EQUIPMENT_CATEGORY[kind] }
+  const items = useUexQuery<Item[]>('items', params, QUERY_TTL.items)
+  const attrs = useUexQuery<ItemAttribute[]>('items_attributes', params, QUERY_TTL.items_attributes)
+  const prices = useUexQuery<ItemPrice[]>('items_prices', params, QUERY_TTL.items_prices)
+  return (
+    <Loaded states={all(items, attrs, prices)}>
+      {() => <EquipmentView kind={kind} onKind={setKind} items={items.data!} attrs={attrs.data!} prices={prices.data!} now={Date.now()} />}
     </Loaded>
   )
 }
