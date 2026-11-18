@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { RateLimiter } from '../api/rateLimiter'
 import { fetchUex, UexError } from '../api/uexClient'
 import { getResource, peekResource } from '../cache/cachedResource'
@@ -47,38 +47,54 @@ export interface UexState<T> {
   refresh: () => void
 }
 
-export function useUex<T>(resource: UexResource): UexState<T> {
+/** Chave de cache: recurso + parâmetros em ordem alfabética (ex.: `items?id_category=29`). */
+export function queryKey(resource: string, params?: Record<string, string | number> | null): string {
+  if (!params) return resource
+  const q = Object.keys(params)
+    .sort()
+    .map((k) => `${k}=${params[k]}`)
+    .join('&')
+  return q ? `${resource}?${q}` : resource
+}
+
+function useUexBase<T>(resource: string, params: Record<string, string | number> | null | undefined, ttlMs: number, enabled: boolean): UexState<T> {
   const { store, fetchFn, limiter } = useUexContext()
+  const key = queryKey(resource, params)
+  const paramsRef = useRef(params)
+  paramsRef.current = params
   const [state, setState] = useState<Omit<UexState<T>, 'refresh'>>({
     data: null,
     fetchedAt: null,
-    loading: true,
+    loading: enabled,
     error: null,
   })
 
   const load = useCallback(
     async (force: boolean, isActive: () => boolean) => {
+      if (!enabled) {
+        setState({ data: null, fetchedAt: null, loading: false, error: null })
+        return
+      }
       setState((s) => ({ ...s, loading: true }))
       if (!force) {
-        const peek = await peekResource<T>(resource, store)
+        const peek = await peekResource<T>(key, store)
         if (peek && isActive()) setState((s) => ({ ...s, data: peek.data, fetchedAt: peek.fetchedAt }))
       }
       try {
         const r = await getResource<T>(
-          resource,
-          TTL_MS[resource],
-          () => fetchUex<T>(resource, undefined, { fetchFn, limiter }),
+          key,
+          ttlMs,
+          () => fetchUex<T>(resource, paramsRef.current ?? undefined, { fetchFn, limiter }),
           store,
           Date.now,
           force,
         )
         if (isActive()) setState({ data: r.data, fetchedAt: r.fetchedAt, loading: false, error: r.error ?? null })
       } catch (e) {
-        if (isActive())
-          setState((s) => ({ ...s, loading: false, error: e instanceof UexError ? e.code : 'unknown' }))
+        if (isActive()) setState((s) => ({ ...s, loading: false, error: e instanceof UexError ? e.code : 'unknown' }))
       }
     },
-    [resource, store, fetchFn, limiter],
+    [key, resource, ttlMs, enabled, store, fetchFn, limiter],
   )
 
   useEffect(() => {
@@ -98,4 +114,13 @@ export function useUex<T>(resource: UexResource): UexState<T> {
   }, [load])
 
   return useMemo(() => ({ ...state, refresh }), [state, refresh])
+}
+
+export function useUex<T>(resource: UexResource): UexState<T> {
+  return useUexBase<T>(resource, undefined, TTL_MS[resource], true)
+}
+
+/** Consulta com parâmetros (ex.: itens de uma categoria). `params === null` não busca nada. */
+export function useUexQuery<T>(resource: string, params: Record<string, string | number> | null, ttlMs: number): UexState<T> {
+  return useUexBase<T>(resource, params, ttlMs, params !== null)
 }

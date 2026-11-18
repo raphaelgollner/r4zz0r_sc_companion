@@ -4,6 +4,7 @@ import { usePrefs } from '../../store/prefs'
 import { useOptionalBalance } from '../../store/progress'
 import { RoutesView } from './RoutesView'
 import { useUex, type UexState } from '../../data/useUex'
+import { useI18n } from '../../i18n/i18n'
 import { LoadState } from '../../ui/components'
 import { CommoditiesView } from './CommoditiesView'
 import { CurrenciesView } from './CurrenciesView'
@@ -22,11 +23,19 @@ export function useMany(states: UexState<unknown>[]) {
 }
 
 export function Loaded({ states, children }: { states: UexState<unknown>[]; children: () => ReactNode }) {
+  const { t } = useI18n()
   const m = useMany(states)
   return (
-    <LoadState loading={m.loading} error={m.error} hasData={m.hasData} onRetry={m.retry}>
-      {m.hasData && children()}
-    </LoadState>
+    <div className="loaded">
+      <div className="loaded-bar">
+        <button className="btn" disabled={m.loading} onClick={() => states.forEach((s) => s.refresh())}>
+          {t('common.refresh')}
+        </button>
+      </div>
+      <LoadState loading={m.loading} error={m.error} hasData={m.hasData} onRetry={m.retry}>
+        {m.hasData && children()}
+      </LoadState>
+    </div>
   )
 }
 

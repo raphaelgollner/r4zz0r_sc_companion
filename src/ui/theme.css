@@ -837,3 +837,13 @@ code {
 input[type='datetime-local'] {
   color-scheme: dark;
 }
+
+.loaded-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 10px;
+}
+.loaded-bar .btn {
+  font-size: 10px;
+  padding: 6px 12px;
+}
