@@ -54,6 +54,8 @@ export interface CommodityStatus {
 
 export interface Vehicle {
   id: number
+  /** Identificador do jogo: liga a nave à Star Citizen Wiki. */
+  uuid?: string
   name: string
   name_full: string
   company_name?: string
@@ -83,6 +85,17 @@ export interface Vehicle {
   is_interdiction?: number
   is_carrier?: number
   is_spaceship?: number
+  is_tractor_beam?: number
+  is_industrial?: number
+}
+
+/** Preço de pledge (dinheiro real) por moeda (`vehicles_prices`). */
+export interface PledgePrice {
+  id: number
+  id_vehicle: number
+  price: number
+  currency: string
+  date_modified: number
 }
 
 export interface VehiclePrice {
@@ -192,6 +205,11 @@ export interface RawPriceRow {
 
 export interface Item {
   id: number
+  /** Identificador do jogo: liga o item à Star Citizen Wiki. */
+  uuid?: string | null
+  /** > 0 quando o item é exclusivo de uma nave (ex.: Pitman → Golem). */
+  id_vehicle?: number
+  vehicle_name?: string | null
   id_category: number
   name: string
   company_name: string | null
