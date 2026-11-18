@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from 'react'
 import type { Commodity, CommodityStatus, CurrencyIndex, CurrencyIndexPoint, Moon, Planet, PriceRow, Terminal, Vehicle } from '../../data/types'
 import { usePrefs } from '../../store/prefs'
+import { useOptionalBalance } from '../../store/progress'
 import { RoutesView } from './RoutesView'
 import { useUex, type UexState } from '../../data/useUex'
 import { LoadState } from '../../ui/components'
@@ -95,6 +96,7 @@ export function RoutesScreen() {
   const vehicles = useUex<Vehicle[]>('vehicles')
   const terminals = useUex<Terminal[]>('terminals')
   const [prefs, setPrefs] = usePrefs()
+  const balance = useOptionalBalance()
   return (
     <Loaded states={[commodities, prices, vehicles, terminals] as UexState<unknown>[]}>
       {() => (
@@ -106,6 +108,7 @@ export function RoutesScreen() {
           now={Date.now()}
           prefs={prefs}
           onPrefs={setPrefs}
+          balance={balance}
         />
       )}
     </Loaded>

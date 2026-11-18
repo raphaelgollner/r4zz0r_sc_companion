@@ -1,6 +1,7 @@
 import type { Commodity, PriceRow, Terminal, Vehicle } from '../../data/types'
 import { refreshAll, useUex, type UexState } from '../../data/useUex'
 import { usePrefs } from '../../store/prefs'
+import { useOptionalBalance } from '../../store/progress'
 import { Loaded } from '../trade/screens'
 import { HomeView } from './HomeView'
 
@@ -16,6 +17,7 @@ export function HomeScreen({ onSetup }: { onSetup: () => void }) {
   const index = useUex('currencies_index')
   const history = useUex('currencies_index_history')
   const [prefs, setPrefs] = usePrefs()
+  const balance = useOptionalBalance()
 
   const all: [string, UexState<unknown>][] = [
     ['commodities', commodities],
@@ -40,6 +42,7 @@ export function HomeScreen({ onSetup }: { onSetup: () => void }) {
           now={Date.now()}
           prefs={prefs}
           onPrefs={setPrefs}
+          balance={balance}
           cache={all.map(([resource, s]) => ({ resource, fetchedAt: s.fetchedAt }))}
           refreshing={all.some(([, s]) => s.loading)}
           onSetup={onSetup}

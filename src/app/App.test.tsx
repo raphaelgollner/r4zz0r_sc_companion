@@ -61,3 +61,13 @@ describe('navegação pelo endereço', () => {
     window.location.hash = ''
   })
 })
+
+describe('aba PROGRESSO', () => {
+  test('existe em PT e EN', async () => {
+    localStorage.clear()
+    renderApp()
+    expect(screen.getByRole('tab', { name: 'PROGRESSO' })).toBeEnabled()
+    await userEvent.click(screen.getByRole('button', { name: 'EN' }))
+    expect(screen.getByRole('tab', { name: 'PROGRESS' })).toBeInTheDocument()
+  })
+})

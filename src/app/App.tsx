@@ -6,7 +6,7 @@ import { useI18n, type Lang } from '../i18n/i18n'
 import { Tabs, type TabItem } from '../ui/components'
 import { ErrorBoundary } from '../ui/ErrorBoundary'
 
-export type MainTab = 'home' | 'trade' | 'ships' | 'mining' | 'salvage' | 'fleet' | 'settings'
+export type MainTab = 'home' | 'trade' | 'ships' | 'progress' | 'mining' | 'salvage' | 'fleet' | 'settings'
 export type TradeTab = 'commodities' | 'locations' | 'harvestables' | 'finder' | 'routes' | 'currencies'
 
 export interface Nav {
@@ -18,6 +18,7 @@ export interface Nav {
 export interface Screens {
   home?: (go: (nav: Partial<Nav>) => void) => ReactNode
   ships?: () => ReactNode
+  progress?: () => ReactNode
   settings?: () => ReactNode
   trade?: Partial<Record<TradeTab, () => ReactNode>>
 }
@@ -57,7 +58,7 @@ function Footer() {
   )
 }
 
-const MAIN: MainTab[] = ['home', 'trade', 'ships', 'mining', 'salvage', 'fleet', 'settings']
+const MAIN: MainTab[] = ['home', 'trade', 'ships', 'progress', 'mining', 'salvage', 'fleet', 'settings']
 const TRADE: TradeTab[] = ['commodities', 'locations', 'harvestables', 'finder', 'routes', 'currencies']
 
 /** Lê a aba inicial do endereço, ex.: `#trade/finder`. */
@@ -78,6 +79,7 @@ export default function App({ screens = {} }: { screens?: Screens }) {
     { key: 'home', label: t('tab.home') },
     { key: 'trade', label: t('tab.trade') },
     { key: 'ships', label: t('tab.ships') },
+    { key: 'progress', label: t('tab.progress') },
     { key: 'mining', label: t('tab.mining'), disabled: true, hint: t('tab.soon', { phase: 2 }) },
     { key: 'salvage', label: t('tab.salvage'), disabled: true, hint: t('tab.soon', { phase: 3 }) },
     { key: 'fleet', label: t('tab.fleet'), disabled: true, hint: t('tab.soon', { phase: 3 }) },
@@ -96,6 +98,7 @@ export default function App({ screens = {} }: { screens?: Screens }) {
   let content: ReactNode = null
   if (nav.main === 'home') content = screens.home?.(go)
   else if (nav.main === 'ships') content = screens.ships?.()
+  else if (nav.main === 'progress') content = screens.progress?.()
   else if (nav.main === 'settings') content = screens.settings?.()
   else if (nav.main === 'trade')
     content = (
