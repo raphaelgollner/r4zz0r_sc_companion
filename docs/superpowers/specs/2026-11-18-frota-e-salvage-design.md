@@ -65,7 +65,7 @@ O usuário escolheu **A** em 2026-11-18.
 ## 5. Desenho
 
 ### 5.1 Abas
-Ordem nova: **ROTAS · TRADE · NAVES · MINERAÇÃO · SALVAGE · FROTA · PROGRESSO · AJUSTES**.
+Ordem nova: **ROTAS · TRADE · MINERAÇÃO · SALVAGE · NAVES · FROTA · PROGRESSO · AJUSTES**. As abas de atividade vêm primeiro e as de apoio depois (pedido do usuário, 2026-11-18).
 
 - INÍCIO passa a se chamar ROTAS (EN: ROUTES). O conteúdo não muda.
 - SALVAGE e FROTA deixam de ficar desabilitadas.
