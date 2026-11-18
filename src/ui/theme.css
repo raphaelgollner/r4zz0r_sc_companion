@@ -926,3 +926,12 @@ input[type='datetime-local'] {
   font-size: 0.75em;
   margin-left: 4px;
 }
+
+/* FROTA */
+.fleet-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 10px;
+}

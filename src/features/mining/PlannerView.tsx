@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import type { Commodity, PriceRow, RawPriceRow, RefineryYield, Terminal } from '../../data/types'
 import { formatAuec } from '../../domain/format'
 import { locationPath, placeName } from '../../domain/location'
@@ -6,80 +6,9 @@ import { refinedOf, refinePlan, refineryMatrix, sellRawValue } from '../../domai
 import { useI18n } from '../../i18n/i18n'
 import type { MinerPrefs } from '../../store/minerPrefs'
 import { DataTable, Panel, SectionLabel } from '../../ui/components'
+import { ScuInput } from '../../ui/ScuInput'
+import { SearchPicker } from '../../ui/SearchPicker'
 import { TerminalName } from '../../ui/TerminalName'
-
-const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-
-/** Campo de busca genérico com lista de opções. */
-function SearchPicker<T>({
-  items,
-  label,
-  value,
-  onPick,
-  text,
-  sub,
-  ariaLabel,
-}: {
-  items: T[]
-  label: (x: T) => string
-  value: T | null
-  onPick: (x: T) => void
-  text: (x: T) => string
-  sub?: (x: T) => string | null
-  ariaLabel: string
-}) {
-  const [q, setQ] = useState('')
-  const opts = useMemo(() => (q.trim() ? items.filter((x) => norm(text(x)).includes(norm(q.trim()))).slice(0, 12) : []), [items, q, text])
-  return (
-    <div className="picker">
-      <input className="input" role="combobox" aria-label={ariaLabel} aria-expanded={opts.length > 0} placeholder={value ? label(value) : '…'} value={q} onChange={(e) => setQ(e.target.value)} />
-      {opts.length > 0 && (
-        <ul className="picker-list" role="listbox">
-          {opts.map((x, i) => (
-            <li
-              key={i}
-              role="option"
-              aria-selected={x === value}
-              onClick={() => {
-                onPick(x)
-                setQ('')
-              }}
-            >
-              {label(x)} {sub?.(x) && <span className="muted">{sub(x)}</span>}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
-
-/** SCU com decimal: mantém o texto enquanto digita ("3," / "3,5") e só reformata ao sair do campo. */
-function ScuInput({ label, value, onChange }: { label: string; value: number; onChange: (scu: number) => void }) {
-  const show = (v: number) => (v > 0 ? String(v).replace('.', ',') : '')
-  const [text, setText] = useState(show(value))
-  const [focused, setFocused] = useState(false)
-  useEffect(() => {
-    if (!focused) setText(show(value))
-  }, [value, focused])
-  return (
-    <input
-      className="input num"
-      style={{ width: 100, minWidth: 80 }}
-      inputMode="decimal"
-      aria-label={label}
-      value={text}
-      placeholder="SCU"
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-      onChange={(e) => {
-        setText(e.target.value)
-        const n = Number(e.target.value.trim().replace(',', '.'))
-        onChange(Number.isFinite(n) && n > 0 ? n : 0)
-      }}
-    />
-  )
-}
 
 export function PlannerView({
   commodities,

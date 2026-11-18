@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Terminal, Vehicle } from '../../data/types'
 import { formatAuec, parseAmount } from '../../domain/format'
+import { useFleet } from '../../store/fleet'
 import { useI18n } from '../../i18n/i18n'
 import { effectiveScu, type Prefs } from '../../store/prefs'
 import { Tooltip } from '../../ui/Tooltip'
@@ -38,6 +39,15 @@ export function RouteControls({
 }) {
   const { t } = useI18n()
   const ships = useMemo(() => [...vehicles].sort((a, b) => a.name_full.localeCompare(b.name_full)), [vehicles])
+  const { entries } = useFleet()
+  const mineIds = useMemo(() => new Set(entries.map((e) => e.vehicleId)), [entries])
+  const mine = useMemo(() => ships.filter((v) => mineIds.has(v.id)), [ships, mineIds])
+  const others = useMemo(() => (mine.length ? ships.filter((v) => !mineIds.has(v.id)) : ships), [ships, mine, mineIds])
+  const shipOption = (v: Vehicle) => (
+    <option key={v.id} value={v.id}>
+      {v.scu > 0 ? `${v.name_full} · ${v.scu} SCU` : v.name_full}
+    </option>
+  )
   const ship = vehicles.find((v) => v.id === prefs.shipId) ?? null
   const scu = effectiveScu(prefs, ship)
   const hasOverride = ship !== null && prefs.scuOverrides[ship.id] !== undefined
@@ -76,11 +86,14 @@ export function RouteControls({
           <option value="" disabled hidden>
             {t('routes.pickShip')}
           </option>
-          {ships.map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.scu > 0 ? `${v.name_full} · ${v.scu} SCU` : v.name_full}
-            </option>
-          ))}
+          {mine.length > 0 ? (
+            <>
+              <optgroup label={t('fleet.mine')}>{mine.map(shipOption)}</optgroup>
+              <optgroup label={t('fleet.allShips')}>{others.map(shipOption)}</optgroup>
+            </>
+          ) : (
+            others.map(shipOption)
+          )}
         </select>
       </label>
       <label className="field">

@@ -1,3 +1,4 @@
+import { FleetScreen } from '../features/fleet/screens'
 import { HomeScreen } from '../features/home/HomeScreen'
 import { EquipmentScreen, GroundScreen, OresScreen, PlannerScreen, RefineriesScreen } from '../features/mining/screens'
 import { ProgressView } from '../features/progress/ProgressView'
@@ -19,6 +20,7 @@ export const screens: Screens = {
   home: (go) => <HomeScreen onSetup={() => go({ main: 'trade', trade: 'routes' })} />,
   ships: () => <ShipsScreen />,
   progress: () => <ProgressView />,
+  fleet: () => <FleetScreen />,
   settings: () => <SettingsView version={__APP_VERSION__} onClearCache={() => clearCache()} />,
   mining: {
     ores: () => <OresScreen />,
