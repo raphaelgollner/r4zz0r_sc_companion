@@ -56,7 +56,8 @@ Endpoints principais que o app usa:
 | `commodities_routes` | Rotas prontas (margem, ROI, distância, score) — base da calculadora |
 | `commodities_status` | Significado dos níveis de `status_*` (a buscar) |
 | `refineries_yields`, `refineries_methods`, `refineries_capacities` | Bônus de rendimento por refinaria/commodity; métodos (ratings 1–3 de rendimento/custo/velocidade) |
-| `vehicles` | Naves e veículos: `scu`, flags is_mining, is_salvage, is_cargo, is_ground_vehicle |
+| `vehicles` | Naves e veículos: `scu`, `crew`, `pad_type`, `company_name`, `url_photo` e flags de tipo (is_cargo, is_mining, is_salvage, is_ground_vehicle, is_military…) |
+| `vehicles_purchases_prices_all`, `vehicles_rentals_prices_all` | Preço de compra/aluguel in-game por terminal (aba NAVES) |
 | `items`, `items_prices`, `items_attributes`, `categories` | Lasers/módulos de mineração e onde comprar (via categoria com `is_mining`) |
 | `terminals`, `star_systems`, `planets`, `moons`, `orbits`, `space_stations`, `cities`, `outposts`, `poi` | Hierarquia de locais |
 | `terminals_distances` / `orbits_distances` | Distâncias para "mais próximo" (a confirmar formato) |
@@ -132,11 +133,12 @@ TAYKO CORP COMPANION
 ├─ SALVAGE            (condicional: só se RMC/CMAT existirem no UEX, §3.1)
 │   ├─ Materials        RMC, Construction Materials: onde vender, preço
 │   └─ Salvage Planner  nave de salvage + carga → melhor venda
+├─ NAVES / SHIPS      busca de naves: tipo (pelas flags do UEX), SCU, tripulação, pad, preço de compra in-game e onde comprar, aluguel
 ├─ FLEET                "minhas naves": lista pessoal salva localmente, usada nas calculadoras
 └─ SETTINGS            local atual, limites de "dado velho", cache
 ```
 
-Nomes de abas em inglês como o usuário escreveu e como no UEX; textos explicativos em pt-BR. Só pt-BR nesta fase, sem sistema de tradução. *(minha decisão)*
+**Idiomas (pedido do usuário, 2026-11-17):** toda a interface em **PT-BR e EN**, com troca no cabeçalho e em SETTINGS. **Nomes de produtos ficam sempre em inglês** (commodities, naves, fabricantes, terminais, locais), como no jogo, para não confundir na hora de achar no terminal. Sub-abas de TRADE mantêm os nomes do UEX nos dois idiomas; TRADE, NAVES e SALVAGE mantêm os nomes que o usuário usou. *(nomes exatos das abas: minha decisão)*
 
 **Quem usa**: vários membros da org, cada um com o app instalado no próprio PC, sem login e sem token (decisão do usuário).
 
