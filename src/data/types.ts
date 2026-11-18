@@ -154,3 +154,68 @@ export interface PriceHistoryPoint {
   price_sell: number
   date_added: number
 }
+
+export interface RefineryYield {
+  id_commodity: number
+  id_terminal: number
+  commodity_name: string
+  terminal_name: string
+  value: number
+  date_modified: number
+}
+
+export interface RefineryMethod {
+  id: number
+  name: string
+  code: string
+  rating_yield: number
+  rating_cost: number
+  rating_speed: number
+}
+
+export interface RefineryCapacity {
+  id_terminal: number
+  terminal_name: string
+  value: number
+  date_modified: number
+}
+
+export interface RawPriceRow {
+  id: number
+  id_commodity: number
+  id_terminal: number
+  price_sell: number
+  date_modified: number
+  commodity_name: string
+  terminal_name: string
+}
+
+export interface Item {
+  id: number
+  id_category: number
+  name: string
+  company_name: string | null
+  size: string | null
+  category: string
+}
+
+export interface ItemAttribute {
+  id_item: number
+  attribute_name: string
+  value: string
+  unit: string
+}
+
+export interface ItemPrice {
+  id: number
+  id_item: number
+  id_terminal: number
+  price_buy: number
+  date_modified: number
+  item_name: string
+  terminal_name: string
+}
+
+export interface TerminalDistance {
+  distance: string
+}
