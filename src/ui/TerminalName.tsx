@@ -7,11 +7,15 @@ export function TerminalName({ id, fallback }: { id: number; fallback: string })
   const t = useTerminal(id)
   if (!t) return <span>{fallback}</span>
   const place = placeName(t)
-  const showPlace = place && !fallback.toLowerCase().includes(place.toLowerCase())
+  const f = fallback.toLowerCase()
+  const p = place?.toLowerCase() ?? ''
+  // "ARC-L3" + "ARC-L3 Modern Express Station" → mostra só o nome completo do lugar.
+  const placeExtendsName = !!place && p.startsWith(f)
+  const showPlace = !!place && !placeExtendsName && !f.includes(p)
   return (
     <Tooltip content={locationPath(t).join(' › ')}>
       <span className="terminal-name">
-        <span>{fallback}</span>
+        <span>{placeExtendsName ? place : fallback}</span>
         {showPlace && <span className="muted place">{place}</span>}
       </span>
     </Tooltip>
