@@ -847,3 +847,26 @@ input[type='datetime-local'] {
   font-size: 10px;
   padding: 6px 12px;
 }
+
+.history {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--mid-gray);
+}
+.history-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 13px;
+  margin-top: 6px;
+}
+.legend-buy {
+  color: var(--orange);
+}
+.legend-sell {
+  color: var(--profit);
+}
+.hint {
+  margin-top: 12px;
+  font-size: 13px;
+}

@@ -59,6 +59,9 @@ export const pt = {
 
   'commodities.title': 'Commodities',
   'commodities.pricesAt': 'Preços por terminal',
+  'history.title': 'Histórico em {terminal}',
+  'history.notEnough': 'Sem histórico suficiente neste terminal.',
+  'history.hint': 'Clique num terminal para ver o histórico de preços.',
   'commodities.pick': 'Escolha uma commodity para ver os preços por terminal.',
 
   'finder.title': 'Price Finder',
@@ -289,6 +292,9 @@ export const en: Record<DictKey, string> = {
 
   'commodities.title': 'Commodities',
   'commodities.pricesAt': 'Prices by terminal',
+  'history.title': 'History at {terminal}',
+  'history.notEnough': 'Not enough history at this terminal.',
+  'history.hint': 'Click a terminal to see its price history.',
   'commodities.pick': 'Pick a commodity to see prices by terminal.',
 
   'finder.title': 'Price Finder',

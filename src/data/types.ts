@@ -148,3 +148,9 @@ export interface CurrencyIndexPoint {
   index_value: number
   date_added: number
 }
+
+export interface PriceHistoryPoint {
+  price_buy: number
+  price_sell: number
+  date_added: number
+}
