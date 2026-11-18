@@ -32,7 +32,7 @@ describe('fetchUex', () => {
 
   test('HTTP 500 lança UexError http_500', async () => {
     const fetchFn = vi.fn(async () => new Response('erro', { status: 500 }))
-    const err = await fetchUex('commodities', undefined, { fetchFn, limiter }).catch((e) => e)
+    const err = (await fetchUex('commodities', undefined, { fetchFn, limiter }).catch((e) => e)) as UexError
     expect(err).toBeInstanceOf(UexError)
     expect(err.code).toBe('http_500')
   })
@@ -41,7 +41,7 @@ describe('fetchUex', () => {
     const fetchFn = vi.fn(async () => {
       throw new TypeError('Failed to fetch')
     })
-    const err = await fetchUex('commodities', undefined, { fetchFn, limiter }).catch((e) => e)
+    const err = (await fetchUex('commodities', undefined, { fetchFn, limiter }).catch((e) => e)) as UexError
     expect(err).toBeInstanceOf(UexError)
     expect(err.code).toBe('network')
   })

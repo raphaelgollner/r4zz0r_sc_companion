@@ -14,13 +14,15 @@ export function ageLevel(
   return 'fresh'
 }
 
-export function formatAge(dateModifiedSec: number | null | undefined, nowMs: number): string {
-  if (!dateModifiedSec || dateModifiedSec <= 0) return 'data desconhecida'
+export function formatAge(dateModifiedSec: number | null | undefined, nowMs: number, lang: 'pt' | 'en' = 'pt'): string {
+  const en = lang === 'en'
+  if (!dateModifiedSec || dateModifiedSec <= 0) return en ? 'unknown date' : 'data desconhecida'
   const ageSec = Math.max(0, nowMs / 1000 - dateModifiedSec)
-  if (ageSec < 60) return 'agora'
+  if (ageSec < 60) return en ? 'now' : 'agora'
   const min = Math.floor(ageSec / 60)
-  if (min < 60) return `há ${min} min`
+  if (min < 60) return en ? `${min} min ago` : `há ${min} min`
   const hours = Math.floor(min / 60)
-  if (hours < 48) return `há ${hours} h`
-  return `há ${Math.floor(hours / 24)} dias`
+  if (hours < 48) return en ? `${hours} h ago` : `há ${hours} h`
+  const days = Math.floor(hours / 24)
+  return en ? `${days} days ago` : `há ${days} dias`
 }

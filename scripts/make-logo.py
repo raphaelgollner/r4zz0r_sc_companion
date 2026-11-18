@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "file_00000000ec2c720e95998fae1a1060a0.png"
 DST = ROOT / "src" / "assets" / "logo.png"
 ICON = ROOT / "src-tauri" / "app-icon.png"
+MARK = ROOT / "src" / "assets" / "logo-mark.png"
 
 def main() -> int:
     img = Image.open(SRC).convert("RGBA")
@@ -34,6 +35,7 @@ def main() -> int:
     icon = Image.new("RGBA", (side, side), (0, 0, 0, 0))
     icon.paste(gear, ((side - gear.width) // 2, (side - gear.height) // 2), gear)
     icon.resize((1024, 1024), Image.LANCZOS).save(ICON)
+    icon.resize((256, 256), Image.LANCZOS).save(MARK)
     print(f"ok {ICON}")
     return 0
 

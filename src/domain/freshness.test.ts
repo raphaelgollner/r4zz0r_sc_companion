@@ -27,3 +27,13 @@ describe('formatAge', () => {
   test('1 dia no singular', () => expect(formatAge(sec - 50 * 3600, now)).toBe('há 2 dias'))
   test('null → data desconhecida', () => expect(formatAge(null, now)).toBe('data desconhecida'))
 })
+
+describe('formatAge em inglês', () => {
+  test('agora, minutos, horas, dias e desconhecida', () => {
+    expect(formatAge(sec - 30, now, 'en')).toBe('now')
+    expect(formatAge(sec - 300, now, 'en')).toBe('5 min ago')
+    expect(formatAge(sec - 3 * 3600, now, 'en')).toBe('3 h ago')
+    expect(formatAge(sec - 3 * 86400, now, 'en')).toBe('3 days ago')
+    expect(formatAge(null, now, 'en')).toBe('unknown date')
+  })
+})
