@@ -12,6 +12,15 @@ import { ItemStoreDialog } from './ItemStoreDialog'
 export type EquipmentKind = 'lasers' | 'modules' | 'gadgets'
 export const EQUIPMENT_CATEGORY: Record<EquipmentKind, number> = { lasers: 29, modules: 30, gadgets: 28 }
 
+/** Uma aba de equipamentos: categoria do UEX e, opcionalmente, atributos que viram colunas. */
+export interface EquipmentKindDef<K extends string = string> {
+  key: K
+  /** Rótulo da aba: chave do dicionário ou texto fixo (nomes como no jogo). */
+  label: string
+  category: number
+  columns?: string[]
+}
+
 /** Atributos de laser que viram colunas (nomes como no jogo). */
 const LASER_COLUMNS = [
   'Mining Laser Power',
@@ -27,7 +36,8 @@ const HIDDEN = new Set(['Volume', 'Size', 'Item Type'])
 const MAX_COMPARE = 3
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
-export function EquipmentView({
+export function EquipmentView<K extends string = EquipmentKind>({
+  kinds,
   kind,
   onKind,
   items,
@@ -35,14 +45,22 @@ export function EquipmentView({
   prices,
   now,
 }: {
-  kind: EquipmentKind
-  onKind: (k: EquipmentKind) => void
+  /** Abas; sem elas, as de mineração (lasers, módulos, gadgets). */
+  kinds?: EquipmentKindDef<K>[]
+  kind: K
+  onKind: (k: K) => void
   items: Item[]
   attrs: ItemAttribute[]
   prices: ItemPrice[]
   now: number
 }) {
   const { t } = useI18n()
+  const tabs: EquipmentKindDef<K>[] = kinds ?? ([
+    { key: 'lasers', label: t('equip.lasers'), category: EQUIPMENT_CATEGORY.lasers, columns: LASER_COLUMNS },
+    { key: 'modules', label: t('equip.modules'), category: EQUIPMENT_CATEGORY.modules },
+    { key: 'gadgets', label: t('equip.gadgets'), category: EQUIPMENT_CATEGORY.gadgets },
+  ] as EquipmentKindDef<string>[] as EquipmentKindDef<K>[])
+  const fixedColumns = tabs.find((k) => k.key === kind)?.columns
   const [query, setQuery] = useState('')
   const [size, setSize] = useState('')
   const [compare, setCompare] = useState<number[]>([])
@@ -70,7 +88,7 @@ export function EquipmentView({
     attrs
       .filter((a) => a.id_item === id && a.value && !HIDDEN.has(a.attribute_name))
       .map((a) => `${a.attribute_name}: ${a.value}${a.unit ? ` ${a.unit}` : ''}`)
-  const attrNames = kind === 'lasers' ? LASER_COLUMNS : [...new Set(attrs.filter((a) => a.value && !HIDDEN.has(a.attribute_name)).map((a) => a.attribute_name))]
+  const attrNames = fixedColumns ? fixedColumns : [...new Set(attrs.filter((a) => a.value && !HIDDEN.has(a.attribute_name)).map((a) => a.attribute_name))]
   const dash = <span className="muted">—</span>
   const selected = items.find((i) => i.id === selectedId) ?? null
 
@@ -93,8 +111,8 @@ export function EquipmentView({
     { key: 'maker', header: t('ships.col.maker'), render: (i) => i.company_name ?? '—', sortValue: (i) => i.company_name ?? '' },
     { key: 'size', header: t('equip.size'), render: (i) => i.size || dash, sortValue: (i) => i.size ?? '' },
   ]
-  if (kind === 'lasers')
-    for (const name of LASER_COLUMNS)
+  if (fixedColumns)
+    for (const name of fixedColumns)
       columns.push({ key: name, header: name, align: 'right', render: (i) => attr(attrs, i.id, name) ?? dash })
   else {
     columns.push({ key: 'type', header: t('equip.type'), render: (i) => attr(attrs, i.id, 'Item Type') ?? dash })
@@ -123,11 +141,7 @@ export function EquipmentView({
       <Panel>
         <Tabs
           sub
-          items={[
-            { key: 'lasers' as EquipmentKind, label: t('equip.lasers') },
-            { key: 'modules' as EquipmentKind, label: t('equip.modules') },
-            { key: 'gadgets' as EquipmentKind, label: t('equip.gadgets') },
-          ]}
+          items={tabs.map((k) => ({ key: k.key, label: k.label }))}
           active={kind}
           onChange={(k) => {
             onKind(k)
