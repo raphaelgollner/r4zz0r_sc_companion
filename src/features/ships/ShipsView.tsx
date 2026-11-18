@@ -4,6 +4,8 @@ import { formatAuec } from '../../domain/format'
 import { SHIP_ROLES, searchShips, shipOffers, shipRoles, type ShipRole } from '../../domain/ships'
 import { useI18n } from '../../i18n/i18n'
 import { DataTable, FreshnessBadge, Panel, SectionLabel } from '../../ui/components'
+import { TerminalName } from '../../ui/TerminalName'
+import { Tooltip } from '../../ui/Tooltip'
 
 export function ShipsView({
   vehicles,
@@ -65,7 +67,13 @@ export function ShipsView({
               key: 'role',
               header: t('ships.col.role'),
               render: (r) =>
-                r.roles.length ? r.roles.map((x) => <span key={x} className="chip">{roleLabel(x)}</span>) : dash,
+                r.roles.length ? (
+                  <Tooltip content={r.roles.map(roleLabel).join(', ')}>
+                    {r.roles.map((x) => <span key={x} className="chip">{roleLabel(x)}</span>)}
+                  </Tooltip>
+                ) : (
+                  dash
+                ),
             },
             { key: 'scu', header: t('ships.col.scu'), align: 'right', render: (r) => (r.v.scu > 0 ? r.v.scu : dash), sortValue: (r) => r.v.scu },
             { key: 'crew', header: t('ships.col.crew'), align: 'right', render: (r) => r.v.crew || dash },
@@ -108,7 +116,7 @@ export function ShipsView({
               rowKey={(o) => o.id}
               empty={t('ships.notSold')}
               columns={[
-                { key: 't', header: t('col.terminal'), render: (o) => o.terminal_name },
+                { key: 't', header: t('col.terminal'), render: (o) => <TerminalName id={o.id_terminal} fallback={o.terminal_name} /> },
                 { key: 'p', header: t('col.price'), align: 'right', render: (o) => `${formatAuec(o.price_buy)} aUEC` },
                 { key: 'u', header: t('common.updated'), render: (o) => <FreshnessBadge dateModifiedSec={o.date_modified} now={now} /> },
               ]}
@@ -120,7 +128,7 @@ export function ShipsView({
               rowKey={(o) => o.id}
               empty={t('ships.noRent')}
               columns={[
-                { key: 't', header: t('col.terminal'), render: (o) => o.terminal_name },
+                { key: 't', header: t('col.terminal'), render: (o) => <TerminalName id={o.id_terminal} fallback={o.terminal_name} /> },
                 { key: 'p', header: t('col.price'), align: 'right', render: (o) => `${formatAuec(o.price_rent)} aUEC` },
                 { key: 'u', header: t('common.updated'), render: (o) => <FreshnessBadge dateModifiedSec={o.date_modified} now={now} /> },
               ]}

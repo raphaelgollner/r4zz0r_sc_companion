@@ -44,6 +44,7 @@ export interface StatusLevel {
   name: string
   name_short: string
   colors: string
+  percentage?: string
 }
 
 export interface CommodityStatus {

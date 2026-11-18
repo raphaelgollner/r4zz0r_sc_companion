@@ -3,6 +3,7 @@ import type { StatusLevel } from '../data/types'
 import { ageLevel, formatAge } from '../domain/freshness'
 import { useI18n } from '../i18n/i18n'
 import { usePrefs } from '../store/prefs'
+import { Tooltip } from './Tooltip'
 
 export function Panel({ title, children, glow }: { title?: ReactNode; children: ReactNode; glow?: boolean }) {
   return (
@@ -157,13 +158,22 @@ export function FreshnessBadge({
   const { lang } = useI18n()
   const [prefs] = usePrefs()
   const level = ageLevel(dateModifiedSec, now, warnHours ?? prefs.warnHours, staleDays ?? prefs.staleDays)
-  return <span className={`age-${level}`}>{formatAge(dateModifiedSec, now, lang)}</span>
+  const exact = dateModifiedSec && dateModifiedSec > 0 ? new Date(dateModifiedSec * 1000).toLocaleString(lang === 'en' ? 'en-US' : 'pt-BR') : null
+  return (
+    <Tooltip content={exact}>
+      <span className={`age-${level}`}>{formatAge(dateModifiedSec, now, lang)}</span>
+    </Tooltip>
+  )
 }
 
 export function StatusBadge({ code, levels }: { code: number; levels: StatusLevel[] }) {
   const lvl = levels.find((l) => l.code === code)
   if (!lvl) return <span className="muted">—</span>
-  return <span className={`badge status-${lvl.colors}`}>{lvl.name_short}</span>
+  return (
+    <Tooltip content={lvl.percentage ? `${lvl.name} (${lvl.percentage})` : lvl.name}>
+      <span className={`badge status-${lvl.colors}`}>{lvl.name_short}</span>
+    </Tooltip>
+  )
 }
 
 export function LoadState({

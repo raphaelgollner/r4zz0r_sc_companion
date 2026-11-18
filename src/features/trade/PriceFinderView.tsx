@@ -4,6 +4,7 @@ import { formatAuec } from '../../domain/format'
 import { bestPlaces } from '../../domain/priceFinder'
 import { useI18n } from '../../i18n/i18n'
 import { DataTable, FreshnessBadge, Panel, SectionLabel, Tabs } from '../../ui/components'
+import { TerminalName } from '../../ui/TerminalName'
 import { usePrefsFreshness } from './freshnessPrefs'
 import { CommodityPicker } from './shared'
 
@@ -44,7 +45,7 @@ export function PriceFinderView({ commodities, prices, now }: { commodities: Com
           rowKey={(r) => r.id}
           empty={t('finder.noPrice')}
           columns={[
-            { key: 'terminal', header: t('col.terminal'), render: (r) => r.terminal_name },
+            { key: 'terminal', header: t('col.terminal'), render: (r) => <TerminalName id={r.id_terminal} fallback={r.terminal_name} /> },
             { key: 'price', header: t('col.price'), align: 'right', render: (r) => formatAuec(side === 'buy' ? r.price_buy : r.price_sell) },
             {
               key: 'qty',

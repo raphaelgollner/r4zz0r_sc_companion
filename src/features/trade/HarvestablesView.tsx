@@ -5,6 +5,7 @@ import { whereFound } from '../../domain/locations'
 import { bestPlaces } from '../../domain/priceFinder'
 import { useI18n } from '../../i18n/i18n'
 import { DataTable, FreshnessBadge, Panel, SectionLabel } from '../../ui/components'
+import { TerminalName } from '../../ui/TerminalName'
 import { usePrefsFreshness } from './freshnessPrefs'
 
 export function HarvestablesView({
@@ -42,7 +43,7 @@ export function HarvestablesView({
           {
             key: 'best',
             header: t('col.bestSell'),
-            render: (r) => (r.best ? r.best.terminal_name : <span className="muted">{t('harvest.notSold')}</span>),
+            render: (r) => (r.best ? <TerminalName id={r.best.id_terminal} fallback={r.best.terminal_name} /> : <span className="muted">{t('harvest.notSold')}</span>),
           },
           {
             key: 'price',
