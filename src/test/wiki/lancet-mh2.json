@@ -1,0 +1,119 @@
+{
+ "data": {
+  "uuid": "c2006c91-f8f7-4bda-ae38-e0ca5af5c737",
+  "name": "Lancet MH2 Mining Laser",
+  "type": "WeaponMining",
+  "sub_type": "Gun",
+  "size": 2,
+  "manufacturer": {
+   "name": "Greycat Industrial"
+  },
+  "tags": [
+   "flightReady",
+   "weaponMountUsable",
+   "miningMount"
+  ],
+  "required_tags": [
+   "miningMount"
+  ],
+  "mining_laser": {
+   "laser_power": {
+    "min": 1087.5,
+    "max": 4350,
+    "minimum": 1087.5,
+    "maximum": 4350
+   },
+   "modifiers": [
+    {
+     "name": "laser_instability",
+     "display_name": "Laser Instability",
+     "value": -10
+    },
+    {
+     "name": "optimal_charge_window_size",
+     "display_name": "Optimal Charge Window Size",
+     "value": -60
+    },
+    {
+     "name": "optimal_charge_rate",
+     "display_name": "Optimal Charge Rate",
+     "value": 40
+    },
+    {
+     "name": "inert_materials",
+     "display_name": "Inert Materials",
+     "value": -40
+    },
+    {
+     "name": "all_charge_rates",
+     "display_name": "All Charge Rates",
+     "value": 40
+    }
+   ],
+   "module_slots": 2,
+   "throttle_lerp_speed": 6.5,
+   "throttle_minimum": 0.3,
+   "power_transfer": 4350,
+   "optimal_range": 45,
+   "maximum_range": 135,
+   "extraction_throughput": 2590,
+   "collection_point_radius": 0.1,
+   "extraction_laser_power": "2590",
+   "mining_laser_power": "1087 - 4350",
+   "modifier_map": {
+    "laser_instability": -10,
+    "optimal_charge_window_size": -60,
+    "optimal_charge_rate": 40,
+    "inert_materials": -40,
+    "all_charge_rates": 40
+   }
+  },
+  "mining_modifier": null,
+  "weapon_modifier": null,
+  "ports": [
+   {
+    "name": "BONE_ItemPort_Consumable_1",
+    "type": "MiningModifier",
+    "sub_type": "Gun",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": [
+     "miningConsumable"
+    ],
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "BONE_ItemPort_Consumable_2",
+    "type": "MiningModifier",
+    "sub_type": "Gun",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": [
+     "miningConsumable"
+    ],
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "VEN",
+    "type": "WeaponAttachment",
+    "sub_type": "Ventilation",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": [],
+    "equipped_item": null,
+    "ports": []
+   }
+  ]
+ }
+}

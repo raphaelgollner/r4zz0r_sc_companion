@@ -4,7 +4,7 @@ import { formatAuec } from '../../domain/format'
 import { SHIP_ROLES, searchShips, shipOffers, shipRoles, type ShipRole } from '../../domain/ships'
 import { useI18n } from '../../i18n/i18n'
 import { DataTable, FreshnessBadge, Panel, SectionLabel } from '../../ui/components'
-import { TerminalName } from '../../ui/TerminalName'
+import { TerminalCopy, TerminalName } from '../../ui/TerminalName'
 import { Tooltip } from '../../ui/Tooltip'
 import { StoreDialog } from './StoreDialog'
 
@@ -122,9 +122,12 @@ export function ShipsView({
               empty={t('ships.notSold')}
               columns={[
                 { key: 't', header: t('col.terminal'), render: (o) => (
+                  <>
                   <button className="link-cell" onClick={() => setStore({ id: o.id_terminal, name: o.terminal_name })}>
-                    <TerminalName id={o.id_terminal} fallback={o.terminal_name} />
+                    <TerminalName id={o.id_terminal} fallback={o.terminal_name} copy={false} />
                   </button>
+                  <TerminalCopy id={o.id_terminal} fallback={o.terminal_name} />
+                  </>
                 ) },
                 { key: 'p', header: t('col.price'), align: 'right', render: (o) => `${formatAuec(o.price_buy)} aUEC` },
                 { key: 'u', header: t('common.updated'), render: (o) => <FreshnessBadge dateModifiedSec={o.date_modified} now={now} /> },
@@ -138,9 +141,12 @@ export function ShipsView({
               empty={t('ships.noRent')}
               columns={[
                 { key: 't', header: t('col.terminal'), render: (o) => (
+                  <>
                   <button className="link-cell" onClick={() => setStore({ id: o.id_terminal, name: o.terminal_name })}>
-                    <TerminalName id={o.id_terminal} fallback={o.terminal_name} />
+                    <TerminalName id={o.id_terminal} fallback={o.terminal_name} copy={false} />
                   </button>
+                  <TerminalCopy id={o.id_terminal} fallback={o.terminal_name} />
+                  </>
                 ) },
                 { key: 'p', header: t('col.price'), align: 'right', render: (o) => `${formatAuec(o.price_rent)} aUEC` },
                 { key: 'u', header: t('common.updated'), render: (o) => <FreshnessBadge dateModifiedSec={o.date_modified} now={now} /> },

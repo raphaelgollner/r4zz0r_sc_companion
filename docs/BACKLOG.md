@@ -2,6 +2,13 @@
 
 Itens anotados para as próximas fases de desenvolvimento.
 
+## Feito na versão 0.4.0
+- Abas: INÍCIO virou ROTAS; ordem ROTAS · TRADE · MINERAÇÃO · SALVAGE · NAVES · FROTA · PROGRESSO · AJUSTES.
+- Botão "Copiar destino" ao lado do nome de cada terminal (copia o nome do local para colar no mapa do jogo).
+- FROTA: lista pessoal de naves e veículos com preço em dólar e aUEC, SCU, categoria, onde comprar e totais; naves da frota primeiro na escolha de nave da ROTAS.
+- Janela de setup com dados da Star Citizen Wiki: encaixes industriais reais, itens que cabem, builds recomendadas (Estável, Potência, Equilibrada; Velocidade, Eficiência) e custo das trocas.
+- SALVAGE: Materials, Salvage Planner, Equipment e Ships.
+
 ## Feito na versão 0.3.0
 - Tooltip em portal, nunca cortado.
 - Campo SCU vazio volta ao SCU do UEX; "Usar meu saldo" desabilitado com saldo ≤ 0.
@@ -14,14 +21,9 @@ Itens anotados para as próximas fases de desenvolvimento.
 ## Pendências menores
 - Ao editar um lançamento sem mudar a data, os segundos são perdidos (o campo de data só guarda minutos).
 - Na janela de loja de equipamentos, só aparecem os itens da categoria aberta (Lasers, Módulos ou Gadgets).
+- Os campos de busca (minério, local, nave) não funcionam com as setas do teclado.
+- As linhas clicáveis das tabelas só funcionam com o mouse.
+- O botão "Atualizar" do Refine Planner não refaz a busca das distâncias.
 
-## Ajustes para a Fase 3
-- Renomear a aba INÍCIO para "ROTAS" (PT) / "ROUTES" (EN).
-- Mover a aba PROGRESSO para a penúltima posição, logo antes de AJUSTES.
-
-## Ideias em avaliação
-- Botão "traçar rota no mapa do jogo": o companion alternaria para o Star Citizen, abriria o mapa (F2), buscaria o destino e marcaria a rota.
-
-## Fases seguintes (do design original)
-- **Fase 3 — FROTA e SALVAGE:** lista pessoal de naves usada nas calculadoras; onde vender RMC/Construction Materials e calculadora para naves de salvage.
+## Fases seguintes
 - **Fase 4 — Distribuição:** instalador assinado e atualização automática.

@@ -14,6 +14,7 @@ export type UexResource =
   | 'refineries_capacities'
   | 'refineries_methods'
   | 'commodities_raw_prices_all'
+  | 'vehicles_prices'
 
 const MIN = 60_000
 const HOUR = 60 * MIN
@@ -35,6 +36,7 @@ export const TTL_MS: Record<UexResource, number> = {
   refineries_capacities: 12 * HOUR,
   refineries_methods: 7 * 24 * HOUR,
   commodities_raw_prices_all: 30 * MIN,
+  vehicles_prices: 24 * HOUR,
 }
 
 /** Tempo de vida das consultas com parâmetros. */
@@ -45,5 +47,8 @@ export const QUERY_TTL = {
   commodities_prices_history: 1 * HOUR,
   terminals_distances: 7 * 24 * HOUR,
 } as const
+
+/** Dados da Star Citizen Wiki mudam só com patches do jogo. */
+export const WIKI_TTL = 7 * 24 * HOUR
 
 export const ALL_RESOURCES = Object.keys(TTL_MS) as UexResource[]

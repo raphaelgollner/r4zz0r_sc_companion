@@ -57,11 +57,17 @@ export function queryKey(resource: string, params?: Record<string, string | numb
   return q ? `${resource}?${q}` : resource
 }
 
-function useUexBase<T>(resource: string, params: Record<string, string | number> | null | undefined, ttlMs: number, enabled: boolean): UexState<T> {
+/** Dependências de rede vindas do contexto (nos testes, `fetchFn` e `limiter` falsos). */
+export type FetchDeps = { fetchFn?: typeof fetch; limiter?: RateLimiter }
+
+/**
+ * Busca com cache, deduplicação e "Atualizar tudo" para qualquer fonte (UEX, Wiki).
+ * `key` identifica a consulta no cache; `fetcher` é lido sempre na versão mais recente.
+ */
+export function useCachedQuery<T>(key: string, fetcher: (deps: FetchDeps) => Promise<T>, ttlMs: number, enabled: boolean): UexState<T> {
   const { store, fetchFn, limiter } = useUexContext()
-  const key = queryKey(resource, params)
-  const paramsRef = useRef(params)
-  paramsRef.current = params
+  const fetcherRef = useRef(fetcher)
+  fetcherRef.current = fetcher
   type S = Omit<UexState<T>, 'refresh'> & { key: string }
   const [raw, setRaw] = useState<S>({ key, data: null, fetchedAt: null, loading: enabled, error: null })
   // Ao trocar de consulta (ex.: outra categoria), nunca mostra os dados da consulta anterior.
@@ -90,7 +96,7 @@ function useUexBase<T>(resource: string, params: Record<string, string | number>
         const r = await getResource<T>(
           key,
           ttlMs,
-          () => fetchUex<T>(resource, paramsRef.current ?? undefined, { fetchFn, limiter }),
+          () => fetcherRef.current({ fetchFn, limiter }),
           store,
           Date.now,
           force,
@@ -100,7 +106,7 @@ function useUexBase<T>(resource: string, params: Record<string, string | number>
         if (isActive()) setState((s) => ({ ...s, loading: false, error: e instanceof UexError ? e.code : 'unknown' }))
       }
     },
-    [key, resource, ttlMs, enabled, store, fetchFn, limiter, setState],
+    [key, ttlMs, enabled, store, fetchFn, limiter, setState],
   )
 
   useEffect(() => {
@@ -120,6 +126,11 @@ function useUexBase<T>(resource: string, params: Record<string, string | number>
   }, [load])
 
   return useMemo(() => ({ data: state.data, fetchedAt: state.fetchedAt, loading: state.loading, error: state.error, refresh }), [state.data, state.fetchedAt, state.loading, state.error, refresh])
+}
+
+function useUexBase<T>(resource: string, params: Record<string, string | number> | null | undefined, ttlMs: number, enabled: boolean): UexState<T> {
+  const key = queryKey(resource, params)
+  return useCachedQuery<T>(key, (deps) => fetchUex<T>(resource, params ?? undefined, deps), ttlMs, enabled)
 }
 
 export function useUex<T>(resource: UexResource): UexState<T> {

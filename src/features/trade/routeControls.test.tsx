@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { describe, expect, test } from 'vitest'
+import { memoryStore } from '../../cache/store'
 import { I18nProvider } from '../../i18n/i18n'
+import { FleetProvider } from '../../store/fleet'
 import { DEFAULT_PREFS, type Prefs } from '../../store/prefs'
 import { GOLD, LARANITE, NOW, PRICES, terminal, vehicle } from '../../test/fixtures'
 import { HomeView } from '../home/HomeView'
@@ -97,5 +99,21 @@ describe('ajustes do campo SCU e do saldo', () => {
   test('saldo negativo desabilita Usar meu saldo', () => {
     render(<Harness initial={{ shipId: 1 }} balance={-5} />)
     expect(screen.getByRole('button', { name: 'Usar meu saldo' })).toBeDisabled()
+  })
+})
+
+describe('naves da frota primeiro', () => {
+  test('grupo "Minhas naves" antes das demais, sem repetir', async () => {
+    const store = memoryStore()
+    await store.set('data', { entries: [{ id: 'a', vehicleId: 7, nickname: '', note: '', addedAt: 0, setup: {} }] })
+    render(
+      <FleetProvider store={store}>
+        <Harness />
+      </FleetProvider>,
+    )
+    await waitFor(() => expect(screen.getByRole('group', { name: 'Minhas naves' })).toBeInTheDocument())
+    const mine = screen.getByRole('group', { name: 'Minhas naves' })
+    expect(mine.querySelectorAll('option')[0]).toHaveTextContent('RSI Galaxy')
+    expect(screen.getAllByRole('option').filter((o) => o.textContent?.startsWith('RSI Galaxy'))).toHaveLength(1)
   })
 })

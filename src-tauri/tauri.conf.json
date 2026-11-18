@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Tayko Corp Companion",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "identifier": "org.tayko.companion",
   "build": {
     "frontendDist": "../dist",
@@ -23,7 +23,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost https://api.uexcorp.uk; img-src 'self' data: blob: https://assets.uexcorp.space; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'"
+      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost https://api.uexcorp.uk https://api.star-citizen.wiki; img-src 'self' data: blob: https://assets.uexcorp.space; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'"
     }
   },
   "bundle": {

@@ -58,3 +58,12 @@ describe('ShipsView', () => {
     expect(screen.getByRole('row', { name: /Drake Caterpillar/ })).toHaveTextContent('Cargo')
   })
 })
+
+describe('copiar destino nas lojas', () => {
+  test('sem botão dentro de botão e com o botão copiar ao lado', async () => {
+    const { container } = renderView()
+    await userEvent.click(screen.getByRole('row', { name: /Drake Caterpillar/ }))
+    expect(container.querySelectorAll('button button')).toHaveLength(0)
+    expect(screen.getAllByRole('button', { name: /Copiar destino: Astro Armada/ })).toHaveLength(1)
+  })
+})

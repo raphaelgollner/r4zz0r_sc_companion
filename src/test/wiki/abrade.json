@@ -1,0 +1,36 @@
+{
+ "data": {
+  "uuid": "98e0e5ac-3a76-4f3f-be2f-7fabf65a8826",
+  "name": "Abrade Scraper Module",
+  "type": "SalvageModifier",
+  "sub_type": "UNDEFINED",
+  "size": 1,
+  "manufacturer": {
+   "name": "Greycat Industrial"
+  },
+  "tags": [
+   "salvageMount"
+  ],
+  "required_tags": [],
+  "mining_laser": null,
+  "mining_modifier": null,
+  "weapon_modifier": {
+   "activate_on_attach": null,
+   "ignore_wear": null,
+   "salvage": {
+    "salvage_speed_multiplier": 0.15,
+    "radius_multiplier": 3.5,
+    "extraction_efficiency": 0.9
+   },
+   "fire_rate_multiplier": 1,
+   "damage_multiplier": 1,
+   "damage_over_time_multiplier": null,
+   "projectile_speed_multiplier": 1,
+   "ammo_cost_multiplier": 1,
+   "heat_generation_multiplier": 1,
+   "sound_radius_multiplier": 1,
+   "charge_time_multiplier": 1
+  },
+  "ports": []
+ }
+}
