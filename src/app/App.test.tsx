@@ -35,9 +35,9 @@ describe('App', () => {
       expect(screen.getByRole('tab', { name })).toBeInTheDocument()
   })
 
-  test('MINERAÇÃO está desabilitada', () => {
+  test('SALVAGE ainda está desabilitada', () => {
     renderApp()
-    expect(screen.getByRole('tab', { name: /MINERAÇÃO/ })).toBeDisabled()
+    expect(screen.getByRole('tab', { name: /SALVAGE/ })).toBeDisabled()
   })
 
   test('rodapé credita o UEX', () => {

@@ -1,4 +1,5 @@
 import { HomeScreen } from '../features/home/HomeScreen'
+import { GroundScreen, OresScreen, RefineriesScreen } from '../features/mining/screens'
 import { ProgressView } from '../features/progress/ProgressView'
 import { SettingsView } from '../features/settings/SettingsView'
 import { ShipsScreen } from '../features/ships/ShipsScreen'
@@ -19,6 +20,11 @@ export const screens: Screens = {
   ships: () => <ShipsScreen />,
   progress: () => <ProgressView />,
   settings: () => <SettingsView version={__APP_VERSION__} onClearCache={() => clearCache()} />,
+  mining: {
+    ores: () => <OresScreen />,
+    refineries: () => <RefineriesScreen />,
+    ground: () => <GroundScreen />,
+  },
   trade: {
     commodities: () => <CommoditiesScreen />,
     locations: () => <LocationsScreen />,
