@@ -8,6 +8,8 @@ export type UexResource =
   | 'moons'
   | 'currencies_index'
   | 'currencies_index_history'
+  | 'vehicles_purchases_prices_all'
+  | 'vehicles_rentals_prices_all'
 
 const MIN = 60_000
 const HOUR = 60 * MIN
@@ -23,6 +25,8 @@ export const TTL_MS: Record<UexResource, number> = {
   moons: 12 * HOUR,
   currencies_index: 1 * HOUR,
   currencies_index_history: 12 * HOUR,
+  vehicles_purchases_prices_all: 12 * HOUR,
+  vehicles_rentals_prices_all: 12 * HOUR,
 }
 
 export const ALL_RESOURCES = Object.keys(TTL_MS) as UexResource[]

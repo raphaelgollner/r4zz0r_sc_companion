@@ -1,4 +1,5 @@
 import { HomeScreen } from '../features/home/HomeScreen'
+import { ShipsScreen } from '../features/ships/ShipsScreen'
 import {
   CommoditiesScreen,
   CurrenciesScreen,
@@ -12,6 +13,7 @@ import type { Screens } from './App'
 /** Telas do app. Cada tarefa registra a sua aqui. */
 export const screens: Screens = {
   home: (go) => <HomeScreen onSetup={() => go({ main: 'trade', trade: 'routes' })} />,
+  ships: () => <ShipsScreen />,
   trade: {
     commodities: () => <CommoditiesScreen />,
     locations: () => <LocationsScreen />,

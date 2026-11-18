@@ -55,11 +55,53 @@ export interface Vehicle {
   id: number
   name: string
   name_full: string
+  company_name?: string
   scu: number
+  crew?: string
+  pad_type?: string | null
+  url_photo?: string | null
   is_cargo: number
   is_mining: number
   is_salvage: number
   is_ground_vehicle: number
+  is_military?: number
+  is_bomber?: number
+  is_exploration?: number
+  is_passenger?: number
+  is_racing?: number
+  is_refinery?: number
+  is_refuel?: number
+  is_repair?: number
+  is_medical?: number
+  is_science?: number
+  is_research?: number
+  is_stealth?: number
+  is_starter?: number
+  is_construction?: number
+  is_datarunner?: number
+  is_interdiction?: number
+  is_carrier?: number
+  is_spaceship?: number
+}
+
+export interface VehiclePrice {
+  id: number
+  id_vehicle: number
+  id_terminal: number
+  price_buy: number
+  date_modified: number
+  vehicle_name: string
+  terminal_name: string
+}
+
+export interface VehicleRent {
+  id: number
+  id_vehicle: number
+  id_terminal: number
+  price_rent: number
+  date_modified: number
+  vehicle_name: string
+  terminal_name: string
 }
 
 export interface Terminal {
