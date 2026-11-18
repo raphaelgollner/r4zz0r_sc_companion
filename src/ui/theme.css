@@ -903,3 +903,26 @@ input[type='datetime-local'] {
 .nowrap {
   white-space: nowrap;
 }
+
+/* Copiar destino */
+.copy-btn {
+  background: none;
+  border: 0;
+  color: var(--muted, #8a8f98);
+  cursor: pointer;
+  font-size: 0.85em;
+  padding: 0 2px;
+  margin-left: 4px;
+  line-height: 1;
+}
+.copy-btn::before {
+  content: '⧉';
+}
+.copy-btn:hover,
+.copy-btn:focus-visible {
+  color: var(--gold, #f4c430);
+}
+.copy-status {
+  font-size: 0.75em;
+  margin-left: 4px;
+}

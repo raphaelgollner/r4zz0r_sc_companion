@@ -7,6 +7,9 @@ export const pt = {
   'app.subtitle': 'Heavy Industry Division',
 
   'tab.home': 'ROTAS',
+  'copy.dest': 'Copiar destino: {name}',
+  'copy.ok': 'Copiado',
+  'copy.fail': 'Não foi possível copiar',
   'tab.trade': 'TRADE',
   'tab.ships': 'NAVES',
   'tab.mining': 'MINERAÇÃO',
@@ -291,6 +294,9 @@ export const en: Record<DictKey, string> = {
   'app.subtitle': 'Heavy Industry Division',
 
   'tab.home': 'ROUTES',
+  'copy.dest': 'Copy destination: {name}',
+  'copy.ok': 'Copied',
+  'copy.fail': 'Could not copy',
   'tab.trade': 'TRADE',
   'tab.ships': 'SHIPS',
   'tab.mining': 'MINING',
