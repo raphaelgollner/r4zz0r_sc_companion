@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { formatAuec, formatDecimal, formatPercent, formatScu } from './format'
+import { formatAuec, formatDecimal, formatPercent, formatScu, parseAmount } from './format'
 
 describe('format', () => {
   test('formatAuec usa ponto de milhar e arredonda', () => {
@@ -13,5 +13,17 @@ describe('format', () => {
     expect(formatAuec(NaN)).toBe('—')
     expect(formatAuec(Infinity)).toBe('—')
     expect(formatPercent(NaN)).toBe('—')
+  })
+})
+
+describe('parseAmount', () => {
+  test('aceita com e sem ponto de milhar', () => {
+    expect(parseAmount('1.200.000')).toBe(1_200_000)
+    expect(parseAmount('1200000')).toBe(1_200_000)
+    expect(parseAmount(' 500 ')).toBe(500)
+  })
+  test('vazio ou texto inválido vira NaN', () => {
+    expect(parseAmount('')).toBeNaN()
+    expect(parseAmount('abc')).toBeNaN()
   })
 })

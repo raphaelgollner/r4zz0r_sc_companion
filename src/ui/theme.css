@@ -539,3 +539,88 @@ select {
   text-shadow: 0 0 18px var(--glow-gold);
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- Routes ---------- */
+.route-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 14px;
+}
+.route-card {
+  background: linear-gradient(160deg, rgba(26, 26, 26, 0.95), rgba(15, 15, 26, 0.95));
+  border-left: 3px solid var(--gold);
+  padding: 14px 16px;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+.route-card header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.route-card h3 {
+  font-size: 15px;
+  color: var(--gold);
+}
+.route-path {
+  color: var(--steel);
+  font-size: 13px;
+}
+.route-path .arrow {
+  color: var(--accent);
+}
+.route-card dl {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 4px 10px;
+  margin: 0;
+  font-size: 13.5px;
+}
+.route-card dt {
+  font-family: var(--font-title);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--steel);
+  padding-top: 3px;
+}
+.route-card dd {
+  margin: 0;
+}
+.route-card .limit {
+  color: var(--orange);
+  font-weight: 600;
+}
+.route-card .warn {
+  color: var(--orange);
+}
+.route-card .profit-line .profit {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ---------- Home ---------- */
+.home-hero {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 22px;
+}
+.home-hero img {
+  height: 150px;
+  filter: drop-shadow(0 0 22px var(--glow-soft));
+}
+.hero-title {
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 24px var(--glow-gold);
+}
+.home-grid {
+  grid-template-columns: minmax(420px, 1.5fr) minmax(300px, 1fr);
+}
+code {
+  font-size: 12px;
+  color: var(--steel);
+}

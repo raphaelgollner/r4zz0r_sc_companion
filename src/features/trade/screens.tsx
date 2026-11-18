@@ -1,5 +1,7 @@
 import { useMemo, type ReactNode } from 'react'
-import type { Commodity, CommodityStatus, CurrencyIndex, CurrencyIndexPoint, Moon, Planet, PriceRow, Terminal } from '../../data/types'
+import type { Commodity, CommodityStatus, CurrencyIndex, CurrencyIndexPoint, Moon, Planet, PriceRow, Terminal, Vehicle } from '../../data/types'
+import { usePrefs } from '../../store/prefs'
+import { RoutesView } from './RoutesView'
 import { useUex, type UexState } from '../../data/useUex'
 import { LoadState } from '../../ui/components'
 import { CommoditiesView } from './CommoditiesView'
@@ -84,6 +86,28 @@ export function CurrenciesScreen() {
   return (
     <Loaded states={[index, history] as UexState<unknown>[]}>
       {() => <CurrenciesView index={index.data!} history={history.data!} now={Date.now()} />}
+    </Loaded>
+  )
+}
+
+export function RoutesScreen() {
+  const { commodities, prices } = useTradeBase()
+  const vehicles = useUex<Vehicle[]>('vehicles')
+  const terminals = useUex<Terminal[]>('terminals')
+  const [prefs, setPrefs] = usePrefs()
+  return (
+    <Loaded states={[commodities, prices, vehicles, terminals] as UexState<unknown>[]}>
+      {() => (
+        <RoutesView
+          vehicles={vehicles.data!}
+          commodities={commodities.data!}
+          prices={prices.data!}
+          terminals={terminals.data!}
+          now={Date.now()}
+          prefs={prefs}
+          onPrefs={setPrefs}
+        />
+      )}
     </Loaded>
   )
 }
