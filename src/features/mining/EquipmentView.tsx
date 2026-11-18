@@ -89,7 +89,7 @@ export function EquipmentView({
         />
       ),
     },
-    { key: 'name', header: t('equip.item'), render: (i) => i.name, sortValue: (i) => i.name },
+    { key: 'name', header: t('equip.item'), render: (i) => <span className="nowrap">{i.name}</span>, sortValue: (i) => i.name },
     { key: 'maker', header: t('ships.col.maker'), render: (i) => i.company_name ?? '—', sortValue: (i) => i.company_name ?? '' },
     { key: 'size', header: t('equip.size'), render: (i) => i.size || dash, sortValue: (i) => i.size ?? '' },
   ]
