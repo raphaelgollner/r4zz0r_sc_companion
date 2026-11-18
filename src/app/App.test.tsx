@@ -52,3 +52,12 @@ describe('App', () => {
     expect(screen.getByText(/Data: UEX Corp/)).toBeInTheDocument()
   })
 })
+
+describe('navegação pelo endereço', () => {
+  test('#trade/finder abre TRADE › Price Finder', () => {
+    window.location.hash = '#trade/finder'
+    renderApp()
+    expect(screen.getByRole('tab', { name: 'Price Finder' })).toHaveAttribute('aria-selected', 'true')
+    window.location.hash = ''
+  })
+})

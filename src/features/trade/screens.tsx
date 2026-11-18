@@ -1,8 +1,11 @@
-import type { ReactNode } from 'react'
-import type { Commodity, CommodityStatus, PriceRow } from '../../data/types'
+import { useMemo, type ReactNode } from 'react'
+import type { Commodity, CommodityStatus, CurrencyIndex, CurrencyIndexPoint, Moon, Planet, PriceRow, Terminal } from '../../data/types'
 import { useUex, type UexState } from '../../data/useUex'
 import { LoadState } from '../../ui/components'
 import { CommoditiesView } from './CommoditiesView'
+import { CurrenciesView } from './CurrenciesView'
+import { HarvestablesView } from './HarvestablesView'
+import { LocationsView } from './LocationsView'
 import { PriceFinderView } from './PriceFinderView'
 
 /** Junta vários recursos num só estado de carregamento. */
@@ -46,6 +49,41 @@ export function PriceFinderScreen() {
   return (
     <Loaded states={[commodities, prices] as UexState<unknown>[]}>
       {() => <PriceFinderView commodities={commodities.data!} prices={prices.data!} now={Date.now()} />}
+    </Loaded>
+  )
+}
+
+export function LocationsScreen() {
+  const terminals = useUex<Terminal[]>('terminals')
+  const prices = useUex<PriceRow[]>('commodities_prices_all')
+  return (
+    <Loaded states={[terminals, prices] as UexState<unknown>[]}>
+      {() => <LocationsView terminals={terminals.data!} prices={prices.data!} now={Date.now()} />}
+    </Loaded>
+  )
+}
+
+const toMap = <T extends { id: number }>(list: T[] | null) => new Map((list ?? []).map((x) => [x.id, x]))
+
+export function HarvestablesScreen() {
+  const { commodities, prices } = useTradeBase()
+  const planets = useUex<Planet[]>('planets')
+  const moons = useUex<Moon[]>('moons')
+  const planetMap = useMemo(() => toMap(planets.data), [planets.data])
+  const moonMap = useMemo(() => toMap(moons.data), [moons.data])
+  return (
+    <Loaded states={[commodities, prices, planets, moons] as UexState<unknown>[]}>
+      {() => <HarvestablesView commodities={commodities.data!} prices={prices.data!} planets={planetMap} moons={moonMap} now={Date.now()} />}
+    </Loaded>
+  )
+}
+
+export function CurrenciesScreen() {
+  const index = useUex<CurrencyIndex[]>('currencies_index')
+  const history = useUex<CurrencyIndexPoint[]>('currencies_index_history')
+  return (
+    <Loaded states={[index, history] as UexState<unknown>[]}>
+      {() => <CurrenciesView index={index.data!} history={history.data!} now={Date.now()} />}
     </Loaded>
   )
 }

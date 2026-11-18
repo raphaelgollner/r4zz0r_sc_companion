@@ -56,9 +56,21 @@ function Footer() {
   )
 }
 
+const MAIN: MainTab[] = ['home', 'trade', 'ships', 'mining', 'salvage', 'fleet', 'settings']
+const TRADE: TradeTab[] = ['commodities', 'locations', 'harvestables', 'finder', 'routes', 'currencies']
+
+/** Lê a aba inicial do endereço, ex.: `#trade/finder`. */
+function navFromHash(): Nav {
+  const [main, sub] = window.location.hash.replace(/^#/, '').split('/')
+  return {
+    main: MAIN.includes(main as MainTab) ? (main as MainTab) : 'home',
+    trade: TRADE.includes(sub as TradeTab) ? (sub as TradeTab) : 'commodities',
+  }
+}
+
 export default function App({ screens = {} }: { screens?: Screens }) {
   const { t } = useI18n()
-  const [nav, setNav] = useState<Nav>({ main: 'home', trade: 'commodities' })
+  const [nav, setNav] = useState<Nav>(navFromHash)
   const go = (patch: Partial<Nav>) => setNav((n) => ({ ...n, ...patch }))
 
   const mainTabs: TabItem<MainTab>[] = [
