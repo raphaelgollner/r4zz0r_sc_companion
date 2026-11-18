@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import type { ItemAttribute, RawPriceRow, RefineryYield } from '../data/types'
 import { commodity, price } from '../test/fixtures'
-import { attr, oreSummary, refinedOf, refinePlan, refineryMatrix, sellRawValue } from './mining'
+import { attr, distancesFor, oreSummary, refinedOf, refinePlan, refineryMatrix, sellRawValue } from './mining'
 
 const laraniteRaw = commodity(48, 'Laranite (Raw)', { is_raw: 1, is_refined: 0 })
 const laranite = commodity(47, 'Laranite')
@@ -96,4 +96,20 @@ describe('attr', () => {
     expect(attr(attrs, 107, 'Resistance')).toBeNull()
     expect(attr(attrs, 999, 'Resistance')).toBeNull()
   })
+})
+
+describe('carga sem minério escolhido', () => {
+  test('linha com SCU mas sem minério é ignorada', () => {
+    const rows = refinePlan([{ oreId: 0, scu: 10 }], [], () => 100, () => null, [{ id: 1, name: 'A' }], 'value')
+    expect(rows).toEqual([])
+  })
+})
+
+describe('distancesFor', () => {
+  test('refinaria onde o jogador está tem distância 0', () => {
+    const m = distancesFor(1, [1, 2], new Map([['1:2', 50]]))
+    expect(m.get(1)).toBe(0)
+    expect(m.get(2)).toBe(50)
+  })
+  test('sem local: vazio', () => expect(distancesFor(null, [1, 2], new Map()).size).toBe(0))
 })

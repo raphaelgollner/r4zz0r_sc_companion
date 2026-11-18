@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useState } from 'react'
 import { describe, expect, test } from 'vitest'
 import { TerminalsContext } from '../../data/terminals'
 import type { Item, ItemAttribute, ItemPrice } from '../../data/types'
@@ -60,5 +61,22 @@ describe('EquipmentView', () => {
     const dialog = screen.getByRole('dialog', { name: /Dumpers Depot Area 18/ })
     expect(dialog).toHaveTextContent('Stanton › ArcCorp › Area 18')
     expect(within(dialog).getByRole('row', { name: /Lancet MH2/ })).toHaveTextContent('94.000')
+  })
+})
+
+describe('troca de categoria', () => {
+  test('filtro de tamanho volta para Todos', async () => {
+    function H() {
+      const [kind, setKind] = useState<'lasers' | 'modules' | 'gadgets'>('lasers')
+      return (
+        <I18nProvider initial="pt">
+          <EquipmentView kind={kind} onKind={setKind} items={items} attrs={attrs} prices={prices} now={NOW} />
+        </I18nProvider>
+      )
+    }
+    render(<H />)
+    await userEvent.selectOptions(screen.getByLabelText('Tamanho'), '2')
+    await userEvent.click(screen.getByRole('tab', { name: 'Módulos' }))
+    expect(screen.getByLabelText('Tamanho')).toHaveValue('')
   })
 })

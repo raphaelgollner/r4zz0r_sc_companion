@@ -57,7 +57,7 @@ export function EquipmentView({
     return m
   }, [prices])
 
-  const sizes = useMemo(() => [...new Set(items.map((i) => i.size).filter((s): s is string => !!s))].sort(), [items])
+  const sizes = useMemo(() => [...new Set(items.map((i) => i.size).filter((s): s is string => !!s))].sort((a, b) => Number(a) - Number(b)), [items])
   const rows = useMemo(
     () =>
       items.filter(
@@ -133,6 +133,8 @@ export function EquipmentView({
             onKind(k)
             setCompare([])
             setSelectedId(null)
+            setSize('')
+            setQuery('')
           }}
         />
         <div className="row" style={{ marginBottom: 12 }}>

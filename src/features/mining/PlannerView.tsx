@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Commodity, PriceRow, RawPriceRow, RefineryYield, Terminal } from '../../data/types'
 import { formatAuec } from '../../domain/format'
 import { locationPath, placeName } from '../../domain/location'
@@ -51,6 +51,33 @@ function SearchPicker<T>({
         </ul>
       )}
     </div>
+  )
+}
+
+/** SCU com decimal: mantém o texto enquanto digita ("3," / "3,5") e só reformata ao sair do campo. */
+function ScuInput({ label, value, onChange }: { label: string; value: number; onChange: (scu: number) => void }) {
+  const show = (v: number) => (v > 0 ? String(v).replace('.', ',') : '')
+  const [text, setText] = useState(show(value))
+  const [focused, setFocused] = useState(false)
+  useEffect(() => {
+    if (!focused) setText(show(value))
+  }, [value, focused])
+  return (
+    <input
+      className="input num"
+      style={{ width: 100, minWidth: 80 }}
+      inputMode="decimal"
+      aria-label={label}
+      value={text}
+      placeholder="SCU"
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      onChange={(e) => {
+        setText(e.target.value)
+        const n = Number(e.target.value.trim().replace(',', '.'))
+        onChange(Number.isFinite(n) && n > 0 ? n : 0)
+      }}
+    />
   )
 }
 
@@ -125,18 +152,7 @@ export function PlannerView({
                   text={(c) => `${c.name} ${c.code}`}
                   onPick={(c) => setLine(i, { oreId: c.id })}
                 />
-                <input
-                  className="input num"
-                  style={{ width: 100, minWidth: 80 }}
-                  inputMode="numeric"
-                  aria-label={t('planner.scuN', { n: i + 1 })}
-                  value={l.scu > 0 ? String(l.scu) : ''}
-                  placeholder="SCU"
-                  onChange={(e) => {
-                    const n = Number(e.target.value.replace(',', '.'))
-                    setLine(i, { scu: Number.isFinite(n) && n > 0 ? n : 0 })
-                  }}
-                />
+                <ScuInput label={t('planner.scuN', { n: i + 1 })} value={l.scu} onChange={(scu) => setLine(i, { scu })} />
                 <button className="btn-link danger" onClick={() => onPrefs({ cargo: prefs.cargo.filter((_, j) => j !== i) })}>
                   {t('planner.remove')}
                 </button>

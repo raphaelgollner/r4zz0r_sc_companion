@@ -27,7 +27,7 @@ import { EQUIPMENT_CATEGORY, EquipmentView, type EquipmentKind } from './Equipme
 import { QUERY_TTL } from '../../data/ttl'
 import { useUexQuery } from '../../data/useUex'
 import { useMinerPrefs } from '../../store/minerPrefs'
-import { refineryMatrix } from '../../domain/mining'
+import { distancesFor, refineryMatrix } from '../../domain/mining'
 
 const toMap = <T extends { id: number }>(list: T[] | null) => new Map((list ?? []).map((x) => [x.id, x]))
 const all = (...s: UexState<unknown>[]) => s
@@ -107,14 +107,7 @@ export function PlannerScreen() {
   )
   const refineryIds = useMemo(() => refineryMatrix(yields.data ?? []).terminals.map((x) => x.id), [yields.data])
   const hasCargo = prefs.cargo.some((l) => l.scu > 0 && l.oreId > 0)
-  const distMap = useMemo(() => {
-    const m = new Map<number, number | null>()
-    for (const id of refineryIds) {
-      const k = `${prefs.locationId}:${id}`
-      if (distances.has(k)) m.set(id, distances.get(k)!)
-    }
-    return m
-  }, [distances, refineryIds, prefs.locationId])
+  const distMap = useMemo(() => distancesFor(prefs.locationId, refineryIds, distances), [distances, refineryIds, prefs.locationId])
   const tradeTerminals = useMemo(() => (terminals.data ?? []).filter((x) => x.type !== 'item' && x.type !== 'fuel'), [terminals.data])
 
   return (

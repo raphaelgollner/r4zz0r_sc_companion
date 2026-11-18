@@ -39,3 +39,22 @@ describe('useUexQuery', () => {
     expect(fetchFn).not.toHaveBeenCalled()
   })
 })
+
+describe('troca de parâmetros', () => {
+  test('não mostra dados da consulta anterior quando a nova falha', async () => {
+    const store = memoryStore()
+    const fetchFn = vi.fn(async (url: string) =>
+      url.includes('id_category=29') ? ok([{ id: 'laser' }]) : Promise.reject(new TypeError('offline')),
+    ) as unknown as typeof fetch
+    const wrapper = ({ children }: { children: ReactNode }) => <UexProvider value={{ store, fetchFn, limiter }}>{children}</UexProvider>
+    const { result, rerender } = renderHook(({ cat }) => useUexQuery<{ id: string }[]>('items', { id_category: cat }, 1000), {
+      wrapper,
+      initialProps: { cat: 29 },
+    })
+    await waitFor(() => expect(result.current.data).toEqual([{ id: 'laser' }]))
+    rerender({ cat: 30 })
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.data).toBeNull()
+    expect(result.current.error).toBe('network')
+  })
+})

@@ -71,7 +71,21 @@ export interface RefinePlanRow {
   distance: number | null
 }
 
-const validCargo = (cargo: CargoLine[]) => cargo.filter((c) => Number.isFinite(c.scu) && c.scu > 0)
+const validCargo = (cargo: CargoLine[]) => cargo.filter((c) => c.oreId > 0 && Number.isFinite(c.scu) && c.scu > 0)
+
+/**
+ * Distâncias do local atual até cada refinaria, a partir do cache `local:refinaria`.
+ * A refinaria onde o jogador já está tem distância 0.
+ */
+export function distancesFor(locationId: number | null, refineryIds: number[], cache: Map<string, number | null>): Map<number, number | null> {
+  const m = new Map<number, number | null>()
+  if (locationId === null) return m
+  for (const id of refineryIds) {
+    if (id === locationId) m.set(id, 0)
+    else if (cache.has(`${locationId}:${id}`)) m.set(id, cache.get(`${locationId}:${id}`)!)
+  }
+  return m
+}
 
 export function refinePlan(
   cargo: CargoLine[],

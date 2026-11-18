@@ -104,3 +104,13 @@ describe('DistanceFetcher', () => {
     expect((fetchFn as unknown as { mock: { calls: unknown[] } }).mock.calls).toHaveLength(1)
   })
 })
+
+describe('SCU com decimal', () => {
+  test('mantém o texto digitado e usa o valor', async () => {
+    render(<Harness initial={{ cargo: [{ oreId: 59, scu: 0 }] }} />)
+    const input = screen.getByLabelText('SCU do minério 1')
+    await userEvent.type(input, '3,5')
+    expect(input).toHaveValue('3,5')
+    expect(screen.getByRole('row', { name: /Alpha Refinery/ })).toHaveTextContent('545.403')
+  })
+})

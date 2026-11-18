@@ -62,12 +62,18 @@ function useUexBase<T>(resource: string, params: Record<string, string | number>
   const key = queryKey(resource, params)
   const paramsRef = useRef(params)
   paramsRef.current = params
-  const [state, setState] = useState<Omit<UexState<T>, 'refresh'>>({
-    data: null,
-    fetchedAt: null,
-    loading: enabled,
-    error: null,
-  })
+  type S = Omit<UexState<T>, 'refresh'> & { key: string }
+  const [raw, setRaw] = useState<S>({ key, data: null, fetchedAt: null, loading: enabled, error: null })
+  // Ao trocar de consulta (ex.: outra categoria), nunca mostra os dados da consulta anterior.
+  const state: S = raw.key === key ? raw : { key, data: null, fetchedAt: null, loading: enabled, error: null }
+  const setState = useCallback(
+    (next: Omit<S, 'key'> | ((s: Omit<S, 'key'>) => Omit<S, 'key'>)) =>
+      setRaw((prev) => {
+        const base = prev.key === key ? prev : { key, data: null, fetchedAt: null, loading: enabled, error: null }
+        return { ...(typeof next === 'function' ? next(base) : next), key }
+      }),
+    [key, enabled],
+  )
 
   const load = useCallback(
     async (force: boolean, isActive: () => boolean) => {
@@ -94,7 +100,7 @@ function useUexBase<T>(resource: string, params: Record<string, string | number>
         if (isActive()) setState((s) => ({ ...s, loading: false, error: e instanceof UexError ? e.code : 'unknown' }))
       }
     },
-    [key, resource, ttlMs, enabled, store, fetchFn, limiter],
+    [key, resource, ttlMs, enabled, store, fetchFn, limiter, setState],
   )
 
   useEffect(() => {
@@ -113,7 +119,7 @@ function useUexBase<T>(resource: string, params: Record<string, string | number>
     load(true, () => true)
   }, [load])
 
-  return useMemo(() => ({ ...state, refresh }), [state, refresh])
+  return useMemo(() => ({ data: state.data, fetchedAt: state.fetchedAt, loading: state.loading, error: state.error, refresh }), [state.data, state.fetchedAt, state.loading, state.error, refresh])
 }
 
 export function useUex<T>(resource: UexResource): UexState<T> {
