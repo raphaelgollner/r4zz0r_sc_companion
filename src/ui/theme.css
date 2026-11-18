@@ -697,3 +697,51 @@ code {
   padding-bottom: 14px;
   border-bottom: 1px solid var(--mid-gray);
 }
+
+/* ---------- Dialog ---------- */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5, 5, 8, 0.75);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+.dialog {
+  width: min(900px, 100%);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.dialog-head h2 {
+  font-size: 16px;
+  color: var(--gold);
+}
+.dialog-body {
+  overflow-y: auto;
+}
+.location-line {
+  color: var(--steel);
+  margin: 0 0 14px;
+}
+.link-cell {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: var(--gold-light);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}

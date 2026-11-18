@@ -6,6 +6,7 @@ import { useI18n } from '../../i18n/i18n'
 import { DataTable, FreshnessBadge, Panel, SectionLabel } from '../../ui/components'
 import { TerminalName } from '../../ui/TerminalName'
 import { Tooltip } from '../../ui/Tooltip'
+import { StoreDialog } from './StoreDialog'
 
 export function ShipsView({
   vehicles,
@@ -22,6 +23,7 @@ export function ShipsView({
   const [query, setQuery] = useState('')
   const [role, setRole] = useState<ShipRole | ''>('')
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [store, setStore] = useState<{ id: number; name: string } | null>(null)
 
   const rows = useMemo(
     () =>
@@ -32,7 +34,10 @@ export function ShipsView({
       })),
     [vehicles, purchases, rentals, query, role],
   )
-  const selected = rows.find((r) => r.v.id === selectedId) ?? null
+  const selected = useMemo(() => {
+    const v = vehicles.find((x) => x.id === selectedId)
+    return v ? { v, roles: shipRoles(v), offers: shipOffers(v.id, purchases, rentals) } : null
+  }, [vehicles, purchases, rentals, selectedId])
   const dash = <span className="muted">—</span>
   const roleLabel = (r: ShipRole) => t(`role.${r}`)
 
@@ -116,7 +121,11 @@ export function ShipsView({
               rowKey={(o) => o.id}
               empty={t('ships.notSold')}
               columns={[
-                { key: 't', header: t('col.terminal'), render: (o) => <TerminalName id={o.id_terminal} fallback={o.terminal_name} /> },
+                { key: 't', header: t('col.terminal'), render: (o) => (
+                  <button className="link-cell" onClick={() => setStore({ id: o.id_terminal, name: o.terminal_name })}>
+                    <TerminalName id={o.id_terminal} fallback={o.terminal_name} />
+                  </button>
+                ) },
                 { key: 'p', header: t('col.price'), align: 'right', render: (o) => `${formatAuec(o.price_buy)} aUEC` },
                 { key: 'u', header: t('common.updated'), render: (o) => <FreshnessBadge dateModifiedSec={o.date_modified} now={now} /> },
               ]}
@@ -128,7 +137,11 @@ export function ShipsView({
               rowKey={(o) => o.id}
               empty={t('ships.noRent')}
               columns={[
-                { key: 't', header: t('col.terminal'), render: (o) => <TerminalName id={o.id_terminal} fallback={o.terminal_name} /> },
+                { key: 't', header: t('col.terminal'), render: (o) => (
+                  <button className="link-cell" onClick={() => setStore({ id: o.id_terminal, name: o.terminal_name })}>
+                    <TerminalName id={o.id_terminal} fallback={o.terminal_name} />
+                  </button>
+                ) },
                 { key: 'p', header: t('col.price'), align: 'right', render: (o) => `${formatAuec(o.price_rent)} aUEC` },
                 { key: 'u', header: t('common.updated'), render: (o) => <FreshnessBadge dateModifiedSec={o.date_modified} now={now} /> },
               ]}
@@ -140,6 +153,18 @@ export function ShipsView({
           </Panel>
         )}
       </div>
+      {store && (
+        <StoreDialog
+          terminalId={store.id}
+          terminalName={store.name}
+          vehicles={vehicles}
+          purchases={purchases}
+          rentals={rentals}
+          now={now}
+          onPickShip={setSelectedId}
+          onClose={() => setStore(null)}
+        />
+      )}
     </div>
   )
 }
