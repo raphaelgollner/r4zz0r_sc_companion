@@ -1,7 +1,7 @@
-/**
- * Limites de "dado envelhecendo/velho" escolhidos pelo usuário.
- * Até a Task 12 (SETTINGS) usa os padrões; depois lê das preferências.
- */
+import { usePrefs } from '../../store/prefs'
+
+/** Limites de "dado envelhecendo/velho" escolhidos pelo usuário em AJUSTES. */
 export function usePrefsFreshness(): { warnHours: number; staleDays: number } {
-  return { warnHours: 24, staleDays: 7 }
+  const [prefs] = usePrefs()
+  return { warnHours: prefs.warnHours, staleDays: prefs.staleDays }
 }

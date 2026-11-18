@@ -1,5 +1,7 @@
 import { HomeScreen } from '../features/home/HomeScreen'
+import { SettingsView } from '../features/settings/SettingsView'
 import { ShipsScreen } from '../features/ships/ShipsScreen'
+import { clearCache } from '../data/useUex'
 import {
   CommoditiesScreen,
   CurrenciesScreen,
@@ -14,6 +16,7 @@ import type { Screens } from './App'
 export const screens: Screens = {
   home: (go) => <HomeScreen onSetup={() => go({ main: 'trade', trade: 'routes' })} />,
   ships: () => <ShipsScreen />,
+  settings: () => <SettingsView version={__APP_VERSION__} onClearCache={() => clearCache()} />,
   trade: {
     commodities: () => <CommoditiesScreen />,
     locations: () => <LocationsScreen />,

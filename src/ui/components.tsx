@@ -2,6 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react'
 import type { StatusLevel } from '../data/types'
 import { ageLevel, formatAge } from '../domain/freshness'
 import { useI18n } from '../i18n/i18n'
+import { usePrefs } from '../store/prefs'
 
 export function Panel({ title, children, glow }: { title?: ReactNode; children: ReactNode; glow?: boolean }) {
   return (
@@ -154,7 +155,8 @@ export function FreshnessBadge({
   staleDays?: number
 }) {
   const { lang } = useI18n()
-  const level = ageLevel(dateModifiedSec, now, warnHours, staleDays)
+  const [prefs] = usePrefs()
+  const level = ageLevel(dateModifiedSec, now, warnHours ?? prefs.warnHours, staleDays ?? prefs.staleDays)
   return <span className={`age-${level}`}>{formatAge(dateModifiedSec, now, lang)}</span>
 }
 
