@@ -3,17 +3,22 @@ import type { Terminal, Vehicle } from '../../data/types'
 import { formatAuec, parseAmount } from '../../domain/format'
 import { useI18n } from '../../i18n/i18n'
 import { effectiveScu, type Prefs } from '../../store/prefs'
+import { Tooltip } from '../../ui/Tooltip'
 
-/** Texto de um campo numérico: mantém o que foi digitado e só reescreve quando o valor muda por fora. */
+/**
+ * Texto de um campo numérico: enquanto o campo está em foco, mantém exatamente o que foi digitado;
+ * fora de foco, mostra o valor salvo formatado.
+ */
 function useAmountText(value: number) {
-  const [text, setText] = useState(value > 0 ? formatAuec(value) : '')
+  const fmt = (v: number) => (v > 0 ? formatAuec(v) : '')
+  const [text, setText] = useState(fmt(value))
+  const [focused, setFocused] = useState(false)
   useEffect(() => {
-    const typed = parseAmount(text)
-    if ((Number.isFinite(typed) ? typed : 0) !== value) setText(value > 0 ? formatAuec(value) : '')
-    // só reage a mudanças externas do valor
+    if (!focused) setText(fmt(value))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-  return [text, setText] as const
+  }, [value, focused])
+  const bind = { onFocus: () => setFocused(true), onBlur: () => setFocused(false) }
+  return [text, setText, bind] as const
 }
 
 export function RouteControls({
@@ -36,24 +41,27 @@ export function RouteControls({
   const ship = vehicles.find((v) => v.id === prefs.shipId) ?? null
   const scu = effectiveScu(prefs, ship)
   const hasOverride = ship !== null && prefs.scuOverrides[ship.id] !== undefined
-  const [budgetText, setBudgetText] = useAmountText(prefs.budget)
-  const [scuText, setScuText] = useAmountText(scu)
+  const [budgetText, setBudgetText, budgetBind] = useAmountText(prefs.budget)
+  const [scuText, setScuText, scuBind] = useAmountText(scu)
   const systems = useMemo(
     () => [...new Set(terminals.map((x) => x.star_system_name).filter((s): s is string => !!s))].sort(),
     [terminals],
   )
 
-  const setScu = (text: string) => {
-    setScuText(text)
-    if (!ship) return
-    const n = parseAmount(text)
-    onPrefs({ scuOverrides: { ...prefs.scuOverrides, [ship.id]: Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0 } })
-  }
   const resetScu = () => {
     if (!ship) return
     const rest = { ...prefs.scuOverrides }
     delete rest[ship.id]
     onPrefs({ scuOverrides: rest })
+  }
+  const setScu = (text: string) => {
+    setScuText(text)
+    if (!ship) return
+    // campo vazio = usar o SCU do UEX
+    if (text.trim() === '') return resetScu()
+    const n = parseAmount(text)
+    if (!Number.isFinite(n) || n < 0) return
+    onPrefs({ scuOverrides: { ...prefs.scuOverrides, [ship.id]: Math.floor(n) } })
   }
 
   return (
@@ -83,6 +91,7 @@ export function RouteControls({
           inputMode="numeric"
           disabled={!ship}
           value={ship ? scuText : ''}
+          {...scuBind}
           onChange={(e) => setScu(e.target.value)}
         />
       </label>
@@ -97,6 +106,7 @@ export function RouteControls({
           className="input num"
           inputMode="numeric"
           value={budgetText}
+          {...budgetBind}
           placeholder="0"
           onChange={(e) => {
             setBudgetText(e.target.value)
@@ -106,9 +116,11 @@ export function RouteControls({
         />
       </label>
       {balance !== null && (
-        <button className="btn" onClick={() => onPrefs({ budget: Math.max(0, balance) })}>
-          {t('routes.useBalance')}
-        </button>
+        <Tooltip content={balance <= 0 ? t('routes.balanceEmpty') : null}>
+          <button className="btn" disabled={balance <= 0} onClick={() => onPrefs({ budget: balance })}>
+            {t('routes.useBalance')}
+          </button>
+        </Tooltip>
       )}
       {!compact && (
         <>

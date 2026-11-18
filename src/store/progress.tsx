@@ -4,6 +4,8 @@ import type { KVStore } from '../cache/store'
 import { EMPTY_PROGRESS, type ProgressData } from '../domain/progress'
 
 const KEY = 'data'
+/** Atraso para juntar várias mudanças seguidas (ex.: digitação) numa só gravação. */
+const WRITE_DELAY_MS = 400
 
 /** Banco separado do cache do UEX: "Limpar cache" não apaga o progresso. */
 export function progressStore(): KVStore {
@@ -36,6 +38,18 @@ export function ProgressProvider({ store, children }: { store?: KVStore; childre
   const [loadFailed, setLoadFailed] = useState(false)
   const loadFailedRef = useRef(false)
   const dataRef = useRef(data)
+  const pending = useRef(false)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const flush = useCallback(() => {
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = null
+    if (!pending.current) return
+    pending.current = false
+    kv.set(KEY, dataRef.current).catch(() => {
+      // falha ao gravar: segue em memória nesta sessão
+    })
+  }, [kv])
 
   useEffect(() => {
     let active = true
@@ -62,12 +76,24 @@ export function ProgressProvider({ store, children }: { store?: KVStore; childre
       const next = fn(dataRef.current)
       dataRef.current = next
       setData(next)
-      kv.set(KEY, next).catch(() => {
-        // falha ao gravar: segue em memória nesta sessão
-      })
+      pending.current = true
+      if (timer.current) clearTimeout(timer.current)
+      timer.current = setTimeout(flush, WRITE_DELAY_MS)
     },
-    [kv],
+    [kv, flush],
   )
+
+  // Grava o que estiver pendente ao fechar, minimizar ou desmontar.
+  useEffect(() => {
+    const onHide = () => document.visibilityState === 'hidden' && flush()
+    window.addEventListener('beforeunload', flush)
+    document.addEventListener('visibilitychange', onHide)
+    return () => {
+      window.removeEventListener('beforeunload', flush)
+      document.removeEventListener('visibilitychange', onHide)
+      flush()
+    }
+  }, [flush])
 
   const value = useMemo(() => ({ data, ready, loadFailed, apply }), [data, ready, loadFailed, apply])
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>

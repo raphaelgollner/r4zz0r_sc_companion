@@ -16,6 +16,8 @@ export function HomeScreen({ onSetup }: { onSetup: () => void }) {
   const moons = useUex('moons')
   const index = useUex('currencies_index')
   const history = useUex('currencies_index_history')
+  const shipBuy = useUex('vehicles_purchases_prices_all')
+  const shipRent = useUex('vehicles_rentals_prices_all')
   const [prefs, setPrefs] = usePrefs()
   const balance = useOptionalBalance()
 
@@ -29,6 +31,8 @@ export function HomeScreen({ onSetup }: { onSetup: () => void }) {
     ['moons', moons],
     ['currencies_index', index],
     ['currencies_index_history', history],
+    ['vehicles_purchases_prices_all', shipBuy],
+    ['vehicles_rentals_prices_all', shipRent],
   ]
 
   return (

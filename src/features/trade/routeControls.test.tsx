@@ -75,3 +75,27 @@ describe('RouteControls', () => {
     expect(screen.getAllByRole('article')[0]).toHaveTextContent(/64 SCU/)
   })
 })
+
+describe('ajustes do campo SCU e do saldo', () => {
+  test('apagar o SCU remove o valor digitado e volta ao do UEX ao sair do campo', async () => {
+    render(<Harness initial={{ shipId: 7, scuOverrides: { 7: 192 } }} />)
+    const scu = screen.getByLabelText('SCU')
+    await userEvent.clear(scu)
+    expect(prefsNow().scuOverrides).toEqual({})
+    await userEvent.tab()
+    expect(scu).toHaveValue('64')
+  })
+
+  test('decimal fica como digitado até sair do campo', async () => {
+    render(<Harness initial={{ shipId: 7 }} />)
+    const scu = screen.getByLabelText('SCU')
+    await userEvent.clear(scu)
+    await userEvent.type(scu, '10,5')
+    expect(scu).toHaveValue('10,5')
+  })
+
+  test('saldo negativo desabilita Usar meu saldo', () => {
+    render(<Harness initial={{ shipId: 1 }} balance={-5} />)
+    expect(screen.getByRole('button', { name: 'Usar meu saldo' })).toBeDisabled()
+  })
+})
