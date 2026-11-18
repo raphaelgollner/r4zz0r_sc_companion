@@ -5,7 +5,7 @@ import { attr } from '../../domain/mining'
 import { useI18n } from '../../i18n/i18n'
 import { DataTable, FreshnessBadge, Panel, SectionLabel, Tabs, type Column } from '../../ui/components'
 import { Dialog } from '../../ui/Dialog'
-import { TerminalName } from '../../ui/TerminalName'
+import { TerminalCopy, TerminalName } from '../../ui/TerminalName'
 import { Tooltip } from '../../ui/Tooltip'
 import { ItemStoreDialog } from './ItemStoreDialog'
 
@@ -169,9 +169,12 @@ export function EquipmentView({
                 key: 't',
                 header: t('col.terminal'),
                 render: (o) => (
+                  <>
                   <button className="link-cell" onClick={() => setStore({ id: o.id_terminal, name: o.terminal_name })}>
-                    <TerminalName id={o.id_terminal} fallback={o.terminal_name} />
+                    <TerminalName id={o.id_terminal} fallback={o.terminal_name} copy={false} />
                   </button>
+                  <TerminalCopy id={o.id_terminal} fallback={o.terminal_name} />
+                  </>
                 ),
               },
               { key: 'p', header: t('col.price'), align: 'right', render: (o) => `${formatAuec(o.price_buy)} aUEC` },

@@ -36,14 +36,23 @@ function CopyDestination({ name }: { name: string }) {
   )
 }
 
-/** Nome do terminal + nome do lugar (em cinza) + tooltip com a localização completa + copiar destino. */
-export function TerminalName({ id, fallback }: { id: number; fallback: string }) {
+/** Só o botão copiar destino de um terminal (para usar ao lado de um botão que já contém o nome). */
+export function TerminalCopy({ id, fallback }: { id: number; fallback: string }) {
+  const t = useTerminal(id)
+  return <CopyDestination name={(t && placeName(t)) || fallback} />
+}
+
+/**
+ * Nome do terminal + nome do lugar (em cinza) + tooltip com a localização completa + copiar destino.
+ * `copy={false}` quando o nome fica dentro de outro botão (use `TerminalCopy` ao lado).
+ */
+export function TerminalName({ id, fallback, copy = true }: { id: number; fallback: string; copy?: boolean }) {
   const t = useTerminal(id)
   if (!t)
     return (
       <span className="terminal-name">
         <span>{fallback}</span>
-        <CopyDestination name={fallback} />
+        {copy && <CopyDestination name={fallback} />}
       </span>
     )
   const place = placeName(t)
@@ -60,7 +69,7 @@ export function TerminalName({ id, fallback }: { id: number; fallback: string })
           {showPlace && <span className="muted place">{place}</span>}
         </span>
       </Tooltip>
-      <CopyDestination name={place ?? fallback} />
+      {copy && <CopyDestination name={place ?? fallback} />}
     </span>
   )
 }
