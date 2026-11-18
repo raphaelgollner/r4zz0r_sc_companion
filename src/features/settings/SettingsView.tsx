@@ -6,7 +6,7 @@ import { Panel, SectionLabel } from '../../ui/components'
 export function SettingsView({ version, onClearCache }: { version: string; onClearCache: () => Promise<void> }) {
   const { t, lang, setLang } = useI18n()
   const [prefs, setPrefs] = usePrefs()
-  const [cleared, setCleared] = useState(false)
+  const [cleared, setCleared] = useState<'ok' | 'failed' | null>(null)
 
   const num = (v: string, fallback: number) => {
     const n = Number(v)
@@ -58,13 +58,18 @@ export function SettingsView({ version, onClearCache }: { version: string; onCle
           <button
             className="btn"
             onClick={async () => {
-              await onClearCache()
-              setCleared(true)
+              try {
+                await onClearCache()
+                setCleared('ok')
+              } catch {
+                setCleared('failed')
+              }
             }}
           >
             {t('settings.clearCache')}
           </button>
-          {cleared && <span className="profit">{t('settings.cacheCleared')}</span>}
+          {cleared === 'ok' && <span className="profit">{t('settings.cacheCleared')}</span>}
+          {cleared === 'failed' && <span className="loss">{t('settings.cacheClearFailed')}</span>}
         </div>
       </Panel>
 

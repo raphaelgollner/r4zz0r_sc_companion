@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { RateLimiter } from '../api/rateLimiter'
 import { fetchUex, UexError } from '../api/uexClient'
 import { getResource, peekResource } from '../cache/cachedResource'
@@ -47,38 +47,60 @@ export interface UexState<T> {
   refresh: () => void
 }
 
-export function useUex<T>(resource: UexResource): UexState<T> {
+/** Chave de cache: recurso + parâmetros em ordem alfabética (ex.: `items?id_category=29`). */
+export function queryKey(resource: string, params?: Record<string, string | number> | null): string {
+  if (!params) return resource
+  const q = Object.keys(params)
+    .sort()
+    .map((k) => `${k}=${params[k]}`)
+    .join('&')
+  return q ? `${resource}?${q}` : resource
+}
+
+function useUexBase<T>(resource: string, params: Record<string, string | number> | null | undefined, ttlMs: number, enabled: boolean): UexState<T> {
   const { store, fetchFn, limiter } = useUexContext()
-  const [state, setState] = useState<Omit<UexState<T>, 'refresh'>>({
-    data: null,
-    fetchedAt: null,
-    loading: true,
-    error: null,
-  })
+  const key = queryKey(resource, params)
+  const paramsRef = useRef(params)
+  paramsRef.current = params
+  type S = Omit<UexState<T>, 'refresh'> & { key: string }
+  const [raw, setRaw] = useState<S>({ key, data: null, fetchedAt: null, loading: enabled, error: null })
+  // Ao trocar de consulta (ex.: outra categoria), nunca mostra os dados da consulta anterior.
+  const state: S = raw.key === key ? raw : { key, data: null, fetchedAt: null, loading: enabled, error: null }
+  const setState = useCallback(
+    (next: Omit<S, 'key'> | ((s: Omit<S, 'key'>) => Omit<S, 'key'>)) =>
+      setRaw((prev) => {
+        const base = prev.key === key ? prev : { key, data: null, fetchedAt: null, loading: enabled, error: null }
+        return { ...(typeof next === 'function' ? next(base) : next), key }
+      }),
+    [key, enabled],
+  )
 
   const load = useCallback(
     async (force: boolean, isActive: () => boolean) => {
+      if (!enabled) {
+        setState({ data: null, fetchedAt: null, loading: false, error: null })
+        return
+      }
       setState((s) => ({ ...s, loading: true }))
       if (!force) {
-        const peek = await peekResource<T>(resource, store)
+        const peek = await peekResource<T>(key, store)
         if (peek && isActive()) setState((s) => ({ ...s, data: peek.data, fetchedAt: peek.fetchedAt }))
       }
       try {
         const r = await getResource<T>(
-          resource,
-          TTL_MS[resource],
-          () => fetchUex<T>(resource, undefined, { fetchFn, limiter }),
+          key,
+          ttlMs,
+          () => fetchUex<T>(resource, paramsRef.current ?? undefined, { fetchFn, limiter }),
           store,
           Date.now,
           force,
         )
         if (isActive()) setState({ data: r.data, fetchedAt: r.fetchedAt, loading: false, error: r.error ?? null })
       } catch (e) {
-        if (isActive())
-          setState((s) => ({ ...s, loading: false, error: e instanceof UexError ? e.code : 'unknown' }))
+        if (isActive()) setState((s) => ({ ...s, loading: false, error: e instanceof UexError ? e.code : 'unknown' }))
       }
     },
-    [resource, store, fetchFn, limiter],
+    [key, resource, ttlMs, enabled, store, fetchFn, limiter, setState],
   )
 
   useEffect(() => {
@@ -97,5 +119,14 @@ export function useUex<T>(resource: UexResource): UexState<T> {
     load(true, () => true)
   }, [load])
 
-  return useMemo(() => ({ ...state, refresh }), [state, refresh])
+  return useMemo(() => ({ data: state.data, fetchedAt: state.fetchedAt, loading: state.loading, error: state.error, refresh }), [state.data, state.fetchedAt, state.loading, state.error, refresh])
+}
+
+export function useUex<T>(resource: UexResource): UexState<T> {
+  return useUexBase<T>(resource, undefined, TTL_MS[resource], true)
+}
+
+/** Consulta com parâmetros (ex.: itens de uma categoria). `params === null` não busca nada. */
+export function useUexQuery<T>(resource: string, params: Record<string, string | number> | null, ttlMs: number): UexState<T> {
+  return useUexBase<T>(resource, params, ttlMs, params !== null)
 }

@@ -75,11 +75,15 @@ export function PriceTable({
   status,
   now,
   label,
+  onRowClick,
+  selectedId,
 }: {
   rows: PriceRow[]
   status?: CommodityStatus
   now: number
   label: 'terminal' | 'commodity'
+  onRowClick?: (r: PriceRow) => void
+  selectedId?: number | null
 }) {
   const { t } = useI18n()
   const fresh = usePrefsFreshness()
@@ -110,5 +114,5 @@ export function PriceTable({
     sortValue: (r) => -r.date_modified,
   })
 
-  return <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} initialSort={{ key: 'name', dir: 'asc' }} />
+  return <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} initialSort={{ key: 'name', dir: 'asc' }} onRowClick={onRowClick} selectedKey={selectedId} />
 }

@@ -176,6 +176,13 @@ export function StatusBadge({ code, levels }: { code: number; levels: StatusLeve
   )
 }
 
+/** Tipo de falha do UEX para escolher a mensagem certa. */
+export function errorKind(code: string): 'offline' | 'rate' | 'server' {
+  if (code === 'network' || code === 'timeout') return 'offline'
+  if (code === 'requests_limit_reached' || code === 'http_429') return 'rate'
+  return 'server'
+}
+
 export function LoadState({
   loading,
   error,
@@ -203,7 +210,7 @@ export function LoadState({
   }
   return (
     <>
-      {error && <div className="load-warning">{t('load.staleWarning', { code: error })}</div>}
+      {error && <div className="load-warning">{t(`load.stale.${errorKind(error)}`, { code: error })}</div>}
       {children}
     </>
   )

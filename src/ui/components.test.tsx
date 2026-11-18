@@ -57,3 +57,20 @@ describe('badges', () => {
     expect(screen.getByText('Out Stock')).toHaveClass('status-red')
   })
 })
+
+describe('mensagem de dados salvos por tipo de erro', () => {
+  const show = (error: string) =>
+    wrap(<LoadState loading={false} error={error} hasData onRetry={() => {}}>x</LoadState>)
+  test('limite de consultas', () => {
+    show('requests_limit_reached')
+    expect(screen.getByText(/Limite de consultas do UEX/)).toBeInTheDocument()
+  })
+  test('sem conexão', () => {
+    show('network')
+    expect(screen.getByText(/Sem conexão com o UEX/)).toBeInTheDocument()
+  })
+  test('erro do servidor mostra o código', () => {
+    show('http_500')
+    expect(screen.getByText(/O UEX respondeu com erro \(http_500\)/)).toBeInTheDocument()
+  })
+})

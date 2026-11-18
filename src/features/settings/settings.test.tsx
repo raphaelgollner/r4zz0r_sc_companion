@@ -54,3 +54,11 @@ describe('SettingsView', () => {
     expect(screen.getAllByText(/Cloud Imperium Games/).length).toBeGreaterThan(0)
   })
 })
+
+describe('falha ao limpar cache', () => {
+  test('avisa quando não consegue limpar', async () => {
+    renderAll(vi.fn(async () => { throw new Error('x') }))
+    await userEvent.click(screen.getByRole('button', { name: 'Limpar cache' }))
+    expect(await screen.findByText('Não foi possível limpar o cache.')).toBeInTheDocument()
+  })
+})

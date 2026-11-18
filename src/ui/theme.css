@@ -658,10 +658,8 @@ code {
   box-shadow: 0 0 0 1px var(--gold);
 }
 .tip-box {
-  position: absolute;
-  z-index: 50;
-  left: 0;
-  bottom: calc(100% + 6px);
+  position: fixed;
+  z-index: 1000;
   background: var(--panel);
   border: 1px solid var(--gold-dark);
   color: var(--white);
@@ -838,4 +836,70 @@ code {
 }
 input[type='datetime-local'] {
   color-scheme: dark;
+}
+
+.loaded-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 10px;
+}
+.loaded-bar .btn {
+  font-size: 10px;
+  padding: 6px 12px;
+}
+
+.history {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--mid-gray);
+}
+.history-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 13px;
+  margin-top: 6px;
+}
+.legend-buy {
+  color: var(--orange);
+}
+.legend-sell {
+  color: var(--profit);
+}
+.hint {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+/* ---------- Refine Planner ---------- */
+.planner-grid {
+  display: grid;
+  grid-template-columns: minmax(380px, 1.3fr) minmax(300px, 1fr);
+  gap: 24px;
+}
+.cargo-line {
+  align-items: center;
+  gap: 8px;
+}
+.estimate-note {
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  border-left: 2px solid var(--orange);
+  padding-left: 10px;
+}
+.sell-raw {
+  font-size: 14px;
+  color: var(--steel);
+}
+.sell-raw b {
+  color: var(--white);
+  font-size: 16px;
+}
+.warn {
+  color: var(--orange);
+  font-size: 12.5px;
+}
+
+.nowrap {
+  white-space: nowrap;
 }

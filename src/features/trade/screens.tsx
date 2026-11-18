@@ -4,8 +4,10 @@ import { usePrefs } from '../../store/prefs'
 import { useOptionalBalance } from '../../store/progress'
 import { RoutesView } from './RoutesView'
 import { useUex, type UexState } from '../../data/useUex'
+import { useI18n } from '../../i18n/i18n'
 import { LoadState } from '../../ui/components'
 import { CommoditiesView } from './CommoditiesView'
+import { HistoryPanel } from './HistoryPanel'
 import { CurrenciesView } from './CurrenciesView'
 import { HarvestablesView } from './HarvestablesView'
 import { LocationsView } from './LocationsView'
@@ -22,11 +24,19 @@ export function useMany(states: UexState<unknown>[]) {
 }
 
 export function Loaded({ states, children }: { states: UexState<unknown>[]; children: () => ReactNode }) {
+  const { t } = useI18n()
   const m = useMany(states)
   return (
-    <LoadState loading={m.loading} error={m.error} hasData={m.hasData} onRetry={m.retry}>
-      {m.hasData && children()}
-    </LoadState>
+    <div className="loaded">
+      <div className="loaded-bar">
+        <button className="btn" disabled={m.loading} onClick={() => states.forEach((s) => s.refresh())}>
+          {t('common.refresh')}
+        </button>
+      </div>
+      <LoadState loading={m.loading} error={m.error} hasData={m.hasData} onRetry={m.retry}>
+        {m.hasData && children()}
+      </LoadState>
+    </div>
   )
 }
 
@@ -42,7 +52,15 @@ export function CommoditiesScreen() {
   const { commodities, prices, status } = useTradeBase()
   return (
     <Loaded states={[commodities, prices, status] as UexState<unknown>[]}>
-      {() => <CommoditiesView commodities={commodities.data!} prices={prices.data!} status={status.data!} now={Date.now()} />}
+      {() => <CommoditiesView
+          commodities={commodities.data!}
+          prices={prices.data!}
+          status={status.data!}
+          now={Date.now()}
+          renderHistory={(cid, row) => (
+            <HistoryPanel key={row.id} commodityId={cid} terminalId={row.id_terminal} terminalName={row.terminal_name} />
+          )}
+        />}
     </Loaded>
   )
 }

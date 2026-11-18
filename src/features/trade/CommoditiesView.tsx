@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import type { Commodity, CommodityStatus, PriceRow } from '../../data/types'
 import { formatAuec } from '../../domain/format'
 import { useI18n } from '../../i18n/i18n'
@@ -10,15 +10,18 @@ export function CommoditiesView({
   prices,
   status,
   now,
+  renderHistory,
 }: {
   commodities: Commodity[]
   prices: PriceRow[]
   status: CommodityStatus
   now: number
+  renderHistory?: (commodityId: number, row: PriceRow) => ReactNode
 }) {
   const { t } = useI18n()
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [historyRow, setHistoryRow] = useState<PriceRow | null>(null)
 
   const list = useMemo(
     () => (query.trim() ? commodities.filter((c) => matches(c.name, query) || matches(c.code, query)) : commodities),
@@ -39,7 +42,10 @@ export function CommoditiesView({
           rows={list}
           rowKey={(c) => c.id}
           selectedKey={selectedId}
-          onRowClick={(c) => setSelectedId(c.id)}
+          onRowClick={(c) => {
+            setSelectedId(c.id)
+            setHistoryRow(null)
+          }}
           initialSort={{ key: 'name', dir: 'asc' }}
           columns={[
             { key: 'name', header: t('col.commodity'), render: (c) => c.name, sortValue: (c) => c.name },
@@ -52,7 +58,21 @@ export function CommoditiesView({
       </Panel>
       <div role="region" aria-label={selected?.name ?? t('commodities.pricesAt')}>
         <Panel title={selected ? `${selected.name} · ${t('commodities.pricesAt')}` : t('commodities.pricesAt')} glow>
-          {selected ? <PriceTable rows={rows} status={status} now={now} label="terminal" /> : <p className="muted">{t('commodities.pick')}</p>}
+          {selected ? (
+            <>
+              <PriceTable
+                rows={rows}
+                status={status}
+                now={now}
+                label="terminal"
+                onRowClick={renderHistory ? setHistoryRow : undefined}
+                selectedId={historyRow?.id ?? null}
+              />
+              {renderHistory && (historyRow ? renderHistory(selected.id, historyRow) : <p className="muted hint">{t('history.hint')}</p>)}
+            </>
+          ) : (
+            <p className="muted">{t('commodities.pick')}</p>
+          )}
         </Panel>
       </div>
     </div>
