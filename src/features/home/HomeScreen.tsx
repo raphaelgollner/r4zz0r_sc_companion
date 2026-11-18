@@ -15,7 +15,7 @@ export function HomeScreen({ onSetup }: { onSetup: () => void }) {
   const moons = useUex('moons')
   const index = useUex('currencies_index')
   const history = useUex('currencies_index_history')
-  const [prefs] = usePrefs()
+  const [prefs, setPrefs] = usePrefs()
 
   const all: [string, UexState<unknown>][] = [
     ['commodities', commodities],
@@ -39,6 +39,7 @@ export function HomeScreen({ onSetup }: { onSetup: () => void }) {
           terminals={terminals.data!}
           now={Date.now()}
           prefs={prefs}
+          onPrefs={setPrefs}
           cache={all.map(([resource, s]) => ({ resource, fetchedAt: s.fetchedAt }))}
           refreshing={all.some(([, s]) => s.loading)}
           onSetup={onSetup}

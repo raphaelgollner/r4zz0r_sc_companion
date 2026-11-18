@@ -680,3 +680,20 @@ code {
 .terminal-name .place::before {
   content: ' · ';
 }
+
+.btn-link {
+  background: none;
+  border: 0;
+  color: var(--gold);
+  cursor: pointer;
+  padding: 8px 4px;
+  font-size: 13px;
+}
+.btn-link:hover {
+  text-decoration: underline;
+}
+.home-controls {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--mid-gray);
+}

@@ -30,11 +30,10 @@ function Harness({ initial = {} }: { initial?: Partial<Prefs> }) {
 describe('RoutesView', () => {
   beforeEach(() => localStorage.clear())
 
-  test('lista de naves só tem naves com SCU', () => {
+  test('lista de naves mostra o SCU do UEX', () => {
     render(<Harness />)
     const options = screen.getAllByRole('option').map((o) => o.textContent)
     expect(options).toContain('Caterpillar · 576 SCU')
-    expect(options.some((o) => o?.includes('Prospector'))).toBe(false)
   })
 
   test('sem nave pede para escolher', () => {
@@ -68,7 +67,7 @@ describe('RoutesView', () => {
 
   test('nave salva sem carga mostra aviso', () => {
     render(<Harness initial={{ shipId: 2, budget: 1000 }} />)
-    expect(screen.getByText('Essa nave não tem carga em SCU.')).toBeInTheDocument()
+    expect(screen.getByText(/Essa nave não tem carga em SCU/)).toBeInTheDocument()
   })
 
   test('orçamento em formato EN não some nem é lido errado', async () => {

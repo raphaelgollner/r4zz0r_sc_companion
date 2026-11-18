@@ -12,6 +12,7 @@ const base = {
   prices: PRICES,
   terminals: [terminal(8), terminal(12), terminal(13)],
   now: NOW,
+  onPrefs: () => {},
   cache: [{ resource: 'commodities', fetchedAt: NOW - 5 * 60_000 }, { resource: 'vehicles', fetchedAt: null }],
 }
 
