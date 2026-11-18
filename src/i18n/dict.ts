@@ -6,7 +6,7 @@ export const pt = {
   'app.title': 'TAYKO CORP COMPANION',
   'app.subtitle': 'Heavy Industry Division',
 
-  'tab.home': 'INÍCIO',
+  'tab.home': 'ROTAS',
   'tab.trade': 'TRADE',
   'tab.ships': 'NAVES',
   'tab.mining': 'MINERAÇÃO',
@@ -290,7 +290,7 @@ export const en: Record<DictKey, string> = {
   'app.title': 'TAYKO CORP COMPANION',
   'app.subtitle': 'Heavy Industry Division',
 
-  'tab.home': 'HOME',
+  'tab.home': 'ROUTES',
   'tab.trade': 'TRADE',
   'tab.ships': 'SHIPS',
   'tab.mining': 'MINING',

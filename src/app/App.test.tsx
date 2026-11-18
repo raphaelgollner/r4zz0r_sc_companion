@@ -35,9 +35,36 @@ describe('App', () => {
       expect(screen.getByRole('tab', { name })).toBeInTheDocument()
   })
 
-  test('SALVAGE ainda está desabilitada', () => {
+  test('abas na ordem nova', () => {
     renderApp()
-    expect(screen.getByRole('tab', { name: /SALVAGE/ })).toBeDisabled()
+    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['ROTAS', 'TRADE', 'MINERAÇÃO', 'SALVAGE', 'NAVES', 'FROTA', 'PROGRESSO', 'AJUSTES'])
+  })
+
+  test('SALVAGE e FROTA habilitadas', () => {
+    renderApp()
+    expect(screen.getByRole('tab', { name: 'SALVAGE' })).toBeEnabled()
+    expect(screen.getByRole('tab', { name: 'FROTA' })).toBeEnabled()
+  })
+
+  test('#salvage/planner abre a subaba', () => {
+    window.location.hash = '#salvage/planner'
+    render(
+      <I18nProvider>
+        <UexProvider value={{ store: memoryStore(), fetchFn, limiter }}>
+          <App screens={{ salvage: { planner: () => <p>PLAN</p> } }} />
+        </UexProvider>
+      </I18nProvider>,
+    )
+    expect(screen.getByText('PLAN')).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Salvage Planner' })).toHaveAttribute('aria-selected', 'true')
+    window.location.hash = ''
+  })
+
+  test('#home abre ROTAS', () => {
+    window.location.hash = '#home'
+    renderApp()
+    expect(screen.getByRole('tab', { name: 'ROTAS' })).toHaveAttribute('aria-selected', 'true')
+    window.location.hash = ''
   })
 
   test('rodapé credita o UEX', () => {
