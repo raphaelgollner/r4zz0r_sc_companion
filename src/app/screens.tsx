@@ -1,5 +1,5 @@
 import { HomeScreen } from '../features/home/HomeScreen'
-import { GroundScreen, OresScreen, RefineriesScreen } from '../features/mining/screens'
+import { GroundScreen, OresScreen, PlannerScreen, RefineriesScreen } from '../features/mining/screens'
 import { ProgressView } from '../features/progress/ProgressView'
 import { SettingsView } from '../features/settings/SettingsView'
 import { ShipsScreen } from '../features/ships/ShipsScreen'
@@ -23,6 +23,7 @@ export const screens: Screens = {
   mining: {
     ores: () => <OresScreen />,
     refineries: () => <RefineriesScreen />,
+    planner: () => <PlannerScreen />,
     ground: () => <GroundScreen />,
   },
   trade: {

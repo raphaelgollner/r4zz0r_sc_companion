@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type {
   Commodity,
   Moon,
@@ -8,6 +8,7 @@ import type {
   RefineryCapacity,
   RefineryMethod,
   RefineryYield,
+  Terminal,
   Vehicle,
   VehiclePrice,
   VehicleRent,
@@ -17,6 +18,10 @@ import { Loaded } from '../trade/screens'
 import { GroundView } from './GroundView'
 import { OresView } from './OresView'
 import { RefineriesView } from './RefineriesView'
+import { DistanceFetcher } from './DistanceFetcher'
+import { PlannerView } from './PlannerView'
+import { useMinerPrefs } from '../../store/minerPrefs'
+import { refineryMatrix } from '../../domain/mining'
 
 const toMap = <T extends { id: number }>(list: T[] | null) => new Map((list ?? []).map((x) => [x.id, x]))
 const all = (...s: UexState<unknown>[]) => s
@@ -72,6 +77,61 @@ export function GroundScreen() {
           rentals={rentals.data!}
           now={Date.now()}
         />
+      )}
+    </Loaded>
+  )
+}
+
+export function PlannerScreen() {
+  const b = useMiningBase()
+  const yields = useUex<RefineryYield[]>('refineries_yields')
+  const terminals = useUex<Terminal[]>('terminals')
+  const [prefs, setPrefs] = useMinerPrefs()
+  const [distances, setDistances] = useState<Map<string, number | null>>(new Map())
+  const onDistance = useCallback(
+    (destination: number, d: number | null) =>
+      setDistances((prev) => {
+        const k = `${prefs.locationId}:${destination}`
+        if (prev.has(k) && prev.get(k) === d) return prev
+        const next = new Map(prev)
+        next.set(k, d)
+        return next
+      }),
+    [prefs.locationId],
+  )
+  const refineryIds = useMemo(() => refineryMatrix(yields.data ?? []).terminals.map((x) => x.id), [yields.data])
+  const hasCargo = prefs.cargo.some((l) => l.scu > 0 && l.oreId > 0)
+  const distMap = useMemo(() => {
+    const m = new Map<number, number | null>()
+    for (const id of refineryIds) {
+      const k = `${prefs.locationId}:${id}`
+      if (distances.has(k)) m.set(id, distances.get(k)!)
+    }
+    return m
+  }, [distances, refineryIds, prefs.locationId])
+  const tradeTerminals = useMemo(() => (terminals.data ?? []).filter((x) => x.type !== 'item' && x.type !== 'fuel'), [terminals.data])
+
+  return (
+    <Loaded states={all(b.commodities, b.prices, b.rawPrices, yields, terminals)}>
+      {() => (
+        <>
+          {prefs.locationId !== null &&
+            hasCargo &&
+            refineryIds.map((id) =>
+              id === prefs.locationId ? null : <DistanceFetcher key={`${prefs.locationId}:${id}`} origin={prefs.locationId!} destination={id} onDistance={onDistance} />,
+            )}
+          <PlannerView
+            commodities={b.commodities.data!}
+            yields={yields.data!}
+            prices={b.prices.data!}
+            rawPrices={b.rawPrices.data!}
+            terminals={tradeTerminals}
+            distances={distMap}
+            prefs={prefs}
+            onPrefs={setPrefs}
+            now={Date.now()}
+          />
+        </>
       )}
     </Loaded>
   )
