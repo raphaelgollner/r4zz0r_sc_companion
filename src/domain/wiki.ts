@@ -31,6 +31,8 @@ export interface WikiVehicle {
 export interface WikiItem {
   uuid: string
   name: string
+  /** Nome interno do jogo (ex.: `Mining_Laser_TEST_Best`), usado para tirar variantes de teste. */
+  className: string
   type: string
   subType: string
   size: number
@@ -139,6 +141,7 @@ export function normalizeItem(raw: unknown): WikiItem {
   return {
     uuid: str(d.uuid),
     name: str(d.name),
+    className: str(d.class_name),
     type,
     subType: subType(d.sub_type),
     size: num(d.size) ?? 0,

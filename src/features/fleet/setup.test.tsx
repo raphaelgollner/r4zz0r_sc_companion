@@ -19,11 +19,12 @@ const LANCET = lancet.data.uuid
 const MOLE = vehicle(122, 'Mole', 96, { name_full: 'Argo Mole', uuid: 'mole-uuid', is_mining: 1 })
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status })
 
-type Wiki = { vehicle?: unknown; status?: number }
-function makeFetch({ vehicle: v = mole.data, status = 200 }: Wiki = {}) {
+type Wiki = { vehicle?: unknown; status?: number; itemsDown?: boolean }
+function makeFetch({ vehicle: v = mole.data, status = 200, itemsDown = false }: Wiki = {}) {
   return (async (url: string) => {
     if (url.includes('api.star-citizen.wiki')) {
       if (url.includes('/vehicles/')) return status === 200 ? json({ data: v }) : json({ message: 'x' }, status)
+      if (itemsDown && url.includes('/items')) return json({ message: 'down' }, 500)
       if (url.includes('WeaponMining')) return json({ data: [lancet.data, arbor.data], links: { next: null } })
       if (url.includes('MiningModifier')) return json({ data: [focus.data], links: { next: null } })
       return json({ data: [], links: { next: null } })
@@ -94,5 +95,14 @@ describe('SetupDialog', () => {
   test('sem preço em dólar no UEX: usa o msrp da Wiki como referência', async () => {
     render(<Harness usd={null} />)
     expect(await screen.findByText(/US\$ 315/)).toBeInTheDocument()
+  })
+})
+
+describe('lista de itens fora do ar', () => {
+  test('aviso com Atualizar e encaixes travados para não apagar o setup salvo', async () => {
+    render(<Harness wiki={{ itemsDown: true }} />)
+    expect(await screen.findByText(/Não foi possível carregar os itens/)).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Laser 1' })).toBeDisabled()
+    expect(screen.getAllByRole('button', { name: 'Atualizar' }).length).toBeGreaterThan(0)
   })
 })

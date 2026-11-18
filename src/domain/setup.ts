@@ -87,11 +87,40 @@ export function childPorts(port: WikiPort, setup: Record<string, string>, items:
 /** Remove do setup os caminhos que não existem mais (ex.: laser trocado por um com menos módulos). */
 export function pruneSetup(setup: Record<string, string>, v: WikiVehicle, items: Map<string, WikiItem>): Record<string, string> {
   const valid = new Set<string>()
+  // Item trocado que ainda não carregou (ou a lista falhou): não dá para saber os módulos; mantém os salvos.
+  const unknownParents: string[] = []
   for (const s of industrialSlots(v)) {
     valid.add(s.port.path)
+    const custom = setup[s.port.path]
+    if (custom && custom !== s.port.equippedUuid && !items.has(custom)) unknownParents.push(`${s.port.path}/`)
     for (const c of childPorts(s.port, setup, items)) valid.add(c.path)
   }
-  return Object.fromEntries(Object.entries(setup).filter(([k]) => valid.has(k)))
+  return Object.fromEntries(Object.entries(setup).filter(([k]) => valid.has(k) || unknownParents.some((p) => k.startsWith(p))))
+}
+
+/** Aplica uma build trocando só os encaixes da função dela; as escolhas das outras funções ficam. */
+export function applyBuild(setup: Record<string, string>, build: Build, v: WikiVehicle): Record<string, string> {
+  const own = industrialSlots(v)
+    .filter((s) => s.fn === build.fn)
+    .map((s) => s.port.path)
+  const keep = Object.entries(setup).filter(([k]) => !own.some((p) => k === p || k.startsWith(`${p}/`)))
+  return { ...Object.fromEntries(keep), ...build.setup }
+}
+
+const TEST_VARIANT = /test|_arm$|placeholder/i
+
+/**
+ * A Wiki lista variantes de teste e de veículo com o mesmo nome (ex.: três "Arbor MH1").
+ * Tira as de teste e deixa uma por nome+tipo+tamanho: a de fábrica, senão a que o UEX conhece, senão a primeira.
+ */
+export function cleanItems(items: WikiItem[], stock: Set<string>, uexByUuid: Map<string, Item>): WikiItem[] {
+  const groups = new Map<string, WikiItem[]>()
+  for (const i of items) {
+    if (TEST_VARIANT.test(i.className) && !stock.has(i.uuid)) continue
+    const k = `${i.type}|${i.size}|${i.name}`
+    groups.set(k, [...(groups.get(k) ?? []), i])
+  }
+  return [...groups.values()].map((g) => g.find((i) => stock.has(i.uuid)) ?? g.find((i) => uexByUuid.has(i.uuid)) ?? g[0])
 }
 
 export interface Build {
@@ -158,11 +187,12 @@ export function buildsFor(v: WikiVehicle, items: WikiItem[], vehicleUexId: numbe
     for (const c of CRITERIA[fn]) {
       const setup: Record<string, string> = {}
       for (const slot of slots.filter((x) => x.fn === fn)) {
+        // O item de fábrica não é troca: não entra no setup (nem no custo).
         const main = pick(slot.port, items.filter((i) => fits(i, slot.port, vehicleUexId, uexByUuid)), c.score(slot.port))
-        if (main) setup[slot.port.path] = main.uuid
+        if (main && main.uuid !== slot.port.equippedUuid) setup[slot.port.path] = main.uuid
         for (const child of childPorts(slot.port, setup, byUuid)) {
           const mod = pick(child, items.filter((i) => fits(i, child, vehicleUexId, uexByUuid)), c.score(child))
-          if (mod) setup[child.path] = mod.uuid
+          if (mod && mod.uuid !== child.equippedUuid) setup[child.path] = mod.uuid
         }
       }
       out.push({ id: `${fn}-${c.id}`, fn, nameKey: `build.${c.id}`, criterionKey: `build.${c.id}.criterion`, setup })

@@ -10,7 +10,7 @@ const port = (path: string, type: string, min: number, max: number, extra: Parti
   equippedUuid: null, equippedName: null, requiredTags: [], ports: [], ...extra,
 })
 const item = (uuid: string, type: string, size: number, stats: Record<string, number> = {}, extra: Partial<WikiItem> = {}): WikiItem => ({
-  uuid, name: uuid, type, subType: 'Gun', size, manufacturer: null, tags: ['miningMount', 'miningConsumable'], ports: [], stats, active: false, charges: null, ...extra,
+  uuid, name: uuid, className: uuid, type, subType: 'Gun', size, manufacturer: null, tags: ['miningMount', 'miningConsumable'], ports: [], stats, active: false, charges: null, ...extra,
 })
 const modPorts = (n: number) => Array.from({ length: n }, (_, i) => port(`BONE_ItemPort_Consumable_${i + 1}`, 'MiningModifier', 1, 1))
 

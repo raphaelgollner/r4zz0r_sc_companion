@@ -35,6 +35,7 @@ export function FleetScreen() {
               onUpdate={fleet.update}
               onRemove={fleet.remove}
               onOpenSetup={setSetupId}
+              loadFailed={fleet.loadFailed}
             />
             {entry && vehicle && (
               <SetupDialog

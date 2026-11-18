@@ -5,7 +5,7 @@ import { useUexQuery } from '../../data/useUex'
 import { useWikiItems, useWikiVehicle } from '../../data/useWiki'
 import type { FleetEntry } from '../../domain/fleet'
 import { formatAuec } from '../../domain/format'
-import { buildsFor, childPorts, fits, functionsOf, industrialSlots, pruneSetup, setupCost, type SetupFunction } from '../../domain/setup'
+import { applyBuild, buildsFor, childPorts, cleanItems, fits, functionsOf, industrialSlots, pruneSetup, setupCost, type SetupFunction } from '../../domain/setup'
 import type { WikiItem, WikiPort } from '../../domain/wiki'
 import { useI18n } from '../../i18n/i18n'
 import { SectionLabel } from '../../ui/components'
@@ -52,31 +52,56 @@ export function SetupDialog({
   const fns = useMemo(() => (v ? functionsOf(v) : []), [v])
   const has = (f: SetupFunction) => fns.includes(f)
 
-  // Número fixo de consultas; as de funções que a nave não tem ficam desligadas.
-  const wikiLists = [
-    useWikiItems(has('mining') ? 'WeaponMining' : null),
-    useWikiItems(has('mining') ? 'MiningModifier' : null),
-    useWikiItems(has('salvage') ? 'SalvageHead' : null),
-    useWikiItems(has('salvage') ? 'SalvageModifier' : null),
-    useWikiItems(has('tractor') ? 'TractorBeam' : null),
-  ]
-  const cats = (Object.keys(UEX_CATEGORIES) as SetupFunction[]).flatMap((f) => UEX_CATEGORIES[f].map((c) => ({ f, c })))
-  const uexItems = cats.map(({ f, c }) => useUexQuery<Item[]>('items', has(f) ? { id_category: c } : null, QUERY_TTL.items))
-  const uexPrices = cats.map(({ f, c }) => useUexQuery<ItemPrice[]>('items_prices', has(f) ? { id_category: c } : null, QUERY_TTL.items_prices))
+  const mining = has('mining')
+  const salvage = has('salvage')
+  const tractor = has('tractor')
+  const cat = (on: boolean, id: number) => (on ? { id_category: id } : null)
+  // Consultas fixas; as de funções que a nave não tem ficam desligadas (parâmetro null).
+  const wLaser = useWikiItems(mining ? 'WeaponMining' : null)
+  const wModule = useWikiItems(mining ? 'MiningModifier' : null)
+  const wHead = useWikiItems(salvage ? 'SalvageHead' : null)
+  const wScraper = useWikiItems(salvage ? 'SalvageModifier' : null)
+  const wTractor = useWikiItems(tractor ? 'TractorBeam' : null)
+  const uLaser = useUexQuery<Item[]>('items', cat(mining, UEX_CATEGORIES.mining[0]), QUERY_TTL.items)
+  const uModule = useUexQuery<Item[]>('items', cat(mining, UEX_CATEGORIES.mining[1]), QUERY_TTL.items)
+  const uScraper = useUexQuery<Item[]>('items', cat(salvage, UEX_CATEGORIES.salvage[0]), QUERY_TTL.items)
+  const uBeam = useUexQuery<Item[]>('items', cat(salvage, UEX_CATEGORIES.salvage[1]), QUERY_TTL.items)
+  const uTractor = useUexQuery<Item[]>('items', cat(tractor, UEX_CATEGORIES.tractor[0]), QUERY_TTL.items)
+  const pLaser = useUexQuery<ItemPrice[]>('items_prices', cat(mining, UEX_CATEGORIES.mining[0]), QUERY_TTL.items_prices)
+  const pModule = useUexQuery<ItemPrice[]>('items_prices', cat(mining, UEX_CATEGORIES.mining[1]), QUERY_TTL.items_prices)
+  const pScraper = useUexQuery<ItemPrice[]>('items_prices', cat(salvage, UEX_CATEGORIES.salvage[0]), QUERY_TTL.items_prices)
+  const pBeam = useUexQuery<ItemPrice[]>('items_prices', cat(salvage, UEX_CATEGORIES.salvage[1]), QUERY_TTL.items_prices)
+  const pTractor = useUexQuery<ItemPrice[]>('items_prices', cat(tractor, UEX_CATEGORIES.tractor[0]), QUERY_TTL.items_prices)
+  const wikiLists = [wLaser, wModule, wHead, wScraper, wTractor]
 
-  const items = useMemo(() => wikiLists.flatMap((l) => l.data ?? []), wikiLists.map((l) => l.data)) // eslint-disable-line react-hooks/exhaustive-deps
-  const itemMap = useMemo(() => new Map(items.map((i) => [i.uuid, i])), [items])
   const uexByUuid = useMemo(() => {
     const m = new Map<string, Item>()
-    for (const q of uexItems) for (const i of q.data ?? []) if (i.uuid) m.set(i.uuid, i)
+    for (const list of [uLaser.data, uModule.data, uScraper.data, uBeam.data, uTractor.data]) for (const i of list ?? []) if (i.uuid) m.set(i.uuid, i)
     return m
-  }, uexItems.map((q) => q.data)) // eslint-disable-line react-hooks/exhaustive-deps
-  const prices = useMemo(() => uexPrices.flatMap((q) => q.data ?? []), uexPrices.map((q) => q.data)) // eslint-disable-line react-hooks/exhaustive-deps
-
+  }, [uLaser.data, uModule.data, uScraper.data, uBeam.data, uTractor.data])
+  const prices = useMemo(
+    () => [pLaser.data, pModule.data, pScraper.data, pBeam.data, pTractor.data].flatMap((l) => l ?? []),
+    [pLaser.data, pModule.data, pScraper.data, pBeam.data, pTractor.data],
+  )
   const slots = useMemo(() => (v ? industrialSlots(v) : []), [v])
+  // Itens de fábrica da nave (inclusive módulos declarados): têm preferência quando a Wiki repete o nome.
+  const stock = useMemo(() => {
+    const s = new Set<string>()
+    const walk = (ports: WikiPort[]) => ports.forEach((p) => (p.equippedUuid && s.add(p.equippedUuid), walk(p.ports)))
+    if (v) walk(v.ports)
+    return s
+  }, [v])
+  const items = useMemo(
+    () => cleanItems([wLaser.data, wModule.data, wHead.data, wScraper.data, wTractor.data].flatMap((l) => l ?? []), stock, uexByUuid),
+    [wLaser.data, wModule.data, wHead.data, wScraper.data, wTractor.data, stock, uexByUuid],
+  )
+  const itemMap = useMemo(() => new Map(items.map((i) => [i.uuid, i])), [items])
   const builds = useMemo(() => (v ? buildsFor(v, items, vehicle.id, uexByUuid) : []), [v, items, vehicle.id, uexByUuid])
   const cost = setupCost(entry.setup, uexByUuid, prices)
   const loadingItems = wikiLists.some((l) => l.loading && !l.data)
+  const itemsFailed = wikiLists.some((l) => l.error && !l.data)
+  // Sem a lista de itens, trocar um encaixe poderia apagar módulos salvos: os encaixes ficam travados.
+  const locked = loadingItems || itemsFailed
 
   const save = (setup: Record<string, string>) => onUpdate({ setup: v ? pruneSetup(setup, v, itemMap) : setup })
   const choose = (port: WikiPort, uuid: string) => {
@@ -90,11 +115,14 @@ export function SetupDialog({
     const cands = items.filter((i) => fits(i, port, vehicle.id, uexByUuid)).sort((a, b) => a.name.localeCompare(b.name))
     const value = entry.setup[port.path] ?? port.equippedUuid ?? ''
     const stockMissing = port.equippedUuid && !cands.some((c) => c.uuid === port.equippedUuid)
+    // O valor atual sempre tem uma opção, para a tela nunca mostrar outra coisa como escolhida.
+    const savedMissing = !!value && value !== port.equippedUuid && !cands.some((c) => c.uuid === value)
     return (
       <label className="field setup-slot" key={port.path}>
         {label}
-        <select className="select" aria-label={label} value={value} onChange={(e) => choose(port, e.target.value)}>
-          {allowEmpty && !port.equippedUuid && <option value="">{t('setup.empty')}</option>}
+        <select className="select" aria-label={label} value={value} disabled={locked} onChange={(e) => choose(port, e.target.value)}>
+          {(value === '' || (allowEmpty && !port.equippedUuid)) && <option value="">{t('setup.empty')}</option>}
+          {savedMissing && <option value={value}>{itemMap.get(value)?.name ?? t('setup.savedItem')}</option>}
           {stockMissing && (
             <option value={port.equippedUuid!}>
               {port.equippedName} ({t('setup.stock')})
@@ -155,7 +183,7 @@ export function SetupDialog({
                       <div className="build" key={b.id}>
                         <b>{t(b.nameKey as never)}</b>
                         <span className="muted">{t(b.criterionKey as never)}</span>
-                        <button className="btn" aria-label={`${t('setup.apply')} ${t(b.nameKey as never)}`} onClick={() => save(b.setup)} disabled={loadingItems}>
+                        <button className="btn" aria-label={`${t('setup.apply')} ${t(b.nameKey as never)}`} onClick={() => v && save(applyBuild(entry.setup, b, v))} disabled={locked}>
                           {t('setup.apply')}
                         </button>
                       </div>
@@ -165,6 +193,14 @@ export function SetupDialog({
               )}
               <SectionLabel>{t('setup.slots')}</SectionLabel>
               {loadingItems && <p className="muted">{t('setup.loadingItems')}</p>}
+              {itemsFailed && (
+                <div className="row">
+                  <span className="warn">{t('setup.itemsError')}</span>
+                  <button className="btn" onClick={() => wikiLists.forEach((l) => l.error && l.refresh())}>
+                    {t('common.refresh')}
+                  </button>
+                </div>
+              )}
               {slots.map((s) => (
                 <div className="setup-group" key={s.port.path}>
                   {slotSelect(s.port, s.label, false)}
@@ -176,7 +212,7 @@ export function SetupDialog({
                   {t('setup.cost')}: <b className="num">{formatAuec(cost.total)} aUEC</b>
                   {cost.missing > 0 && <span className="warn"> · {t('setup.noPrice', { n: cost.missing })}</span>}
                 </span>
-                <button className="btn-link" onClick={() => onUpdate({ setup: {} })}>
+                <button className="btn-link" disabled={locked} onClick={() => onUpdate({ setup: {} })}>
                   {t('setup.reset')}
                 </button>
               </div>

@@ -33,6 +33,7 @@ export function FleetView({
   onUpdate,
   onRemove,
   onOpenSetup,
+  loadFailed = false,
 }: {
   entries: FleetEntry[]
   vehicles: Vehicle[]
@@ -45,6 +46,8 @@ export function FleetView({
   onUpdate: (id: string, patch: Partial<Omit<FleetEntry, 'id'>>) => void
   onRemove: (id: string) => void
   onOpenSetup: (id: string) => void
+  /** A frota salva não pôde ser lida: nada é gravado, então não deixamos adicionar. */
+  loadFailed?: boolean
 }) {
   const { t } = useI18n()
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -77,8 +80,9 @@ export function FleetView({
     <div className="grid-2 ships-grid">
       <Panel>
         <SectionLabel>{t('fleet.title')}</SectionLabel>
-        <div className="row" style={{ marginBottom: 12, alignItems: 'flex-start' }}>
-          <SearchPicker
+        {loadFailed && <p className="warn">{t('fleet.loadFailed')}</p>}
+        <div className="row" style={{ marginBottom: 12, alignItems: 'flex-start' }} hidden={loadFailed}>
+          {!loadFailed && <SearchPicker
             items={sorted}
             ariaLabel={t('fleet.add')}
             placeholder={t('fleet.add')}
@@ -87,16 +91,17 @@ export function FleetView({
             text={(v) => `${v.name_full} ${v.name} ${v.company_name ?? ''}`}
             sub={(v) => v.company_name ?? null}
             onPick={(v) => onAdd(v.id)}
-          />
+          />}
         </div>
         <div className="fleet-totals" data-testid="fleet-totals">
-          <b>{t('fleet.count', { n: totals.count })}</b>
+          <b>{t(totals.count === 1 ? 'fleet.countOne' : 'fleet.count', { n: totals.count })}</b>
           <span>
             · <b className="num">{formatUsd(totals.usd)}</b>
           </span>
           <span>
             · <b className="num">{formatAuec(totals.auec)} aUEC</b>
           </span>
+          {totals.unknown > 0 && <span className="warn">{t(totals.unknown === 1 ? 'fleet.unknownOne' : 'fleet.unknownCount', { n: totals.unknown })}</span>}
           {totals.missingUsd > 0 && <span className="warn">{t('fleet.missingUsd', { n: totals.missingUsd })}</span>}
           {totals.missingAuec > 0 && <span className="warn">{t('fleet.missingAuec', { n: totals.missingAuec })}</span>}
         </div>

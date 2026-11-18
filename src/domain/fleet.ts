@@ -27,6 +27,7 @@ export function bestAuec(vehicleId: number, purchases: VehiclePrice[]): VehicleP
 }
 
 export interface FleetTotals {
+  /** Naves conhecidas pelo UEX. */
   count: number
   usd: number
   auec: number
@@ -38,12 +39,13 @@ export interface FleetTotals {
 
 /** Totais da frota: só o preço base de cada nave; o que não tem preço fica de fora e é contado. */
 export function fleetTotals(entries: FleetEntry[], vehicles: Map<number, Vehicle>, pledge: PledgePrice[], purchases: VehiclePrice[]): FleetTotals {
-  const t: FleetTotals = { count: entries.length, usd: 0, auec: 0, missingUsd: 0, missingAuec: 0, unknown: 0 }
+  const t: FleetTotals = { count: 0, usd: 0, auec: 0, missingUsd: 0, missingAuec: 0, unknown: 0 }
   for (const e of entries) {
     if (!vehicles.has(e.vehicleId)) {
       t.unknown++
       continue
     }
+    t.count++
     const usd = usdPrice(e.vehicleId, pledge)
     if (usd === null) t.missingUsd++
     else t.usd += usd

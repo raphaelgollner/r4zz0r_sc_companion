@@ -30,7 +30,7 @@ describe('fleetTotals', () => {
   const purchases = [buy(1, 7, 3_297_600), buy(2, 8, 900_000)]
   test('soma só o que tem preço e conta o que falta', () => {
     const t = fleetTotals([entry('a', 1), entry('b', 1), entry('c', 2), entry('d', 9999)], vehicles, prices, purchases)
-    expect(t).toEqual({ count: 4, usd: 310, auec: 3_297_600 * 2 + 900_000, missingUsd: 1, missingAuec: 0, unknown: 1 })
+    expect(t).toEqual({ count: 3, usd: 310, auec: 3_297_600 * 2 + 900_000, missingUsd: 1, missingAuec: 0, unknown: 1 })
   })
 })
 

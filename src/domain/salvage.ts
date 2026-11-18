@@ -27,11 +27,18 @@ export interface SalvagePlanRow {
 }
 
 const valid = (cargo: SalvageLine[]) => cargo.filter((l) => l.commodityId > 0 && Number.isFinite(l.scu) && l.scu > 0)
+
+/** Junta linhas do mesmo material (ex.: 60 + 60 SCU de RMC = 120). */
+function merged(cargo: SalvageLine[]): SalvageLine[] {
+  const m = new Map<number, number>()
+  for (const l of valid(cargo)) m.set(l.commodityId, (m.get(l.commodityId) ?? 0) + l.scu)
+  return [...m].map(([commodityId, scu]) => ({ commodityId, scu }))
+}
 /** Demanda do terminal: a atual ou, sem ela, a média (como nas rotas). */
 const demandOf = (r: PriceRow) => (r.scu_sell > 0 ? r.scu_sell : r.scu_sell_avg)
 
 export function salvagePlan(cargo: SalvageLine[], prices: PriceRow[], distance: (terminalId: number) => number | null, sortBy: 'value' | 'distance'): SalvagePlanRow[] {
-  const lines = valid(cargo)
+  const lines = merged(cargo)
   if (!lines.length) return []
   const ids = new Set(lines.map((l) => l.commodityId))
   const byTerminal = new Map<number, PriceRow[]>()

@@ -21,7 +21,7 @@ const purchases: VehiclePrice[] = [
 ]
 const terminals = new Map([[3, terminal(3, { city_name: 'Lorville' })]])
 
-function Harness({ initial = [], prefs = DEFAULT_PREFS, onOpenSetup = () => {} }: { initial?: FleetEntry[]; prefs?: Prefs; onOpenSetup?: (id: string) => void }) {
+function Harness({ initial = [], prefs = DEFAULT_PREFS, onOpenSetup = () => {}, loadFailed = false }: { initial?: FleetEntry[]; prefs?: Prefs; onOpenSetup?: (id: string) => void; loadFailed?: boolean }) {
   const [entries, setEntries] = useState<FleetEntry[]>(initial)
   let n = 0
   return (
@@ -39,6 +39,7 @@ function Harness({ initial = [], prefs = DEFAULT_PREFS, onOpenSetup = () => {} }
           onUpdate={(id, patch) => setEntries((l) => l.map((e) => (e.id === id ? { ...e, ...patch } : e)))}
           onRemove={(id) => setEntries((l) => l.filter((e) => e.id !== id))}
           onOpenSetup={onOpenSetup}
+          loadFailed={loadFailed}
         />
       </TerminalsContext.Provider>
     </I18nProvider>
@@ -96,5 +97,20 @@ describe('FleetView', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Fechar' }))
     await userEvent.click(within(detail).getByRole('button', { name: 'Montar setup' }))
     expect(onOpenSetup).toHaveBeenCalledWith('a')
+  })
+})
+
+describe('ajustes da revisão', () => {
+  test('uma nave no singular e desconhecidas contadas à parte', () => {
+    render(<Harness initial={[e('a', 50), e('x', 9999)]} />)
+    const totals = screen.getByTestId('fleet-totals')
+    expect(totals).toHaveTextContent(/1 nave(?!s)/)
+    expect(totals).toHaveTextContent('1 desconhecida')
+  })
+
+  test('frota que não carregou: aviso e sem campo de adicionar', () => {
+    render(<Harness loadFailed />)
+    expect(screen.getByText(/Não foi possível ler a frota salva/)).toBeInTheDocument()
+    expect(screen.queryByRole('combobox', { name: 'Adicionar nave ou veículo' })).toBeNull()
   })
 })
