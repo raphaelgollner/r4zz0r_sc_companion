@@ -646,3 +646,37 @@ code {
   background: transparent;
   color: var(--gold);
 }
+
+/* ---------- Tooltip ---------- */
+.tip {
+  position: relative;
+  display: inline-block;
+  outline: none;
+  cursor: help;
+}
+.tip:focus-visible {
+  box-shadow: 0 0 0 1px var(--gold);
+}
+.tip-box {
+  position: absolute;
+  z-index: 50;
+  left: 0;
+  bottom: calc(100% + 6px);
+  background: var(--panel);
+  border: 1px solid var(--gold-dark);
+  color: var(--white);
+  padding: 6px 10px;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+.terminal-name .place {
+  font-size: 0.92em;
+}
+.terminal-name .place::before {
+  content: ' · ';
+}
