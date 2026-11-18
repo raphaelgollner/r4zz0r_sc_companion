@@ -1,0 +1,107 @@
+{
+ "data": {
+  "uuid": "7a5a7439-15c6-4fae-ba64-788bb905af22",
+  "name": "Arbor MH1 Mining Laser",
+  "type": "WeaponMining",
+  "sub_type": "Gun",
+  "size": 1,
+  "manufacturer": {
+   "name": "Musashi Industrial and Starflight Concern"
+  },
+  "tags": [
+   "flightReady",
+   "weaponMountUsable",
+   "miningMount"
+  ],
+  "required_tags": [
+   "miningMount"
+  ],
+  "mining_laser": {
+   "laser_power": {
+    "min": 117,
+    "max": 2340,
+    "minimum": 117,
+    "maximum": 2340
+   },
+   "modifiers": [
+    {
+     "name": "resistance",
+     "display_name": "Resistance",
+     "value": 25
+    },
+    {
+     "name": "laser_instability",
+     "display_name": "Laser Instability",
+     "value": -35
+    },
+    {
+     "name": "optimal_charge_window_size",
+     "display_name": "Optimal Charge Window Size",
+     "value": 40
+    },
+    {
+     "name": "inert_materials",
+     "display_name": "Inert Materials",
+     "value": -30
+    },
+    {
+     "name": "all_charge_rates",
+     "display_name": "All Charge Rates",
+     "value": 30
+    }
+   ],
+   "module_slots": 1,
+   "throttle_lerp_speed": 6.5,
+   "throttle_minimum": 0.05,
+   "power_transfer": 2340,
+   "optimal_range": 60,
+   "maximum_range": 180,
+   "extraction_throughput": 1850,
+   "collection_point_radius": 0.1,
+   "extraction_laser_power": "1850",
+   "mining_laser_power": "117 - 2340",
+   "modifier_map": {
+    "resistance": 25,
+    "laser_instability": -35,
+    "optimal_charge_window_size": 40,
+    "inert_materials": -30,
+    "all_charge_rates": 30
+   }
+  },
+  "mining_modifier": null,
+  "weapon_modifier": null,
+  "ports": [
+   {
+    "name": "BONE_ItemPort_Consumable_1",
+    "type": "MiningModifier",
+    "sub_type": "Gun",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": [
+     "miningConsumable"
+    ],
+    "equipped_item": {
+     "uuid": "6c072263-8f32-4ca1-b64b-37d820b0786f",
+     "name": "Forel Module"
+    },
+    "ports": []
+   },
+   {
+    "name": "VEN",
+    "type": "WeaponAttachment",
+    "sub_type": "Ventilation",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": [],
+    "equipped_item": null,
+    "ports": []
+   }
+  ]
+ }
+}

@@ -1,0 +1,66 @@
+{
+ "data": {
+  "uuid": "91417d7d-a6ad-4ce2-9d57-1ae15a7486f9",
+  "name": "Focus III Module",
+  "type": "MiningModifier",
+  "sub_type": "Gun",
+  "size": 1,
+  "manufacturer": {
+   "name": "Thermyte Concern"
+  },
+  "tags": [
+   "miningConsumable",
+   "miningMount"
+  ],
+  "required_tags": [
+   "miningConsumable"
+  ],
+  "mining_laser": null,
+  "mining_modifier": {
+   "type": "Passive",
+   "item_type": "Module",
+   "charges": 1,
+   "duration": null,
+   "power_modifier": -0.05,
+   "modifier_map": {
+    "optimal_charge_window_size": 40
+   }
+  },
+  "weapon_modifier": {
+   "activate_on_attach": null,
+   "ignore_wear": null,
+   "base": {
+    "muzzle_flash_multiplier": null,
+    "muzzle_flash_change": 0,
+    "fire_rate_multiplier": 1,
+    "fire_rate_change": 0,
+    "damage_multiplier": 0.95,
+    "damage_change": -0.05,
+    "projectile_speed_multiplier": 1,
+    "projectile_speed_change": 0,
+    "ammo_cost_multiplier": 1,
+    "ammo_cost_change": 0,
+    "heat_generation_multiplier": 1,
+    "heat_generation_change": 0,
+    "sound_radius_multiplier": 1,
+    "sound_radius_change": 0,
+    "charge_time_multiplier": 1,
+    "charge_time_change": 0
+   },
+   "fire_rate_multiplier": 1,
+   "damage_multiplier": 0.95,
+   "damage_over_time_multiplier": null,
+   "projectile_speed_multiplier": 1,
+   "ammo_cost_multiplier": 1,
+   "heat_generation_multiplier": 1,
+   "sound_radius_multiplier": 1,
+   "charge_time_multiplier": 1,
+   "salvage": {
+    "salvage_speed_multiplier": 1,
+    "radius_multiplier": 1,
+    "extraction_efficiency": 1
+   }
+  },
+  "ports": []
+ }
+}

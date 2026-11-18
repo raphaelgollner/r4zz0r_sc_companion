@@ -48,4 +48,7 @@ export const QUERY_TTL = {
   terminals_distances: 7 * 24 * HOUR,
 } as const
 
+/** Dados da Star Citizen Wiki mudam só com patches do jogo. */
+export const WIKI_TTL = 7 * 24 * HOUR
+
 export const ALL_RESOURCES = Object.keys(TTL_MS) as UexResource[]

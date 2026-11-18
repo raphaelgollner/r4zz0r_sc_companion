@@ -1,0 +1,3472 @@
+{
+ "data": {
+  "uuid": "ecdfd0df-6c5f-4183-a24b-9e1546e00a4e",
+  "name": "MOLE",
+  "role": "Medium Mining",
+  "msrp": 315,
+  "description": {
+   "en_EN": "ARGO’s pragmatic no-nonsense approach to ship design is celebrated in the unmistakable silhouette of the MOLE. Just one look at this machine and you know it means business. Tap into your full potential with the combined force of ARGO’s patented trilateral mining system. The MOLE has a total of 24 mineral pods, each holding 12 SCU. Eight pods are usable at one time – when they’re full, either head home or jettison them for collection by another vessel and carry on mining. Three independently controlled articulated extraction stations allow for maximum power and near-limitless versatility. The MOLE lives by the adage ’many hands make for light work’.",
+   "de_DE": "ARGOs pragmatischer, sachlicher Ansatz beim Schiffsdesign wird in der unverkennbaren Silhouette des MOLE gefeiert. Ein Blick auf diese Maschine genügt, und Sie wissen, dass sie es ernst meint. Schöpfen Sie Ihr volles Potenzial mit der vereinten Kraft von ARGOs patentiertem trilateralen Bergbausystem aus. Die MOLE verfügt über insgesamt 24 Mineralkapseln mit jeweils 12 SCU. Acht Pods sind gleichzeitig nutzbar - wenn sie voll sind, fahren Sie entweder nach Hause oder werfen Sie sie zur Abholung durch ein anderes Schiff ab und fahren Sie mit dem Abbau fort. Drei unabhängig voneinander gesteuerte, gelenkig gelagerte Abbaustationen ermöglichen maximale Leistung und nahezu grenzenlose Vielseitigkeit. Die MOLE lebt nach dem Sprichwort \"viele Hände machen leichte Arbeit\".",
+   "zh_CN": "MOLE 的轮廓鲜明，充分体现了 ARGO 对船舶设计的务实态度。只需看上一眼，你就会知道它是认真的。借助 ARGO 获得专利的三边采矿系统的合力，挖掘您的全部潜能。MOLE 共有 24 个矿舱，每个矿舱可容纳 12 个 SCU。一次可使用 8 个矿舱--矿舱装满后，可以返回原地，也可以将矿舱丢弃，由其他船只收集，然后继续采矿。三个独立控制的铰接式提取站可提供最大功率和近乎无限的多功能性。MOLE 遵循 “众人拾柴火焰高 ”的格言。",
+   "fr_FR": "ARGO’s pragmatic no-nonsense approach to ship design is celebrated in the unmistakable silhouette of the MOLE. Just one look at this machine and you know it means business. Tap into your full potential with the combined force of ARGO’s patented trilateral mining system. The MOLE has a total of 24 mineral pods, each holding 12 SCU. Eight pods are usable at one time – when they’re full, either head home or jettison them for collection by another vessel and carry on mining. Three independently controlled articulated extraction stations allow for maximum power and near-limitless versatility. The MOLE lives by the adage ’many hands make for light work’."
+  },
+  "ports": [
+   {
+    "name": "hardpoint_armor",
+    "type": "Armor",
+    "sub_type": "Medium",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "3b447eed-0b3d-4ef6-b57d-f04adee9fca6",
+     "name": "Argo MPUV Ship Armor"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_cargogrid_main",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_comms",
+    "type": "CommsController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ae1a186e-0f8c-4deb-8079-bfb54df4a8a7",
+     "name": "COMMS"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_cooler",
+    "type": "CoolerController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "b935e5d8-dead-47c5-8937-382c3aa11682",
+     "name": "HEAT"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_door",
+    "type": "DoorController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "4a9ebf31-a405-4b68-9886-b4a47bd1b61d",
+     "name": "SECURITY"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_energy",
+    "type": "EnergyController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "61cc7bf5-6666-40f7-8c0a-ee8a8092f51e",
+     "name": "POWER"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_flight",
+    "type": "FlightController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": [
+     "ARGO_MOLE_Blade"
+    ],
+    "equipped_item": {
+     "uuid": "af80ff46-ce2a-428c-a45e-608d7c7bf2a4",
+     "name": "Flight Blade"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_light",
+    "type": "LightController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "056628be-ecee-41b9-9dd2-bb32215e6e34",
+     "name": "LIGHTS"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_mining_cab_front",
+    "type": "MiningController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ac3e1554-19ca-4421-9155-92c2c5f155e8",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_mining_cab_left",
+    "type": "MiningController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ac3e1554-19ca-4421-9155-92c2c5f155e8",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_mining_cab_right",
+    "type": "MiningController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ac3e1554-19ca-4421-9155-92c2c5f155e8",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_scanner",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_scanner_cab_front",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_scanner_cab_left",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_scanner_cab_right",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_shield",
+    "type": "ShieldController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "15151ac8-5a66-4f35-9087-a83f360d9b2e",
+     "name": "SHIELDS"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_weapon",
+    "type": "WeaponController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "c78851f1-ded8-4e8d-91ec-905e3dae075e",
+     "name": "WEAPONS"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_cooler",
+    "type": "Cooler",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 3,
+     "max": 3
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "fd9f41c7-f60b-4ac8-95be-cb501fc5dd5d",
+     "name": "ThermalCore"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_dashboard_copilot",
+    "type": "SeatDashboard",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "998fe3fd-296c-4fc1-acd0-d7c11f7b921c",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": [
+     {
+      "name": "Radar_Helper",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "Display_HUD",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "22b06d56-8534-4701-8285-445ccc646a54",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "Screen_MFD_Left",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "Screen_MFD_Right",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "Screen_MFD_Radar",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "7a37dc17-4984-4418-a70d-04bf22fea031",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "screen_annunciator",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "9a48b047-69d8-44d0-84b0-14246524e5d0",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "HUD_left",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "9a48b047-69d8-44d0-84b0-14246524e5d0",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "HUD_right",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "9a48b047-69d8-44d0-84b0-14246524e5d0",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_dashboard_pilot",
+    "type": "SeatDashboard",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "998fe3fd-296c-4fc1-acd0-d7c11f7b921c",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": [
+     {
+      "name": "Radar_Helper",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "Display_HUD",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "22b06d56-8534-4701-8285-445ccc646a54",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "Screen_MFD_Left",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "Screen_MFD_Right",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "Screen_MFD_Radar",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "7a37dc17-4984-4418-a70d-04bf22fea031",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "screen_annunciator",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "9a48b047-69d8-44d0-84b0-14246524e5d0",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "HUD_left",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "9a48b047-69d8-44d0-84b0-14246524e5d0",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "HUD_right",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "9a48b047-69d8-44d0-84b0-14246524e5d0",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_gun_left",
+    "type": "Turret",
+    "sub_type": "GunTurret",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "7fedca61-dfeb-4ecb-b421-e7c3ba55a584",
+     "name": "VariPuck S2 Gimbal Mount"
+    },
+    "ports": [
+     {
+      "name": "hardpoint_class_2",
+      "type": "WeaponGun",
+      "sub_type": "Gun",
+      "sizes": {
+       "min": 2,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "5453a817-dfd4-4143-aa11-840ca428540c",
+       "name": "CF-227 Badger Repeater"
+      },
+      "ports": [
+       {
+        "name": "BAR1",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "MEC",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "POW",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "VEN",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_gun_right",
+    "type": "Turret",
+    "sub_type": "GunTurret",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "7fedca61-dfeb-4ecb-b421-e7c3ba55a584",
+     "name": "VariPuck S2 Gimbal Mount"
+    },
+    "ports": [
+     {
+      "name": "hardpoint_class_2",
+      "type": "WeaponGun",
+      "sub_type": "Gun",
+      "sizes": {
+       "min": 2,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "5453a817-dfd4-4143-aa11-840ca428540c",
+       "name": "CF-227 Badger Repeater"
+      },
+      "ports": [
+       {
+        "name": "BAR1",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "MEC",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "POW",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "VEN",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_mining_cab_front",
+    "type": "UtilityTurret",
+    "sub_type": "MannedTurret",
+    "sizes": {
+     "min": 4,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "facf753c-5895-4cd1-9bf8-a6b77208a580",
+     "name": "Manned Turret"
+    },
+    "ports": [
+     {
+      "name": "hardpoint_weapon_mining",
+      "type": "WeaponMining",
+      "sub_type": "Gun",
+      "sizes": {
+       "min": 2,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": [
+       "miningMount"
+      ],
+      "equipped_item": {
+       "uuid": "4435898e-a6cc-4f51-ab2a-805d0cf1a44a",
+       "name": "Arbor MH2 Mining Laser"
+      },
+      "ports": [
+       {
+        "name": "BONE_ItemPort_Consumable_1",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": true,
+        "required_tags": [
+         "miningConsumable"
+        ],
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "BONE_ItemPort_Consumable_2",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": true,
+        "required_tags": [
+         "miningConsumable"
+        ],
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "VEN",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       }
+      ]
+     },
+     {
+      "name": "Mining_HUD",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "ab30c1ab-0615-452e-9add-3cea34999611",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "MFD_Right",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "MFD_Left",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_mining_cab_front_access",
+    "type": "SeatAccess",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "5db2b197-9723-4085-8c1e-59a914205058",
+     "name": "Seat"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_ping",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_ping_cab_front",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_ping_cab_left",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_ping_cab_right",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_power_plant",
+    "type": "PowerPlant",
+    "sub_type": "Power",
+    "sizes": {
+     "min": 3,
+     "max": 3
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "96244ab6-8819-47c3-87af-78124661c725",
+     "name": "Ginzel"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_quantum_drive",
+    "type": "QuantumDrive",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "1ed8932d-3d51-4a5d-a323-d696bad07bef",
+     "name": "Huracan"
+    },
+    "ports": [
+     {
+      "name": "hardpoint_Jump_Drive",
+      "type": "JumpDrive",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 2,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "14cbe476-4050-4af5-8635-178519722f4b",
+       "name": "Excelsior"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_quantum_fuel_tank",
+    "type": "QuantumFuelTank",
+    "sub_type": "QuantumFuel",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "2e35b4bd-165f-4641-b813-1c3965c8243e",
+     "name": "Internal Tank"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_radar",
+    "type": "Radar",
+    "sub_type": "MidRangeRadar",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "3260e018-64ca-42e9-b85a-8b80d24d5375",
+     "name": "Surveyor"
+    },
+    "ports": [
+     {
+      "name": "BatteryPort",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 2
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_radar_cab_front",
+    "type": "Radar",
+    "sub_type": "MidRangeRadar",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "06de143e-4e28-4cb7-8e1d-e04017aae514",
+     "name": "Radar"
+    },
+    "ports": [
+     {
+      "name": "BatteryPort",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 2
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_radar_cab_left",
+    "type": "Radar",
+    "sub_type": "MidRangeRadar",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "06de143e-4e28-4cb7-8e1d-e04017aae514",
+     "name": "Radar"
+    },
+    "ports": [
+     {
+      "name": "BatteryPort",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 2
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_radar_cab_right",
+    "type": "Radar",
+    "sub_type": "MidRangeRadar",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "06de143e-4e28-4cb7-8e1d-e04017aae514",
+     "name": "Radar"
+    },
+    "ports": [
+     {
+      "name": "BatteryPort",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 2
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_seat_access",
+    "type": "SeatAccess",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "494be5fa-8bd6-4bba-a921-a97114d5ccce",
+     "name": "Seat"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_seat_access_copilot",
+    "type": "SeatAccess",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "542b1ec1-96cc-4d68-b57d-4127c1d70fca",
+     "name": "Seat"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_seat_copilot",
+    "type": "Seat",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 3
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "deb359d1-c3e5-4f9d-b4a8-38e1776526aa",
+     "name": "TRGT. STATUS"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_seat_pilot",
+    "type": "Seat",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 3
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "5eaa0d9b-29da-4ef7-9487-1aaab702539d",
+     "name": "TRGT. STATUS"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_self_destruct_pilot",
+    "type": "SelfDestruct",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "55f62c57-b7ea-4ed7-b72e-2e99fc6c5486",
+     "name": "Self Destruct Unit"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_shield_generator_left",
+    "type": "Shield",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 3,
+     "max": 3
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "51bf9a6e-0ad7-49d2-8d41-d1d5e69669e6",
+     "name": "5CA 'Akura'"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_front_bottom_left",
+    "type": "ManneuverThruster",
+    "sub_type": "JointThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ca2c842a-4c3d-4291-aefa-9c37d6d53635",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_front_bottom_right",
+    "type": "ManneuverThruster",
+    "sub_type": "JointThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ca2c842a-4c3d-4291-aefa-9c37d6d53635",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_front_vtol_left",
+    "type": "MainThruster",
+    "sub_type": "FixedThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "766fdc8f-3c07-43d2-819f-9f134d0af6e6",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_front_vtol_right",
+    "type": "MainThruster",
+    "sub_type": "FixedThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "766fdc8f-3c07-43d2-819f-9f134d0af6e6",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_front_top_left",
+    "type": "ManneuverThruster",
+    "sub_type": "JointThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ca2c842a-4c3d-4291-aefa-9c37d6d53635",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_front_top_right",
+    "type": "ManneuverThruster",
+    "sub_type": "JointThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ca2c842a-4c3d-4291-aefa-9c37d6d53635",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_retro_left",
+    "type": "ManneuverThruster",
+    "sub_type": "Retro",
+    "sizes": {
+     "min": 1,
+     "max": 3
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "4916e488-e888-486a-8eea-c0ee1278d74c",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_retro_right",
+    "type": "ManneuverThruster",
+    "sub_type": "Retro",
+    "sizes": {
+     "min": 1,
+     "max": 3
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "4916e488-e888-486a-8eea-c0ee1278d74c",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "landingpad_helper",
+    "type": "LandingSystem",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "613bf1ef-7882-4e8a-9017-35e9e1af0687",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_pod_1",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f4aebc6d-ab66-4b7a-93ce-69bdd928ca99",
+     "name": "Argo Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_pod_2",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f4aebc6d-ab66-4b7a-93ce-69bdd928ca99",
+     "name": "Argo Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_pod_3",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f4aebc6d-ab66-4b7a-93ce-69bdd928ca99",
+     "name": "Argo Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_pod_4",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f4aebc6d-ab66-4b7a-93ce-69bdd928ca99",
+     "name": "Argo Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_pod_5",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f4aebc6d-ab66-4b7a-93ce-69bdd928ca99",
+     "name": "Argo Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_pod_6",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f4aebc6d-ab66-4b7a-93ce-69bdd928ca99",
+     "name": "Argo Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_pod_7",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f4aebc6d-ab66-4b7a-93ce-69bdd928ca99",
+     "name": "Argo Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_pod_8",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f4aebc6d-ab66-4b7a-93ce-69bdd928ca99",
+     "name": "Argo Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_ground_fuelport",
+    "type": "Door",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "2af039dc-e8fc-4fa0-b1d2-398d99724414",
+     "name": "Door"
+    },
+    "ports": [
+     {
+      "name": "control_panel_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "control_panel_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "charge_handle_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "charge_handle_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "close_button_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "close_button_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "proximity_sensor",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "light_group_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "light_group_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_front",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_rear",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_screen",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_controller_missile",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_weapon_regen_pool",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_weapon_regen_pool_turrets",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_capacitor_assignment",
+    "type": "CapacitorAssignmentController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "0219b443-6f28-4aa2-bcc3-cfbff843729d",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_cockpit_flair_hang",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_rear_vtol_left",
+    "type": "MainThruster",
+    "sub_type": "FixedThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "8f905755-85a3-4131-b22f-b4cc4d442e78",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_fuel_tank_left",
+    "type": "FuelTank",
+    "sub_type": "Fuel",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "6347cc89-9e6a-43a3-a80c-6be1203e7bf3",
+     "name": "Internal Tank"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_fuel_intake_left",
+    "type": "FuelIntake",
+    "sub_type": "Fuel",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "44ca34c8-068f-4df5-8021-49aeea50bf05",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_main_left_top",
+    "type": "MainThruster",
+    "sub_type": "FixedThruster",
+    "sizes": {
+     "min": 1,
+     "max": 3
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "4be1a511-cfa8-4deb-b802-84ee3a08460c",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_main_left_bottom",
+    "type": "MainThruster",
+    "sub_type": "FixedThruster",
+    "sizes": {
+     "min": 1,
+     "max": 3
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "4be1a511-cfa8-4deb-b802-84ee3a08460c",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_rear_vtol_right",
+    "type": "MainThruster",
+    "sub_type": "FixedThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "8f905755-85a3-4131-b22f-b4cc4d442e78",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_fuel_tank_right",
+    "type": "FuelTank",
+    "sub_type": "Fuel",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "6347cc89-9e6a-43a3-a80c-6be1203e7bf3",
+     "name": "Internal Tank"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_fuel_intake_right",
+    "type": "FuelIntake",
+    "sub_type": "Fuel",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "44ca34c8-068f-4df5-8021-49aeea50bf05",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_main_right_top",
+    "type": "MainThruster",
+    "sub_type": "FixedThruster",
+    "sizes": {
+     "min": 1,
+     "max": 3
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "4be1a511-cfa8-4deb-b802-84ee3a08460c",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_main_right_bottom",
+    "type": "MainThruster",
+    "sub_type": "FixedThruster",
+    "sizes": {
+     "min": 1,
+     "max": 3
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "4be1a511-cfa8-4deb-b802-84ee3a08460c",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_cab_right_access",
+    "type": "SeatAccess",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "28944222-13a3-4d57-9e93-67bd1dd3cab5",
+     "name": "Seat"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_cab_right",
+    "type": "UtilityTurret",
+    "sub_type": "MannedTurret",
+    "sizes": {
+     "min": 4,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "3287181a-04f0-44c9-8bb0-865ae24e7451",
+     "name": "Manned Turret"
+    },
+    "ports": [
+     {
+      "name": "hardpoint_weapon_mining",
+      "type": "WeaponMining",
+      "sub_type": "Gun",
+      "sizes": {
+       "min": 2,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": [
+       "miningMount"
+      ],
+      "equipped_item": {
+       "uuid": "4435898e-a6cc-4f51-ab2a-805d0cf1a44a",
+       "name": "Arbor MH2 Mining Laser"
+      },
+      "ports": [
+       {
+        "name": "BONE_ItemPort_Consumable_1",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": true,
+        "required_tags": [
+         "miningConsumable"
+        ],
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "BONE_ItemPort_Consumable_2",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": true,
+        "required_tags": [
+         "miningConsumable"
+        ],
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "VEN",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       }
+      ]
+     },
+     {
+      "name": "Mining_HUD",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "b5066a63-1764-436f-83fe-b7b85c3f5cbf",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "MFD_Right",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "MFD_Left",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_mining_cab_left_access",
+    "type": "SeatAccess",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "048616ec-72d8-4392-8604-cbe1aa04a1b2",
+     "name": "Seat"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_mining_cab_left",
+    "type": "UtilityTurret",
+    "sub_type": "MannedTurret",
+    "sizes": {
+     "min": 4,
+     "max": 4
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "f93183df-7e7c-4017-a2fb-2975ad1333f2",
+     "name": "Manned Turret"
+    },
+    "ports": [
+     {
+      "name": "hardpoint_weapon_mining",
+      "type": "WeaponMining",
+      "sub_type": "Gun",
+      "sizes": {
+       "min": 2,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": [
+       "miningMount"
+      ],
+      "equipped_item": {
+       "uuid": "4435898e-a6cc-4f51-ab2a-805d0cf1a44a",
+       "name": "Arbor MH2 Mining Laser"
+      },
+      "ports": [
+       {
+        "name": "BONE_ItemPort_Consumable_1",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": true,
+        "required_tags": [
+         "miningConsumable"
+        ],
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "BONE_ItemPort_Consumable_2",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": true,
+        "required_tags": [
+         "miningConsumable"
+        ],
+        "equipped_item": null,
+        "ports": []
+       },
+       {
+        "name": "VEN",
+        "type": "",
+        "sub_type": "",
+        "sizes": {
+         "min": 1,
+         "max": 1
+        },
+        "editable": false,
+        "required_tags": null,
+        "equipped_item": null,
+        "ports": []
+       }
+      ]
+     },
+     {
+      "name": "Mining_HUD",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "b5066a63-1764-436f-83fe-b7b85c3f5cbf",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "MFD_Right",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "MFD_Left",
+      "type": "Display",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_thruster_rear_bottom_left",
+    "type": "ManneuverThruster",
+    "sub_type": "JointThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ca2c842a-4c3d-4291-aefa-9c37d6d53635",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_rear_bottom_right",
+    "type": "ManneuverThruster",
+    "sub_type": "JointThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ca2c842a-4c3d-4291-aefa-9c37d6d53635",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_rear_top_left",
+    "type": "ManneuverThruster",
+    "sub_type": "JointThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ca2c842a-4c3d-4291-aefa-9c37d6d53635",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_thruster_rear_top_right",
+    "type": "ManneuverThruster",
+    "sub_type": "JointThruster",
+    "sizes": {
+     "min": 1,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ca2c842a-4c3d-4291-aefa-9c37d6d53635",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_countermeasure_launcher_right",
+    "type": "WeaponDefensive",
+    "sub_type": "CountermeasureLauncher",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "1e59f1e7-13da-4e99-bf75-252389786c82",
+     "name": "MISC Prospector - Noise Launcher"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_countermeasure_launcher_left",
+    "type": "WeaponDefensive",
+    "sub_type": "CountermeasureLauncher",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "9c90e6ab-f95b-4e07-a15d-aed5d50a944c",
+     "name": "MISC Prospector - Decoy Launcher"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_paint",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": true,
+    "required_tags": [
+     "Paint_MOLE"
+    ],
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_elevator",
+    "type": "Door",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "4725faf9-4517-41f2-adfd-d3ad9e2fb36c",
+     "name": "Door"
+    },
+    "ports": [
+     {
+      "name": "control_panel_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "control_panel_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "charge_handle_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "charge_handle_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "close_button_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "close_button_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "proximity_sensor",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "light_group_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "light_group_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_front",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_rear",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_screen",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "hardpoint_panel_ext",
+      "type": "ControlPanel",
+      "sub_type": "DoorPart",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "7bb27446-399d-422f-bc21-584b15715095",
+       "name": "Door Control"
+      },
+      "ports": []
+     },
+     {
+      "name": "hardpoint_panel_platform",
+      "type": "ControlPanel",
+      "sub_type": "DoorPart",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "6c0dfb2c-742c-41d6-9704-71e6e3f17046",
+       "name": "Door Control"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_elevator_door",
+    "type": "Door",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "2a9b82ca-0668-4aef-9ed9-38cb58fcd8b5",
+     "name": "Door"
+    },
+    "ports": [
+     {
+      "name": "control_panel_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "control_panel_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "charge_handle_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "charge_handle_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "close_button_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "close_button_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "proximity_sensor",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "light_group_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "light_group_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_front",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_rear",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_screen",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_controller_mining_pilot",
+    "type": "MiningController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "ac3e1554-19ca-4421-9155-92c2c5f155e8",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_rear_lift",
+    "type": "Door",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "717c18c9-db8c-4160-92f4-c167da510cbc",
+     "name": "Door"
+    },
+    "ports": [
+     {
+      "name": "control_panel_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "control_panel_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "charge_handle_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "charge_handle_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "close_button_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "close_button_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "proximity_sensor",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 2
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "light_group_a",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "light_group_b",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 1,
+       "max": 10
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_front",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_rear",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "decal_screen",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": null,
+      "ports": []
+     },
+     {
+      "name": "hardpoint_cargo_grid",
+      "type": "CargoGrid",
+      "sub_type": "UNDEFINED",
+      "sizes": {
+       "min": 1,
+       "max": 1
+      },
+      "editable": false,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "a98730b6-717a-4314-9488-d2e660ee5391",
+       "name": "<= PLACEHOLDER =>"
+      },
+      "ports": []
+     },
+     {
+      "name": "hardpoint_ext_panel",
+      "type": "ControlPanel",
+      "sub_type": "DoorPart",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "ee53f6f1-ee26-457f-abd7-e66b01d9ca47",
+       "name": "Door Control"
+      },
+      "ports": []
+     },
+     {
+      "name": "hardpoint_int_panel",
+      "type": "ControlPanel",
+      "sub_type": "DoorPart",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "afea1f63-aeda-41a4-8b78-53b0f7b6cee1",
+       "name": "Door Control"
+      },
+      "ports": []
+     },
+     {
+      "name": "hardpoint_plat_panel",
+      "type": "ControlPanel",
+      "sub_type": "DoorPart",
+      "sizes": {
+       "min": 0,
+       "max": 0
+      },
+      "editable": true,
+      "required_tags": null,
+      "equipped_item": {
+       "uuid": "2bf97fa1-53b3-492e-bff8-3875e7672a1a",
+       "name": "Door Control"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_computer",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_battery",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_gravity_generator",
+    "type": "",
+    "sub_type": "",
+    "sizes": {
+     "min": 2,
+     "max": 2
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_controller_fuel",
+    "type": "FuelController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "9925488b-127a-4fc3-b7bb-9e4f5a46bbbd",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_fuel_port",
+    "type": "DockingCollar",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "dcc5827c-2d51-44bd-b821-f1223d36aa18",
+     "name": "<= PLACEHOLDER =>"
+    },
+    "ports": [
+     {
+      "name": "itemport_vehicle_attach",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 8
+      },
+      "editable": true,
+      "required_tags": [
+       "Ship_Dock_Refuel"
+      ],
+      "equipped_item": null,
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_air_traffic_controller",
+    "type": "AirTrafficController",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": null,
+    "ports": []
+   },
+   {
+    "name": "hardpoint_relay_processing",
+    "type": "Relay",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "d046b6a3-84ba-4a9b-bc51-952ecb40224d",
+     "name": "Relay"
+    },
+    "ports": [
+     {
+      "name": "$slot_fuse_01",
+      "type": "Misc",
+      "sub_type": "Fuse",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": [
+       "fuse"
+      ],
+      "equipped_item": {
+       "uuid": "8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
+       "name": "Fuse"
+      },
+      "ports": []
+     },
+     {
+      "name": "$slot_fuse_02",
+      "type": "Misc",
+      "sub_type": "Fuse",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": [
+       "fuse"
+      ],
+      "equipped_item": {
+       "uuid": "8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
+       "name": "Fuse"
+      },
+      "ports": []
+     },
+     {
+      "name": "$slot_fuse_03",
+      "type": "Misc",
+      "sub_type": "Fuse",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": [
+       "fuse"
+      ],
+      "equipped_item": {
+       "uuid": "8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
+       "name": "Fuse"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_relay_engineering",
+    "type": "Relay",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "609b087d-bdfe-401d-b9fe-526af4d52d09",
+     "name": "Relay"
+    },
+    "ports": [
+     {
+      "name": "$slot_fuse_01",
+      "type": "Misc",
+      "sub_type": "Fuse",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": [
+       "fuse"
+      ],
+      "equipped_item": {
+       "uuid": "8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
+       "name": "Fuse"
+      },
+      "ports": []
+     },
+     {
+      "name": "$slot_fuse_02",
+      "type": "Misc",
+      "sub_type": "Fuse",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": [
+       "fuse"
+      ],
+      "equipped_item": {
+       "uuid": "8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
+       "name": "Fuse"
+      },
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_lifesupport",
+    "type": "LifeSupportGenerator",
+    "sub_type": "UNDEFINED",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "c50917d3-f453-4ca6-b753-1c506a6710e0",
+     "name": "ComfortAir Plus"
+    },
+    "ports": [
+     {
+      "name": "$slot_01",
+      "type": "Misc",
+      "sub_type": "Utility",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": [
+       "filter"
+      ],
+      "equipped_item": {
+       "uuid": "b44ec4bd-854d-48ef-9ac1-c4183edf1d0a",
+       "name": "lfsp_filter_subitem_standard"
+      },
+      "ports": []
+     },
+     {
+      "name": "$slot_02",
+      "type": "Misc",
+      "sub_type": "Utility",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": [
+       "filter"
+      ],
+      "equipped_item": {
+       "uuid": "b44ec4bd-854d-48ef-9ac1-c4183edf1d0a",
+       "name": "lfsp_filter_subitem_standard"
+      },
+      "ports": []
+     },
+     {
+      "name": "$slot_03",
+      "type": "",
+      "sub_type": "",
+      "sizes": {
+       "min": 0,
+       "max": 1
+      },
+      "editable": true,
+      "required_tags": [
+       "filter"
+      ],
+      "equipped_item": null,
+      "ports": []
+     }
+    ]
+   },
+   {
+    "name": "hardpoint_stored_pod_1",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_2",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_3",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_4",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_5",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_6",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_7",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_8",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_9",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_10",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_11",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_12",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_13",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_14",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_15",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   },
+   {
+    "name": "hardpoint_stored_pod_16",
+    "type": "Container",
+    "sub_type": "Cargo",
+    "sizes": {
+     "min": 1,
+     "max": 1
+    },
+    "editable": false,
+    "required_tags": null,
+    "equipped_item": {
+     "uuid": "be59463e-669b-41f2-99fb-ed13f8b70b5d",
+     "name": "MISC Ore Pod"
+    },
+    "ports": []
+   }
+  ]
+ }
+}

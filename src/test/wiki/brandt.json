@@ -1,0 +1,67 @@
+{
+ "data": {
+  "uuid": "18a62ae8-e1aa-453f-8631-df928a71abda",
+  "name": "Brandt Module",
+  "type": "MiningModifier",
+  "sub_type": "Gun",
+  "size": 1,
+  "manufacturer": {
+   "name": "Musashi Industrial and Starflight Concern"
+  },
+  "tags": [
+   "miningConsumable",
+   "miningMount"
+  ],
+  "required_tags": [
+   "miningConsumable"
+  ],
+  "mining_laser": null,
+  "mining_modifier": {
+   "type": "Active",
+   "item_type": "Module",
+   "charges": 5,
+   "duration": 60,
+   "power_modifier": 0.35,
+   "modifier_map": {
+    "resistance": 15.5,
+    "shatter_damage": -30
+   }
+  },
+  "weapon_modifier": {
+   "activate_on_attach": null,
+   "ignore_wear": null,
+   "base": {
+    "muzzle_flash_multiplier": null,
+    "muzzle_flash_change": 0,
+    "fire_rate_multiplier": 1,
+    "fire_rate_change": 0,
+    "damage_multiplier": 1.35,
+    "damage_change": 0.35,
+    "projectile_speed_multiplier": 1,
+    "projectile_speed_change": 0,
+    "ammo_cost_multiplier": 1,
+    "ammo_cost_change": 0,
+    "heat_generation_multiplier": 1,
+    "heat_generation_change": 0,
+    "sound_radius_multiplier": 1,
+    "sound_radius_change": 0,
+    "charge_time_multiplier": 1,
+    "charge_time_change": 0
+   },
+   "fire_rate_multiplier": 1,
+   "damage_multiplier": 1.35,
+   "damage_over_time_multiplier": null,
+   "projectile_speed_multiplier": 1,
+   "ammo_cost_multiplier": 1,
+   "heat_generation_multiplier": 1,
+   "sound_radius_multiplier": 1,
+   "charge_time_multiplier": 1,
+   "salvage": {
+    "salvage_speed_multiplier": 1,
+    "radius_multiplier": 1,
+    "extraction_efficiency": 1
+   }
+  },
+  "ports": []
+ }
+}
