@@ -461,6 +461,40 @@ select {
   letter-spacing: 0.2em;
 }
 
+/* ---------- Evitar ---------- */
+.avoid-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.avoid-row .picker {
+  min-width: 220px;
+}
+.avoid-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 10px;
+  font-size: 12.5px;
+  background: rgba(255, 140, 0, 0.12);
+  border: 1px solid var(--orange);
+  color: var(--orange-light);
+}
+.avoid-tag button {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0 4px;
+}
+.avoid-tag button:hover,
+.avoid-tag button:focus-visible {
+  color: var(--white);
+}
+
 /* ---------- Picker ---------- */
 .picker {
   position: relative;
