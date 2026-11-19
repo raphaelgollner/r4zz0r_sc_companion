@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { createRateLimiter } from '../api/rateLimiter'
 import { memoryStore } from '../cache/store'
 import { UexProvider } from '../data/useUex'
@@ -31,13 +31,14 @@ describe('App', () => {
   test('TRADE mostra as 6 sub-abas', async () => {
     renderApp()
     await userEvent.click(screen.getByRole('tab', { name: 'TRADE' }))
-    for (const name of ['Commodities', 'Locations', 'Harvestables', 'Price Finder', 'Routes', 'Currencies Index'])
-      expect(screen.getByRole('tab', { name })).toBeInTheDocument()
+    const subs = screen.getAllByRole('tab').map((t) => t.textContent).slice(7)
+    expect(subs).toEqual(['Routes', 'Commodities', 'Locations', 'Harvestables', 'Price Finder', 'Currencies Index'])
+    expect(screen.getByRole('tab', { name: 'Routes' })).toHaveAttribute('aria-selected', 'true')
   })
 
   test('abas na ordem nova', () => {
     renderApp()
-    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['ROTAS', 'TRADE', 'MINERAÇÃO', 'SALVAGE', 'NAVES', 'FROTA', 'PROGRESSO', 'AJUSTES'])
+    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['INÍCIO', 'TRADE', 'MINERAÇÃO', 'SALVAGE', 'NAVES', 'FROTA', 'AJUSTES'])
   })
 
   test('SALVAGE e FROTA habilitadas', () => {
@@ -60,10 +61,17 @@ describe('App', () => {
     window.location.hash = ''
   })
 
-  test('#home abre ROTAS', () => {
-    window.location.hash = '#home'
-    renderApp()
-    expect(screen.getByRole('tab', { name: 'ROTAS' })).toHaveAttribute('aria-selected', 'true')
+  test('#progress antigo cai no INÍCIO, que mostra o progresso', () => {
+    window.location.hash = '#progress'
+    render(
+      <I18nProvider>
+        <UexProvider value={{ store: memoryStore(), fetchFn, limiter }}>
+          <App screens={{ home: () => <p>INICIO</p> }} />
+        </UexProvider>
+      </I18nProvider>,
+    )
+    expect(screen.getByRole('tab', { name: 'INÍCIO' })).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByText('INICIO')).toBeInTheDocument()
     window.location.hash = ''
   })
 
@@ -89,12 +97,25 @@ describe('navegação pelo endereço', () => {
   })
 })
 
-describe('aba PROGRESSO', () => {
+describe('aba INÍCIO', () => {
   test('existe em PT e EN', async () => {
     localStorage.clear()
     renderApp()
-    expect(screen.getByRole('tab', { name: 'PROGRESSO' })).toBeEnabled()
+    expect(screen.getByRole('tab', { name: 'INÍCIO' })).toBeEnabled()
     await userEvent.click(screen.getByRole('button', { name: 'EN' }))
-    expect(screen.getByRole('tab', { name: 'PROGRESS' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'HOME' })).toBeInTheDocument()
+  })
+})
+
+describe('link da org', () => {
+  test('TAYKO.ORG no banner abre o site no navegador', async () => {
+    const open = vi.spyOn(window, 'open').mockReturnValue(null)
+    renderApp()
+    const link = screen.getByRole('button', { name: /TAYKO\.ORG/ })
+    const lang = screen.getByRole('group', { name: 'Idioma / Language' })
+    expect(link.compareDocumentPosition(lang) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    await userEvent.click(link)
+    expect(open).toHaveBeenCalledWith('https://tayko.org', '_blank', 'noopener')
+    open.mockRestore()
   })
 })

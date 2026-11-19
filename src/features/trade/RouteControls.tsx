@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Terminal, Vehicle } from '../../data/types'
 import { formatAuec, parseAmount } from '../../domain/format'
+import type { MaxRisk } from '../../domain/risk'
 import { useFleet } from '../../store/fleet'
 import { useI18n } from '../../i18n/i18n'
 import { effectiveScu, type Prefs } from '../../store/prefs'
@@ -29,14 +30,12 @@ export function RouteControls({
   prefs,
   onPrefs,
   balance = null,
-  compact = false,
 }: {
   vehicles: Vehicle[]
   terminals: Terminal[]
   prefs: Prefs
   onPrefs: (patch: Partial<Prefs>) => void
   balance?: number | null
-  compact?: boolean
 }) {
   const { t } = useI18n()
   const ships = useMemo(() => [...vehicles].sort((a, b) => a.name_full.localeCompare(b.name_full)), [vehicles])
@@ -137,8 +136,7 @@ export function RouteControls({
         </Tooltip>
       )}
       <AvoidPicker terminals={terminals} value={prefs.avoid} onChange={(avoid) => onPrefs({ avoid })} />
-      {!compact && (
-        <>
+      <>
           <label className="field">
             {t('routes.originSystem')}
             <select className="select" value={prefs.originSystem} onChange={(e) => onPrefs({ originSystem: e.target.value })}>
@@ -157,12 +155,21 @@ export function RouteControls({
               <option value="roi">{t('routes.sortRoi')}</option>
             </select>
           </label>
+          <label className="field">
+            {t('routes.maxRisk')}
+            <select className="select" value={prefs.maxRisk} onChange={(e) => onPrefs({ maxRisk: e.target.value as MaxRisk })}>
+              <option value="any">{t('routes.riskAny')}</option>
+              <option value="risky">{t('routes.riskUpTo', { level: t('risk.risky') })}</option>
+              <option value="medium">{t('routes.riskUpTo', { level: t('risk.medium') })}</option>
+              <option value="safe">{t('routes.riskOnly', { level: t('risk.safe') })}</option>
+            </select>
+          </label>
           <label className="check">
             <input type="checkbox" checked={prefs.excludeIllegal} onChange={(e) => onPrefs({ excludeIllegal: e.target.checked })} />
             {t('routes.excludeIllegal')}
           </label>
-        </>
-      )}
+      </>
+      <p className="muted risk-note">{t('routes.riskNote')}</p>
     </div>
   )
 }

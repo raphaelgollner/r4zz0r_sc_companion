@@ -5,7 +5,6 @@ import { describe, expect, test } from 'vitest'
 import { I18nProvider } from '../../i18n/i18n'
 import { DEFAULT_PREFS, type Prefs } from '../../store/prefs'
 import { GOLD, LARANITE, NOW, PRICES, price, terminal, vehicle } from '../../test/fixtures'
-import { HomeView } from '../home/HomeView'
 import { RoutesView } from './RoutesView'
 
 const vehicles = [vehicle(1, 'Caterpillar', 576)]
@@ -16,12 +15,12 @@ const terminals = [
 ]
 const prices = [...PRICES, price(47, 20, { price_sell: 9900, scu_sell: 500, terminal_name: 'Ruin Station', commodity_name: 'Laranite' })]
 
-function Harness({ home = false }: { home?: boolean }) {
+function Harness() {
   const [prefs, setPrefs] = useState<Prefs>({ ...DEFAULT_PREFS, shipId: 1, budget: 5_000_000 })
   const common = { vehicles, commodities: [LARANITE, GOLD], prices, terminals, now: NOW, prefs, onPrefs: (p: Partial<Prefs>) => setPrefs((x) => ({ ...x, ...p })) }
   return (
     <I18nProvider initial="pt">
-      {home ? <HomeView {...common} cache={[]} onSetup={() => {}} onRefreshAll={() => {}} /> : <RoutesView {...common} />}
+      <RoutesView {...common} />
     </I18nProvider>
   )
 }
@@ -62,8 +61,12 @@ describe('Evitar', () => {
     expect(screen.getByRole('option', { name: 'Gaslight Pyro' })).toBeInTheDocument()
   })
 
-  test('ROTAS (compacto) também tem o campo', () => {
-    render(<Harness home />)
-    expect(screen.getByRole('combobox', { name: 'Evitar' })).toBeInTheDocument()
+  test('Risco máximo tira rotas acima do nível e avisa que é estimativa', async () => {
+    render(<Harness />)
+    expect(cardsText()).toContain('Ruin Station')
+    expect(screen.getByText(/pode não representar a realidade/)).toBeInTheDocument()
+    await userEvent.selectOptions(screen.getByLabelText('Risco máximo'), 'medium')
+    expect(cardsText()).not.toContain('Ruin Station')
+    expect(cardsText()).toContain('TDD Area 18')
   })
 })

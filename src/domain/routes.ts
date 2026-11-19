@@ -1,5 +1,7 @@
 import type { Commodity, PriceRow, Terminal } from '../data/types'
 import { avoidMatch, type AvoidEntry } from './avoid'
+import { riskAllowed, riskOf, type MaxRisk } from './risk'
+import { routeKey } from './routeMarks'
 
 export type LimitedBy = 'nave' | 'dinheiro' | 'estoque' | 'demanda'
 
@@ -10,6 +12,12 @@ export interface RouteInput {
   originSystem?: string
   /** Rotas com compra ou venda nesses lugares são descartadas. */
   avoid?: AvoidEntry[]
+  /** Rotas ocultas pelo jogador: saem antes do limite. */
+  hiddenKeys?: ReadonlySet<string>
+  /** Só estas rotas (lista de ocultas). */
+  onlyKeys?: ReadonlySet<string>
+  /** Nível de perigo máximo aceito na compra e na venda. */
+  maxRisk?: MaxRisk
   sortBy: 'profit' | 'roi'
 }
 
@@ -45,7 +53,8 @@ export function computeRoutes(
   if (!(input.budget > 0)) return { ok: false, reason: 'sem_orcamento' }
 
   const avoid = input.avoid ?? []
-  const avoided = (id: number) => avoidMatch(terminals.get(id), avoid)
+  const maxRisk = input.maxRisk ?? 'any'
+  const avoided = (id: number) => avoidMatch(terminals.get(id), avoid) || !riskAllowed(riskOf(terminals.get(id)), maxRisk)
   const byId = new Map(commodities.map((c) => [c.id, c]))
   const groups = new Map<number, { buys: PriceRow[]; sells: PriceRow[] }>()
   for (const p of prices) {
@@ -68,6 +77,8 @@ export function computeRoutes(
 
       for (const sell of sells) {
         if (sell.id_terminal === buy.id_terminal || sell.price_sell <= buy.price_buy || avoided(sell.id_terminal)) continue
+        const key = routeKey({ commodityId, buy, sell })
+        if (input.hiddenKeys?.has(key) || (input.onlyKeys && !input.onlyKeys.has(key))) continue
         const demand = demandOf(sell)
 
         // Ordem importa: em empate, vale o primeiro limitador da lista.

@@ -27,7 +27,17 @@ export function CurrenciesView({ index, history, now }: { index: CurrencyIndex[]
           </div>
           <FreshnessBadge dateModifiedSec={current.date_modified} now={now} />
         </div>
-        <p className="muted" style={{ marginTop: 12 }}>{t('currencies.explain')}</p>
+        <div role="region" aria-label={t('currencies.howTo')} className="currencies-help">
+          <SectionLabel>{t('currencies.howTo')}</SectionLabel>
+          <p>{t('currencies.help1')}</p>
+          <ul>
+            <li>{t('currencies.help2')}</li>
+            <li>{t('currencies.help3')}</li>
+            <li>{t('currencies.help4')}</li>
+            <li>{t('currencies.help5')}</li>
+          </ul>
+          <p className="muted">{t('currencies.help6')}</p>
+        </div>
         {points.length > 1 && (
           <>
             <SectionLabel>{t('currencies.history')}</SectionLabel>

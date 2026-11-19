@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import type { Vehicle } from '../data/types'
 import type { AvoidEntry } from '../domain/avoid'
+import { RISKS, type MaxRisk } from '../domain/risk'
 
 export interface Prefs {
   shipId: number | null
@@ -14,6 +15,8 @@ export interface Prefs {
   scuOverrides: Record<number, number>
   /** Lugares fora das rotas (compra e venda). */
   avoid: AvoidEntry[]
+  /** Nível de perigo máximo aceito nas rotas. */
+  maxRisk: MaxRisk
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -26,6 +29,7 @@ export const DEFAULT_PREFS: Prefs = {
   staleDays: 7,
   scuOverrides: {},
   avoid: [],
+  maxRisk: 'any',
 }
 
 const KEY = 'tayko.prefs'
@@ -48,7 +52,8 @@ export function loadPrefs(): Prefs {
     const parsed = JSON.parse(raw)
     if (typeof parsed !== 'object' || !parsed) return { ...DEFAULT_PREFS }
     const p = { ...DEFAULT_PREFS, ...parsed }
-    return { ...p, avoid: cleanAvoid(p.avoid) }
+    const maxRisk: MaxRisk = RISKS.includes(p.maxRisk) ? p.maxRisk : 'any'
+    return { ...p, avoid: cleanAvoid(p.avoid), maxRisk }
   } catch {
     return { ...DEFAULT_PREFS }
   }

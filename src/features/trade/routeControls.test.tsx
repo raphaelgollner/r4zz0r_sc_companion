@@ -7,7 +7,6 @@ import { I18nProvider } from '../../i18n/i18n'
 import { FleetProvider } from '../../store/fleet'
 import { DEFAULT_PREFS, type Prefs } from '../../store/prefs'
 import { GOLD, LARANITE, NOW, PRICES, terminal, vehicle } from '../../test/fixtures'
-import { HomeView } from '../home/HomeView'
 import { RoutesView } from './RoutesView'
 
 const vehicles = [
@@ -17,17 +16,13 @@ const vehicles = [
 ]
 const terminals = [terminal(8), terminal(12), terminal(13)]
 
-function Harness({ initial = {}, balance = null, home = false }: { initial?: Partial<Prefs>; balance?: number | null; home?: boolean }) {
+function Harness({ initial = {}, balance = null }: { initial?: Partial<Prefs>; balance?: number | null }) {
   const [prefs, setPrefs] = useState<Prefs>({ ...DEFAULT_PREFS, ...initial })
   const onPrefs = (p: Partial<Prefs>) => setPrefs((x) => ({ ...x, ...p }))
   const common = { vehicles, commodities: [LARANITE, GOLD], prices: PRICES, terminals, now: NOW, prefs, onPrefs, balance }
   return (
     <I18nProvider initial="pt">
-      {home ? (
-        <HomeView {...common} cache={[]} onSetup={() => {}} onRefreshAll={() => {}} />
-      ) : (
-        <RoutesView {...common} />
-      )}
+      <RoutesView {...common} />
       <output data-testid="prefs">{JSON.stringify(prefs)}</output>
     </I18nProvider>
   )
@@ -70,8 +65,8 @@ describe('RouteControls', () => {
     expect(screen.queryByRole('button', { name: 'Usar meu saldo' })).toBeNull()
   })
 
-  test('INÍCIO tem os controles e trocar a nave muda as rotas', async () => {
-    render(<Harness home initial={{ shipId: 1, budget: 5_000_000 }} />)
+  test('trocar a nave muda as rotas', async () => {
+    render(<Harness initial={{ shipId: 1, budget: 5_000_000 }} />)
     expect(screen.getAllByRole('article')[0]).toHaveTextContent(/434 SCU/)
     await userEvent.selectOptions(screen.getByLabelText('Nave'), '7')
     expect(screen.getAllByRole('article')[0]).toHaveTextContent(/64 SCU/)

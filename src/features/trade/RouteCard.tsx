@@ -1,4 +1,5 @@
 import { formatAuec, formatPercent, formatScu } from '../../domain/format'
+import { MARK_KINDS, type MarkKind } from '../../domain/routeMarks'
 import type { RouteOption } from '../../domain/routes'
 import { useI18n } from '../../i18n/i18n'
 import { FreshnessBadge } from '../../ui/components'
@@ -10,11 +11,17 @@ export function RouteCard({
   now,
   warnHours,
   staleDays,
+  marks = [],
+  onToggleMark,
 }: {
   route: RouteOption
   now: number
   warnHours?: number
   staleDays?: number
+  /** Marcações válidas desta rota. */
+  marks?: MarkKind[]
+  /** Sem isso, o card não mostra o menu Marcar. */
+  onToggleMark?: (kind: MarkKind) => void
 }) {
   const { t } = useI18n()
   const fresh = { now, warnHours, staleDays }
@@ -27,6 +34,28 @@ export function RouteCard({
           <span className="muted"> · ROI {formatPercent(r.roi)}</span>
         </span>
       </header>
+      {(marks.length > 0 || onToggleMark) && (
+        <div className="mark-row">
+          {marks.map((m) => (
+            <span key={m} className={`mark-tag mark-${m}`}>
+              {t(`marks.${m}`)}
+            </span>
+          ))}
+          {onToggleMark && (
+            <details className="mark-menu">
+              <summary>{t('marks.mark')}</summary>
+              <div className="mark-options">
+                {MARK_KINDS.map((m) => (
+                  <label key={m} className="check">
+                    <input type="checkbox" checked={marks.includes(m)} onChange={() => onToggleMark(m)} />
+                    {t(`marks.${m}`)}
+                  </label>
+                ))}
+              </div>
+            </details>
+          )}
+        </div>
+      )}
       <dl>
         <dt>{t('routes.buy')}</dt>
         <dd>

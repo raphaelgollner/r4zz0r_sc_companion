@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'vitest'
 import {
   activeSession,
+  clearProgress,
+  commoditySummary,
+  placesVisited,
   addTx,
   balance,
   EMPTY_PROGRESS,
@@ -92,5 +95,38 @@ describe('perfil', () => {
   test('setProfile muda só o que foi passado', () => {
     const d = setProfile(setProfile(EMPTY_PROGRESS, { name: 'Rapha' }), { photo: 'data:x' })
     expect(d.profile).toEqual({ name: 'Rapha', photo: 'data:x' })
+  })
+})
+
+describe('resumo por recurso e lugares', () => {
+  const tx = (id: string, amount: number, extra: Partial<Tx> = {}): Tx => ({
+    id, amount, kind: 'normal', category: 'trade', description: '', at: Number(id), sessionId: 's', ...extra,
+  })
+  const txs: Tx[] = [
+    tx('1', -250_000, { commodityId: 1, commodityName: 'Quartz', terminalId: 10, terminalName: 'Shubin SAL-2', scu: 100 }),
+    tx('2', 400_000, { commodityId: 1, commodityName: 'Quartz', terminalId: 20, terminalName: 'MIC-L5', scu: 100 }),
+    tx('3', -100_000, { commodityId: 2, commodityName: 'Gold', terminalId: 10, terminalName: 'Shubin SAL-2', scu: 16 }),
+    tx('4', -5_000, { category: 'fuel', terminalId: 20, terminalName: 'MIC-L5' }),
+    tx('5', -50_000, { commodityId: 1, commodityName: 'Quartz', terminalId: 10, terminalName: 'Shubin SAL-2', scu: 20 }),
+    tx('6', 999, { kind: 'adjust' }),
+  ]
+
+  test('soma por recurso, do maior líquido ao menor', () => {
+    expect(commoditySummary(txs)).toEqual([
+      { commodityId: 1, name: 'Quartz', boughtScu: 120, soldScu: 100, net: 100_000 },
+      { commodityId: 2, name: 'Gold', boughtScu: 16, soldScu: 0, net: -100_000 },
+    ])
+  })
+
+  test('lugares na ordem da primeira visita, sem repetir a mesma ação', () => {
+    expect(placesVisited(txs)).toEqual([
+      { terminalId: 10, name: 'Shubin SAL-2', actions: [{ kind: 'buy', commodity: 'Quartz' }, { kind: 'buy', commodity: 'Gold' }] },
+      { terminalId: 20, name: 'MIC-L5', actions: [{ kind: 'sell', commodity: 'Quartz' }] },
+    ])
+  })
+
+  test('limpar zera tudo', () => {
+    const d = { profile: { name: 'Rapha', photo: 'data:x' }, txs, sessions: [{ id: 's', startedAt: 1, endedAt: null }] }
+    expect(clearProgress(d)).toEqual({ profile: { name: 'Rapha', photo: 'data:x' }, txs: [], sessions: [] })
   })
 })
