@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { beforeEach, describe, expect, test } from 'vitest'
@@ -53,10 +53,20 @@ describe('RoutesView', () => {
     await userEvent.type(screen.getByLabelText('Dinheiro disponível (aUEC)'), '5.000.000')
     const card = screen.getAllByRole('article').find((a) => a.textContent?.includes('TDD Area 18'))!
     expect(card).toHaveTextContent('Laranite')
-    expect(card).toHaveTextContent(/COMPRA\s*7\.047\/SCU/)
+    expect(card).toHaveTextContent(/COMPRA\s*ArcCorp 141.*7\.047\/SCU/)
     expect(card).toHaveTextContent(/LEVA\s*434 SCU\s*\(limite: estoque\)/)
-    expect(card).toHaveTextContent(/LUCRO\s*≈ 630\.602 aUEC/)
+    expect(card).toHaveTextContent(/VENDE\s*TDD Area 18.*8\.500\/SCU/)
     expect(card).toHaveTextContent('há 3 h')
+  })
+
+  test('card destaca mercadoria, lucro e as duas estações', async () => {
+    render(<Harness initial={{ shipId: 1, budget: 5_000_000 }} />)
+    const card = screen.getAllByRole('article').find((a) => a.textContent?.includes('TDD Area 18'))!
+    expect(within(card).getByRole('heading', { name: 'Laranite' })).toBeInTheDocument()
+    expect(card.querySelector('header')).toHaveTextContent(/≈ 630\.602 aUEC\s*·\s*ROI/)
+    expect([...card.querySelectorAll('.route-stop')].map((e) => e.textContent)).toEqual(['ArcCorp 141', 'TDD Area 18'])
+    expect(card.querySelector('.route-path')).toBeNull()
+    expect(card).not.toHaveTextContent('LUCRO')
   })
 
   test('demanda desconhecida aparece no card', async () => {
