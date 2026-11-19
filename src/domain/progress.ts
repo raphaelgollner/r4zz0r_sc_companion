@@ -92,8 +92,9 @@ export function setProfile(d: ProgressData, patch: Partial<Profile>): ProgressDa
   return { ...d, profile: { ...d.profile, ...patch } }
 }
 
-export function clearProgress(): ProgressData {
-  return { profile: { name: '', photo: null }, txs: [], sessions: [] }
+/** Zera saldo, transações e sessões. O perfil antigo (nome/foto, que não aparece mais) fica como estava. */
+export function clearProgress(d: ProgressData): ProgressData {
+  return { profile: d.profile, txs: [], sessions: [] }
 }
 
 export interface CommodityLine {

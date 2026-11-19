@@ -147,3 +147,26 @@ describe('useOptionalBalance', () => {
     await waitFor(() => expect(result.current.b).toBe(750_000))
   })
 })
+
+describe('editar transação', () => {
+  test('preço por SCU com decimais não é arredondado ao editar', async () => {
+    const store = memoryStore()
+    await store.set('data', {
+      profile: { name: '', photo: null },
+      sessions: [],
+      txs: [{ id: 'a', amount: -250, kind: 'normal', category: 'trade', description: 'Agri', at: 1, sessionId: null, commodityId: 1, commodityName: 'Quartz', scu: 100, pricePerScu: 2.5 }],
+    })
+    render(
+      <I18nProvider initial="pt">
+        <ProgressProvider store={store}>
+          <ProgressView commodities={COMMODITIES} terminals={TERMINALS} />
+        </ProgressProvider>
+      </I18nProvider>,
+    )
+    await userEvent.click(await screen.findByRole('button', { name: 'Editar: Agri' }))
+    expect(screen.getByLabelText('Preço/SCU')).toHaveValue('2,5')
+    await userEvent.clear(screen.getByLabelText('SCU'))
+    await userEvent.type(screen.getByLabelText('SCU'), '10')
+    expect(screen.getByLabelText('Valor (aUEC)')).toHaveValue('25')
+  })
+})

@@ -27,6 +27,7 @@ describe('riskOf', () => {
     expect(riskOf(terminal(10, { faction_name: null, star_system_name: 'Pyro' }))).toBe('dangerous')
   })
   test('terminal desconhecido não tem nível', () => expect(riskOf(undefined)).toBeNull())
+  test('sem facção e sem sistema não tem nível', () => expect(riskOf(terminal(11, { faction_name: null, star_system_name: null }))).toBeNull())
 })
 
 describe('riskAllowed', () => {

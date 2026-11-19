@@ -59,7 +59,7 @@ export function RoutesView({
 
       {showHidden && hiddenKeys.size === 0 && <p className="muted">{t('marks.noneHidden')}</p>}
 
-      {message ? (
+      {showHidden && hiddenKeys.size === 0 ? null : message ? (
         <p className="muted">{message}</p>
       ) : (
         <div className="route-grid">

@@ -69,6 +69,9 @@ const emptyForm = (): FormState => ({
   editingId: null, kind: 'in', value: '', category: 'trade', description: '', at: '', commodity: null, terminal: null, scu: '', price: '',
 })
 
+/** Número para o campo de edição sem perder casas decimais (2.5 → "2,5"). */
+const editNumber = (n: number) => (Number.isInteger(n) ? formatAuec(n) : String(n).replace('.', ','))
+
 const positive = (text: string) => {
   const n = parseAmount(text)
   return Number.isFinite(n) && n > 0 ? n : null
@@ -142,8 +145,8 @@ export function ProgressView({ commodities, terminals }: { commodities?: Commodi
       at: toLocalInput(x.at),
       commodity: x.commodityId !== undefined ? { id: x.commodityId, name: x.commodityName ?? '?' } : null,
       terminal: x.terminalId !== undefined ? { id: x.terminalId, name: x.terminalName ?? '?' } : null,
-      scu: x.scu ? formatAuec(x.scu) : '',
-      price: x.pricePerScu ? formatAuec(x.pricePerScu) : '',
+      scu: x.scu ? editNumber(x.scu) : '',
+      price: x.pricePerScu ? editNumber(x.pricePerScu) : '',
     })
 
   /** SCU ou preço mudou: com os dois válidos, o valor vira SCU × preço (o usuário ainda pode editar o valor). */
@@ -321,7 +324,7 @@ export function ProgressView({ commodities, terminals }: { commodities?: Commodi
               </label>
               <label className="field">
                 {t('progress.pricePerScu')}
-                <input className="input num" inputMode="numeric" style={{ width: 120 }} value={form.price} onChange={(e) => setQty({ price: e.target.value })} />
+                <input className="input num" inputMode="decimal" style={{ width: 120 }} value={form.price} onChange={(e) => setQty({ price: e.target.value })} />
               </label>
             </div>
             <div className="row">
@@ -478,7 +481,7 @@ export function ProgressView({ commodities, terminals }: { commodities?: Commodi
             <button
               className="btn primary"
               onClick={() => {
-                apply(() => clearProgress())
+                apply((d) => clearProgress(d))
                 setFilter('all')
                 setForm(emptyForm())
                 setConfirmClear(false)

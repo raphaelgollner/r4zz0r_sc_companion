@@ -126,6 +126,7 @@ describe('resumo por recurso e lugares', () => {
   })
 
   test('limpar zera tudo', () => {
-    expect(clearProgress()).toEqual({ profile: { name: '', photo: null }, txs: [], sessions: [] })
+    const d = { profile: { name: 'Rapha', photo: 'data:x' }, txs, sessions: [{ id: 's', startedAt: 1, endedAt: null }] }
+    expect(clearProgress(d)).toEqual({ profile: { name: 'Rapha', photo: 'data:x' }, txs: [], sessions: [] })
   })
 })

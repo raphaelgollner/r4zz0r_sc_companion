@@ -81,4 +81,11 @@ describe('marcações nas rotas', () => {
     expect(within(card()!).queryByText('ESTOQUE MENOR', { selector: '.mark-tag' })).toBeNull()
     expect(within(card()!).getByText('HOSTIL', { selector: '.mark-tag' })).toBeInTheDocument()
   })
+
+  test('Ver ocultas sem nenhuma oculta mostra só uma mensagem', async () => {
+    render(<Harness />)
+    await userEvent.click(screen.getByRole('button', { name: 'Ver ocultas (0)' }))
+    expect(screen.getByText('Nenhuma rota oculta.')).toBeInTheDocument()
+    expect(screen.queryByText('Nenhuma rota com lucro para esses filtros.')).toBeNull()
+  })
 })

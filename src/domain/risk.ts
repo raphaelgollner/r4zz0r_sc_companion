@@ -23,6 +23,7 @@ export function riskOf(t: Terminal | undefined): Risk | null {
     return t.city_name || t.space_station_name ? 'safe' : 'medium'
   }
   if (faction) return 'risky'
+  if (!system) return null
   if (system === 'Stanton') return 'medium'
   if (system === 'Nyx') return 'risky'
   return 'dangerous'
