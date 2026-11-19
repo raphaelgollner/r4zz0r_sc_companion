@@ -109,4 +109,20 @@ describe('copiar destino', () => {
     fireEvent.click(screen.getByRole('button', { name: /Copiar destino/ }))
     expect(await screen.findByText('Não foi possível copiar')).toBeInTheDocument()
   })
+
+  test('mostra o nível de perigo estimado com o aviso', () => {
+    render(
+      <I18nProvider initial="pt"><TerminalsContext.Provider value={new Map([[3, terminal(3, { city_name: 'Lorville', faction_name: 'United Empire of Earth' })]])}>
+        <TerminalName id={3} fallback="TDD" />
+      </TerminalsContext.Provider></I18nProvider>,
+    )
+    const badge = screen.getByText('SEGURO')
+    expect(badge).toHaveClass('risk-safe')
+    expect(badge.getAttribute('title')).toMatch(/United Empire of Earth.*Pode não representar/)
+  })
+
+  test('terminal desconhecido não mostra nível', () => {
+    render(<I18nProvider initial="pt"><TerminalName id={99} fallback="X" /></I18nProvider>)
+    expect(screen.queryByText(/SEGURO|MEDIANO|ARRISCADO|PERIGOSO/)).toBeNull()
+  })
 })

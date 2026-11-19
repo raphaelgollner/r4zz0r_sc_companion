@@ -1,6 +1,8 @@
 import { useEffect, useState, type MouseEvent } from 'react'
 import { useTerminal } from '../data/terminals'
 import { locationPath, placeName } from '../domain/location'
+import { riskOf } from '../domain/risk'
+import type { Terminal } from '../data/types'
 import { useI18n } from '../i18n/i18n'
 import { Tooltip } from './Tooltip'
 
@@ -33,6 +35,19 @@ function CopyDestination({ name }: { name: string }) {
         </span>
       )}
     </>
+  )
+}
+
+/** Nível de perigo estimado do terminal, com o aviso de que é estimativa no `title`. */
+export function RiskBadge({ terminal }: { terminal: Terminal | undefined }) {
+  const { t } = useI18n()
+  const risk = riskOf(terminal)
+  if (!risk) return null
+  const title = t('risk.title', { faction: terminal?.faction_name || t('risk.noFaction') })
+  return (
+    <span className={`risk risk-${risk}`} title={title}>
+      {t(`risk.${risk}`)}
+    </span>
   )
 }
 
@@ -69,6 +84,7 @@ export function TerminalName({ id, fallback, copy = true }: { id: number; fallba
           {showPlace && <span className="muted place">{place}</span>}
         </span>
       </Tooltip>
+      <RiskBadge terminal={t} />
       {copy && <CopyDestination name={place ?? fallback} />}
     </span>
   )

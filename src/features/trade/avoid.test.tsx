@@ -60,4 +60,13 @@ describe('Evitar', () => {
     await userEvent.type(screen.getByRole('combobox', { name: 'Evitar' }), 'Gasl')
     expect(screen.getByRole('option', { name: 'Gaslight Pyro' })).toBeInTheDocument()
   })
+
+  test('Risco máximo tira rotas acima do nível e avisa que é estimativa', async () => {
+    render(<Harness />)
+    expect(cardsText()).toContain('Ruin Station')
+    expect(screen.getByText(/pode não representar a realidade/)).toBeInTheDocument()
+    await userEvent.selectOptions(screen.getByLabelText('Risco máximo'), 'medium')
+    expect(cardsText()).not.toContain('Ruin Station')
+    expect(cardsText()).toContain('TDD Area 18')
+  })
 })

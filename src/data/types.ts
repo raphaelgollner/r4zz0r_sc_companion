@@ -129,6 +129,8 @@ export interface Terminal {
   space_station_name: string | null
   city_name: string | null
   outpost_name: string | null
+  /** Facção que controla o local (UEX); base do nível de perigo. */
+  faction_name?: string | null
 }
 
 export interface Planet {

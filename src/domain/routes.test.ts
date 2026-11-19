@@ -131,6 +131,12 @@ describe('computeRoutes', () => {
     expect(only.ok && only.routes.map((r) => r.sell.id_terminal)).toEqual([12])
   })
 
+  test('risco máximo descarta rota com compra ou venda acima do aceito', () => {
+    const prices = [buy8(), sell12(), price(47, 20, { price_buy: 7000, scu_buy: 10 }), price(47, 21, { price_sell: 9000, scu_sell: 10 })]
+    const rs = routes(prices, input({ maxRisk: 'medium' }))
+    expect(rs.map((r) => [r.buy.id_terminal, r.sell.id_terminal])).toEqual([[8, 12]])
+  })
+
   test('respeita o limite de resultados', () => {
     const prices = [buy8(), sell12(), price(47, 21, { price_sell: 9000, scu_sell: 10 })]
     const r = computeRoutes(prices, [laranite], terminals, input(), 1)

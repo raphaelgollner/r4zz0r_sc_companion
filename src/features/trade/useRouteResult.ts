@@ -18,7 +18,7 @@ export function useRouteResult(
   const ship = vehicles.find((v) => v.id === prefs.shipId) ?? null
   const terminalMap = useMemo(() => new Map(terminals.map((x) => [x.id, x])), [terminals])
   const scu = effectiveScu(prefs, ship)
-  const { budget, excludeIllegal, originSystem, sortBy, avoid } = prefs
+  const { budget, excludeIllegal, originSystem, sortBy, avoid, maxRisk } = prefs
   const result = useMemo(
     () =>
       ship
@@ -26,11 +26,11 @@ export function useRouteResult(
             prices,
             commodities,
             terminalMap,
-            { shipScu: scu, budget, excludeIllegal, originSystem: originSystem || undefined, sortBy, avoid, hiddenKeys: keys.hiddenKeys, onlyKeys: keys.onlyKeys },
+            { shipScu: scu, budget, excludeIllegal, originSystem: originSystem || undefined, sortBy, avoid, maxRisk, hiddenKeys: keys.hiddenKeys, onlyKeys: keys.onlyKeys },
             limit,
           )
         : null,
-    [ship, scu, prices, commodities, terminalMap, budget, excludeIllegal, originSystem, sortBy, avoid, limit, keys.hiddenKeys, keys.onlyKeys],
+    [ship, scu, prices, commodities, terminalMap, budget, excludeIllegal, originSystem, sortBy, avoid, maxRisk, limit, keys.hiddenKeys, keys.onlyKeys],
   )
   let message: string | null = null
   if (!ship) message = t('routes.needShip')
