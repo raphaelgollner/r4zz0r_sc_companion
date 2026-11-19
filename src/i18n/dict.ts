@@ -6,7 +6,7 @@ export const pt = {
   'app.title': 'TAYKO CORP COMPANION',
   'app.subtitle': 'Heavy Industry Division',
 
-  'tab.home': 'ROTAS',
+  'tab.home': 'INÍCIO',
   'copy.dest': 'Copiar destino: {name}',
   'salvage.bestSell': 'Melhor venda',
   'salvage.bestPrice': 'Melhor preço',
@@ -190,9 +190,6 @@ export const pt = {
   'routes.avoidSystem': 'sistema',
   'routes.avoidPlanet': 'planeta',
 
-  'home.overview': 'Visão geral',
-  'home.topRoutes': 'Melhores rotas agora',
-  'home.setup': 'Configurar calculadora',
   'home.cache': 'Dados salvos',
   'home.refreshAll': 'Atualizar tudo',
   'home.never': 'ainda não baixado',
@@ -233,7 +230,6 @@ export const pt = {
   'role.interdiction': 'Interdição',
   'role.carrier': 'Porta-naves',
 
-  'tab.progress': 'PROGRESSO',
   'common.cancel': 'Cancelar',
   'progress.profile': 'Perfil',
   'progress.name': 'Nome',
@@ -360,7 +356,7 @@ export const en: Record<DictKey, string> = {
   'app.title': 'TAYKO CORP COMPANION',
   'app.subtitle': 'Heavy Industry Division',
 
-  'tab.home': 'ROUTES',
+  'tab.home': 'HOME',
   'copy.dest': 'Copy destination: {name}',
   'salvage.bestSell': 'Best sell',
   'salvage.bestPrice': 'Best price',
@@ -544,9 +540,6 @@ export const en: Record<DictKey, string> = {
   'routes.avoidSystem': 'system',
   'routes.avoidPlanet': 'planet',
 
-  'home.overview': 'Overview',
-  'home.topRoutes': 'Best routes now',
-  'home.setup': 'Set up calculator',
   'home.cache': 'Saved data',
   'home.refreshAll': 'Refresh all',
   'home.never': 'not downloaded yet',
@@ -587,7 +580,6 @@ export const en: Record<DictKey, string> = {
   'role.interdiction': 'Interdiction',
   'role.carrier': 'Carrier',
 
-  'tab.progress': 'PROGRESS',
   'common.cancel': 'Cancel',
   'progress.profile': 'Profile',
   'progress.name': 'Name',

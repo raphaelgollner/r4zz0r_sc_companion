@@ -1,11 +1,9 @@
 import { FleetScreen } from '../features/fleet/screens'
-import { HomeScreen } from '../features/home/HomeScreen'
 import { EquipmentScreen, GroundScreen, OresScreen, PlannerScreen, RefineriesScreen } from '../features/mining/screens'
 import { MaterialsScreen, SalvageEquipmentScreen, SalvagePlannerScreen, SalvageShipsScreen } from '../features/salvage/screens'
 import { ProgressView } from '../features/progress/ProgressView'
-import { SettingsView } from '../features/settings/SettingsView'
+import { SettingsScreen } from '../features/settings/SettingsScreen'
 import { ShipsScreen } from '../features/ships/ShipsScreen'
-import { clearCache } from '../data/useUex'
 import {
   CommoditiesScreen,
   CurrenciesScreen,
@@ -18,11 +16,10 @@ import type { Screens } from './App'
 
 /** Telas do app. Cada tarefa registra a sua aqui. */
 export const screens: Screens = {
-  home: (go) => <HomeScreen onSetup={() => go({ main: 'trade', trade: 'routes' })} />,
+  home: () => <ProgressView />,
   ships: () => <ShipsScreen />,
-  progress: () => <ProgressView />,
   fleet: () => <FleetScreen />,
-  settings: () => <SettingsView version={__APP_VERSION__} onClearCache={() => clearCache()} />,
+  settings: () => <SettingsScreen version={__APP_VERSION__} />,
   salvage: {
     materials: () => <MaterialsScreen />,
     planner: () => <SalvagePlannerScreen />,

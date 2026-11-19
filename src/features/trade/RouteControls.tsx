@@ -29,14 +29,12 @@ export function RouteControls({
   prefs,
   onPrefs,
   balance = null,
-  compact = false,
 }: {
   vehicles: Vehicle[]
   terminals: Terminal[]
   prefs: Prefs
   onPrefs: (patch: Partial<Prefs>) => void
   balance?: number | null
-  compact?: boolean
 }) {
   const { t } = useI18n()
   const ships = useMemo(() => [...vehicles].sort((a, b) => a.name_full.localeCompare(b.name_full)), [vehicles])
@@ -137,8 +135,7 @@ export function RouteControls({
         </Tooltip>
       )}
       <AvoidPicker terminals={terminals} value={prefs.avoid} onChange={(avoid) => onPrefs({ avoid })} />
-      {!compact && (
-        <>
+      <>
           <label className="field">
             {t('routes.originSystem')}
             <select className="select" value={prefs.originSystem} onChange={(e) => onPrefs({ originSystem: e.target.value })}>
@@ -161,8 +158,7 @@ export function RouteControls({
             <input type="checkbox" checked={prefs.excludeIllegal} onChange={(e) => onPrefs({ excludeIllegal: e.target.checked })} />
             {t('routes.excludeIllegal')}
           </label>
-        </>
-      )}
+      </>
     </div>
   )
 }

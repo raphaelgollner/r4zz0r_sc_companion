@@ -61,4 +61,22 @@ describe('falha ao limpar cache', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Limpar cache' }))
     expect(await screen.findByText('Não foi possível limpar o cache.')).toBeInTheDocument()
   })
+
+  test('Dados salvos mostra a idade de cada recurso e atualiza tudo', async () => {
+    const onRefreshAll = vi.fn()
+    render(
+      <I18nProvider initial="pt">
+        <SettingsView
+          version="0.5.0"
+          onClearCache={async () => {}}
+          cache={[{ resource: 'commodities', fetchedAt: Date.now() - 5 * 60_000 }, { resource: 'vehicles', fetchedAt: null }]}
+          onRefreshAll={onRefreshAll}
+        />
+      </I18nProvider>,
+    )
+    expect(screen.getByRole('row', { name: /commodities/ })).toHaveTextContent('há 5 min')
+    expect(screen.getByRole('row', { name: /vehicles/ })).toHaveTextContent('ainda não baixado')
+    await userEvent.click(screen.getByRole('button', { name: 'Atualizar tudo' }))
+    expect(onRefreshAll).toHaveBeenCalled()
+  })
 })

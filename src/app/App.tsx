@@ -6,8 +6,8 @@ import { useI18n, type Lang } from '../i18n/i18n'
 import { Tabs, type TabItem } from '../ui/components'
 import { ErrorBoundary } from '../ui/ErrorBoundary'
 
-export type MainTab = 'home' | 'trade' | 'mining' | 'salvage' | 'ships' | 'fleet' | 'progress' | 'settings'
-export type TradeTab = 'commodities' | 'locations' | 'harvestables' | 'finder' | 'routes' | 'currencies'
+export type MainTab = 'home' | 'trade' | 'mining' | 'salvage' | 'ships' | 'fleet' | 'settings'
+export type TradeTab = 'routes' | 'commodities' | 'locations' | 'harvestables' | 'finder' | 'currencies'
 export type MiningTab = 'ores' | 'refineries' | 'planner' | 'equipment' | 'ground'
 export type SalvageTab = 'materials' | 'planner' | 'equipment' | 'ships'
 
@@ -20,9 +20,9 @@ export interface Nav {
 
 /** Telas registradas pelas tarefas seguintes. Sem registro, mostra um espaço vazio. */
 export interface Screens {
-  home?: (go: (nav: Partial<Nav>) => void) => ReactNode
+  /** INÍCIO: saldo, sessões e transações. */
+  home?: () => ReactNode
   ships?: () => ReactNode
-  progress?: () => ReactNode
   fleet?: () => ReactNode
   settings?: () => ReactNode
   trade?: Partial<Record<TradeTab, () => ReactNode>>
@@ -65,8 +65,8 @@ function Footer() {
   )
 }
 
-const MAIN: MainTab[] = ['home', 'trade', 'mining', 'salvage', 'ships', 'fleet', 'progress', 'settings']
-const TRADE: TradeTab[] = ['commodities', 'locations', 'harvestables', 'finder', 'routes', 'currencies']
+const MAIN: MainTab[] = ['home', 'trade', 'mining', 'salvage', 'ships', 'fleet', 'settings']
+const TRADE: TradeTab[] = ['routes', 'commodities', 'locations', 'harvestables', 'finder', 'currencies']
 const MINING: MiningTab[] = ['ores', 'refineries', 'planner', 'equipment', 'ground']
 const SALVAGE: SalvageTab[] = ['materials', 'planner', 'equipment', 'ships']
 
@@ -75,7 +75,7 @@ function navFromHash(): Nav {
   const [main, sub] = window.location.hash.replace(/^#/, '').split('/')
   return {
     main: MAIN.includes(main as MainTab) ? (main as MainTab) : 'home',
-    trade: TRADE.includes(sub as TradeTab) ? (sub as TradeTab) : 'commodities',
+    trade: TRADE.includes(sub as TradeTab) ? (sub as TradeTab) : 'routes',
     mining: MINING.includes(sub as MiningTab) ? (sub as MiningTab) : 'ores',
     salvage: SALVAGE.includes(sub as SalvageTab) ? (sub as SalvageTab) : 'materials',
   }
@@ -93,16 +93,15 @@ export default function App({ screens = {} }: { screens?: Screens }) {
     { key: 'salvage', label: t('tab.salvage') },
     { key: 'ships', label: t('tab.ships') },
     { key: 'fleet', label: t('tab.fleet') },
-    { key: 'progress', label: t('tab.progress') },
     { key: 'settings', label: t('tab.settings') },
   ]
 
   const tradeTabs: TabItem<TradeTab>[] = [
+    { key: 'routes', label: 'Routes' },
     { key: 'commodities', label: 'Commodities' },
     { key: 'locations', label: 'Locations' },
     { key: 'harvestables', label: 'Harvestables' },
     { key: 'finder', label: 'Price Finder' },
-    { key: 'routes', label: 'Routes' },
     { key: 'currencies', label: 'Currencies Index' },
   ]
 
@@ -122,9 +121,8 @@ export default function App({ screens = {} }: { screens?: Screens }) {
   ]
 
   let content: ReactNode = null
-  if (nav.main === 'home') content = screens.home?.(go)
+  if (nav.main === 'home') content = screens.home?.()
   else if (nav.main === 'ships') content = screens.ships?.()
-  else if (nav.main === 'progress') content = screens.progress?.()
   else if (nav.main === 'fleet') content = screens.fleet?.()
   else if (nav.main === 'settings') content = screens.settings?.()
   else if (nav.main === 'mining')
