@@ -29,3 +29,13 @@ O jogador quer encadear trocas para nunca voar vazio: o lugar de venda de um tre
 - Ordem dos caminhos: os completos primeiro, depois por lucro total.
 - Preferências novas em `Prefs`: `pathMode`, `shortDistances`, `pathStart`, `pathLegs`.
 - "Ver ocultas" mostra a lista de ocultas normal mesmo com CAMINHO ligado.
+
+## Adendo: ROTATIVO / ROUNDABOUT
+Pedido durante a execução: o filtro "ROTATIVO" (EN "ROUNDABOUT"), que vai e volta A > B > A > B enquanto houver estoque.
+- **Exclusividade**: CAMINHO e ROTATIVO são caixas que se excluem. As preferências viram `routeMode: 'list' | 'path' | 'roundabout'`.
+- **Pares**: o par (A, B) só conta se houver trecho lucrativo nos dois sentidos, para nunca voar vazio. Cada trecho escolhe a melhor mercadoria daquele sentido com o estoque e a demanda que **sobraram**: o que já foi comprado num terminal sai do estoque dele, e o que foi vendido sai da demanda.
+- **Fim**: o rotativo segue até faltar estoque/demanda ou lucro em algum sentido, com teto de 10 trechos (5 voltas). Com estoque desconhecido, para no teto e avisa.
+- **Começar em**: com "Começar em", A é esse terminal. Sem ele, os pares candidatos saem das 40 rotas mais lucrativas.
+- **Resultado**: 3 rotativos com pares diferentes, ordenados pelo lucro total, cada um com os trechos numerados como no CAMINHO.
+- **Com REDUZIR DISTÂNCIAS**: ordena pelo lucro total ÷ (distância A↔B × número de trechos), buscando a distância dos 15 melhores pares.
+- **Desconto no CAMINHO**: o mesmo desconto de estoque e demanda vale lá também.
