@@ -17,6 +17,14 @@ export interface Prefs {
   avoid: AvoidEntry[]
   /** Nível de perigo máximo aceito nas rotas. */
   maxRisk: MaxRisk
+  /** Como as rotas aparecem: soltas, CAMINHO encadeado ou ROTATIVO (A ⇄ B). */
+  routeMode: 'list' | 'path' | 'roundabout'
+  /** REDUZIR DISTÂNCIAS: ordena por lucro por Gm. */
+  shortDistances: boolean
+  /** "Começar em" do CAMINHO/ROTATIVO (terminal) ou null = o app escolhe. */
+  pathStart: number | null
+  /** Trechos do CAMINHO (2 a 8). */
+  pathLegs: number
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -30,6 +38,10 @@ export const DEFAULT_PREFS: Prefs = {
   scuOverrides: {},
   avoid: [],
   maxRisk: 'any',
+  routeMode: 'list',
+  shortDistances: false,
+  pathStart: null,
+  pathLegs: 4,
 }
 
 const KEY = 'tayko.prefs'
@@ -53,7 +65,10 @@ export function loadPrefs(): Prefs {
     if (typeof parsed !== 'object' || !parsed) return { ...DEFAULT_PREFS }
     const p = { ...DEFAULT_PREFS, ...parsed }
     const maxRisk: MaxRisk = RISKS.includes(p.maxRisk) ? p.maxRisk : 'any'
-    return { ...p, avoid: cleanAvoid(p.avoid), maxRisk }
+    const routeMode: Prefs['routeMode'] = ['list', 'path', 'roundabout'].includes(p.routeMode) ? p.routeMode : 'list'
+    const pathLegs = Number.isInteger(p.pathLegs) && p.pathLegs >= 2 && p.pathLegs <= 8 ? p.pathLegs : 4
+    const pathStart = Number.isInteger(p.pathStart) ? p.pathStart : null
+    return { ...p, avoid: cleanAvoid(p.avoid), maxRisk, routeMode, shortDistances: p.shortDistances === true, pathStart, pathLegs }
   } catch {
     return { ...DEFAULT_PREFS }
   }

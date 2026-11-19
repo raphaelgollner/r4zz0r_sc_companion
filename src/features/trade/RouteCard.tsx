@@ -13,6 +13,8 @@ export function RouteCard({
   staleDays,
   marks = [],
   onToggleMark,
+  legLabel,
+  distance,
 }: {
   route: RouteOption
   now: number
@@ -22,16 +24,28 @@ export function RouteCard({
   marks?: MarkKind[]
   /** Sem isso, o card não mostra o menu Marcar. */
   onToggleMark?: (kind: MarkKind) => void
+  /** "1 de 4" no CAMINHO/ROTATIVO. */
+  legLabel?: string
+  /** Distância compra → venda em Gm (REDUZIR DISTÂNCIAS); undefined = não mostrar. */
+  distance?: number | null
 }) {
   const { t } = useI18n()
   const fresh = { now, warnHours, staleDays }
   return (
     <article className="route-card">
       <header>
-        <h3>{r.commodityName}</h3>
+        <h3>
+          {legLabel && <span className="leg-label">{legLabel}</span>}
+          {r.commodityName}
+        </h3>
         <span className="route-profit">
           <span className="num profit">≈ {formatAuec(r.profit)} aUEC</span>
           <span className="muted"> · ROI {formatPercent(r.roi)}</span>
+          {typeof distance === 'number' && (
+            <span className="route-distance">
+              {formatAuec(distance)} Gm · {formatAuec(r.profit / Math.max(distance, 1))} aUEC/Gm
+            </span>
+          )}
         </span>
       </header>
       {(marks.length > 0 || onToggleMark) && (

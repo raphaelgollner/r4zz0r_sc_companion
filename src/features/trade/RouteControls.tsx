@@ -7,6 +7,8 @@ import { useI18n } from '../../i18n/i18n'
 import { effectiveScu, type Prefs } from '../../store/prefs'
 import { Tooltip } from '../../ui/Tooltip'
 import { AvoidPicker } from './AvoidPicker'
+import { SearchPicker } from '../../ui/SearchPicker'
+import { locationPath } from '../../domain/location'
 
 /**
  * Texto de um campo numérico: enquanto o campo está em foco, mantém exatamente o que foi digitado;
@@ -53,6 +55,8 @@ export function RouteControls({
   const hasOverride = ship !== null && prefs.scuOverrides[ship.id] !== undefined
   const [budgetText, setBudgetText, budgetBind] = useAmountText(prefs.budget)
   const [scuText, setScuText, scuBind] = useAmountText(scu)
+  const tradeTerminals = useMemo(() => terminals.filter((x) => x.type === 'commodity' || x.type === 'commodity_raw'), [terminals])
+  const startTerminal = terminals.find((x) => x.id === prefs.pathStart) ?? null
   const systems = useMemo(
     () => [...new Set(terminals.map((x) => x.star_system_name).filter((s): s is string => !!s))].sort(),
     [terminals],
@@ -169,6 +173,58 @@ export function RouteControls({
             {t('routes.excludeIllegal')}
           </label>
       </>
+      <div className="row route-modes">
+        <label className="check" title={t('path.pathHint')}>
+          <input type="checkbox" checked={prefs.routeMode === 'path'} onChange={(e) => onPrefs({ routeMode: e.target.checked ? 'path' : 'list' })} />
+          {t('path.path')}
+        </label>
+        <label className="check" title={t('path.roundaboutHint')}>
+          <input
+            type="checkbox"
+            checked={prefs.routeMode === 'roundabout'}
+            onChange={(e) => onPrefs({ routeMode: e.target.checked ? 'roundabout' : 'list' })}
+          />
+          {t('path.roundabout')}
+        </label>
+        <label className="check" title={t('path.shortHint')}>
+          <input type="checkbox" checked={prefs.shortDistances} onChange={(e) => onPrefs({ shortDistances: e.target.checked })} />
+          {t('path.short')}
+        </label>
+        {prefs.routeMode !== 'list' && (
+          <div className="field">
+            <span>{t('path.start')}</span>
+            <div className="pick-clear">
+              <SearchPicker
+                items={tradeTerminals}
+                label={(x) => x.displayname}
+                text={(x) => `${x.displayname} ${locationPath(x).join(' ')}`}
+                sub={(x) => locationPath(x).join(' › ')}
+                value={null}
+                onPick={(x) => onPrefs({ pathStart: x.id })}
+                ariaLabel={t('path.start')}
+                placeholder={startTerminal?.displayname ?? t('path.anyStart')}
+              />
+              {startTerminal && (
+                <button className="btn-link" aria-label={t('progress.clearOf', { name: startTerminal.displayname })} onClick={() => onPrefs({ pathStart: null })}>
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+        {prefs.routeMode === 'path' && (
+          <label className="field">
+            {t('path.legs')}
+            <select className="select" value={prefs.pathLegs} onChange={(e) => onPrefs({ pathLegs: Number(e.target.value) })}>
+              {[2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </div>
       <p className="muted risk-note">{t('routes.riskNote')}</p>
     </div>
   )

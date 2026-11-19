@@ -513,6 +513,37 @@ select {
   margin: 2px 0 0;
 }
 
+/* ---------- Caminho / Rotativo ---------- */
+.route-modes {
+  flex-basis: 100%;
+  align-items: flex-end;
+  margin-top: 4px;
+}
+.leg-label {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 1px 8px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--black, #000);
+  background: var(--gold);
+  vertical-align: middle;
+}
+.route-distance {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #5fb4ff;
+  text-align: right;
+}
+.path-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--gold-dark);
+}
+
 /* ---------- Marcações ---------- */
 .mark-row {
   display: flex;
