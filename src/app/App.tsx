@@ -5,6 +5,9 @@ import { formatAge } from '../domain/freshness'
 import { useI18n, type Lang } from '../i18n/i18n'
 import { Tabs, type TabItem } from '../ui/components'
 import { ErrorBoundary } from '../ui/ErrorBoundary'
+import { openExternal } from '../ui/openExternal'
+
+export const ORG_URL = 'https://tayko.org'
 
 export type MainTab = 'home' | 'trade' | 'mining' | 'salvage' | 'ships' | 'fleet' | 'settings'
 export type TradeTab = 'routes' | 'commodities' | 'locations' | 'harvestables' | 'finder' | 'currencies'
@@ -40,6 +43,9 @@ function Header() {
         <div className="subtitle">{t('app.subtitle')}</div>
       </div>
       <div className="spacer" />
+      <button type="button" className="org-link" title={ORG_URL} onClick={() => void openExternal(ORG_URL).catch(() => {})}>
+        TAYKO.ORG ↗
+      </button>
       <div className="lang-toggle" role="group" aria-label="Idioma / Language">
         {(['pt', 'en'] as Lang[]).map((l) => (
           <button key={l} aria-pressed={lang === l} onClick={() => setLang(l)}>
