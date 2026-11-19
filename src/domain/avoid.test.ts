@@ -39,8 +39,9 @@ describe('avoidMatch', () => {
     expect(avoidMatch(undefined, [{ system: 'Nyx' }])).toBe(false)
     expect(avoidMatch(nyx, [])).toBe(false)
   })
-  test('espaço profundo só casa com o sistema', () => {
+  test('estação sem planeta: casa pelo sistema ou pelo próprio lugar', () => {
     expect(avoidMatch(nyx, [{ system: 'Nyx', planet: 'Levski' }])).toBe(false)
+    expect(avoidMatch(nyx, [{ system: 'Nyx', place: 'Levski' }])).toBe(true)
   })
 })
 
@@ -49,6 +50,7 @@ describe('avoidOptions', () => {
     const opts = avoidOptions([grimhex, cru, daymar, lorville, nyx, grimhex, terminal(7, { type: 'item', star_system_name: 'Pyro', planet_name: 'Pyro I' })])
     expect(opts.map(avoidKey)).toEqual([
       'Nyx//',
+      'Nyx//Levski',
       'Stanton//',
       'Stanton/Crusader/',
       'Stanton/Crusader/CRU-L1 Ambitious Dream Station',

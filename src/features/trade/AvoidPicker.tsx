@@ -10,7 +10,7 @@ export function AvoidPicker({ terminals, value, onChange }: { terminals: Termina
   const chosen = useMemo(() => new Set(value.map(avoidKey)), [value])
   const options = useMemo(() => avoidOptions(terminals).filter((e) => !chosen.has(avoidKey(e))), [terminals, chosen])
   const sub = (e: AvoidEntry) =>
-    e.place ? `${e.planet} · ${e.system}` : e.planet ? `${t('routes.avoidPlanet')} · ${e.system}` : t('routes.avoidSystem')
+    e.place ? [e.planet, e.system].filter(Boolean).join(' · ') : e.planet ? `${t('routes.avoidPlanet')} · ${e.system}` : t('routes.avoidSystem')
 
   return (
     <div className="field avoid">

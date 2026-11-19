@@ -36,9 +36,13 @@ export function avoidOptions(terminals: Terminal[]): AvoidEntry[] {
     if (!TRADE_TYPES.includes(t.type) || !t.star_system_name) continue
     const system = t.star_system_name
     add({ system })
-    if (!t.planet_name) continue
-    add({ system, planet: t.planet_name })
     const place = placeOf(t)
+    if (!t.planet_name) {
+      // estação no espaço profundo (ex.: Ruin Station): evitável sozinha, sem planeta
+      if (place) add({ system, place })
+      continue
+    }
+    add({ system, planet: t.planet_name })
     if (place) add({ system, planet: t.planet_name, place })
   }
   return [...out.values()].sort((a, b) => avoidKey(a).localeCompare(avoidKey(b), 'en'))

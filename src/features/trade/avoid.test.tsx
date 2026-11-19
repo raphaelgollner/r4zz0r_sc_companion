@@ -51,6 +51,17 @@ describe('Evitar', () => {
     expect(names).toContain('Ruin Station Pyro I · Pyro')
   })
 
+  test('estação no espaço profundo pode ser evitada sozinha', async () => {
+    const deep = [...terminals, terminal(21, { star_system_name: 'Pyro', planet_name: null, space_station_name: 'Gaslight' })]
+    render(
+      <I18nProvider initial="pt">
+        <RoutesView vehicles={vehicles} commodities={[LARANITE]} prices={prices} terminals={deep} now={NOW} prefs={{ ...DEFAULT_PREFS, shipId: 1, budget: 5_000_000 }} onPrefs={() => {}} />
+      </I18nProvider>,
+    )
+    await userEvent.type(screen.getByRole('combobox', { name: 'Evitar' }), 'Gasl')
+    expect(screen.getByRole('option', { name: 'Gaslight Pyro' })).toBeInTheDocument()
+  })
+
   test('ROTAS (compacto) também tem o campo', () => {
     render(<Harness home />)
     expect(screen.getByRole('combobox', { name: 'Evitar' })).toBeInTheDocument()

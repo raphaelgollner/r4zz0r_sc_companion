@@ -463,6 +463,11 @@ select {
 
 /* ---------- Evitar ---------- */
 .avoid-row {
+  /* o rótulo .field é maiúsculo e cinza; etiquetas e lista não devem herdar isso */
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 13px;
+  color: var(--white);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
