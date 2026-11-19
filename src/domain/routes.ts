@@ -18,6 +18,8 @@ export interface RouteInput {
   onlyKeys?: ReadonlySet<string>
   /** Nível de perigo máximo aceito na compra e na venda. */
   maxRisk?: MaxRisk
+  /** Só rotas que compram neste terminal (trechos do CAMINHO). */
+  fromTerminal?: number
   sortBy: 'profit' | 'roi'
 }
 
@@ -38,8 +40,66 @@ export interface RouteOption {
 
 export type RouteResult = { ok: true; routes: RouteOption[] } | { ok: false; reason: 'nave_sem_carga' | 'sem_orcamento' }
 
-const stockOf = (r: PriceRow) => (r.scu_buy > 0 ? r.scu_buy : r.scu_buy_avg)
-const demandOf = (r: PriceRow) => (r.scu_sell > 0 ? r.scu_sell : r.scu_sell_avg)
+export const stockOf = (r: PriceRow) => (r.scu_buy > 0 ? r.scu_buy : r.scu_buy_avg)
+export const demandOf = (r: PriceRow) => (r.scu_sell > 0 ? r.scu_sell : r.scu_sell_avg)
+
+/**
+ * Um trecho compra → venda: quanto levar e quanto rende. `stock`/`demand` = 0 quando desconhecidos.
+ * Devolve null quando não dá para levar nada.
+ */
+export function evaluateLeg(
+  c: Commodity,
+  buy: PriceRow,
+  sell: PriceRow,
+  shipScu: number,
+  budget: number,
+  stock: number,
+  demand: number,
+  known = { stock: stock > 0, demand: demand > 0 },
+): RouteOption | null {
+  // Ordem importa: em empate, vale o primeiro limitador da lista.
+  const limits: [LimitedBy, number][] = [
+    ['nave', shipScu],
+    ['dinheiro', budget / buy.price_buy],
+  ]
+  if (stock > 0) limits.push(['estoque', stock])
+  if (demand > 0) limits.push(['demanda', demand])
+  const min = Math.min(...limits.map(([, v]) => v))
+  const qty = Math.floor(min)
+  if (qty <= 0) return null
+  const limitedBy = limits.find(([, v]) => v === min)![0]
+  const cost = qty * buy.price_buy
+  const revenue = qty * sell.price_sell
+  return {
+    commodityId: c.id,
+    commodityName: c.name,
+    buy,
+    sell,
+    qty,
+    limitedBy,
+    stockKnown: known.stock,
+    demandKnown: known.demand,
+    cost,
+    revenue,
+    profit: revenue - cost,
+    roi: ((revenue - cost) / cost) * 100,
+  }
+}
+
+/** Filtros comuns das rotas: mercadoria permitida, terminal evitado (Evitar/Risco), rota oculta. */
+export function routeFilters(commodities: Commodity[], terminals: Map<number, Terminal>, input: RouteInput) {
+  const avoid = input.avoid ?? []
+  const maxRisk = input.maxRisk ?? 'any'
+  const byId = new Map(commodities.map((c) => [c.id, c]))
+  return {
+    commodity: (id: number): Commodity | null => {
+      const c = byId.get(id)
+      return !c || (input.excludeIllegal && c.is_illegal) ? null : c
+    },
+    avoided: (id: number) => avoidMatch(terminals.get(id), avoid) || !riskAllowed(riskOf(terminals.get(id)), maxRisk),
+    hidden: (key: string) => !!input.hiddenKeys?.has(key) || (!!input.onlyKeys && !input.onlyKeys.has(key)),
+  }
+}
 
 /** Calcula as melhores rotas compra → venda para a nave e o orçamento informados (spec §7.1). */
 export function computeRoutes(
@@ -52,10 +112,7 @@ export function computeRoutes(
   if (!(input.shipScu > 0)) return { ok: false, reason: 'nave_sem_carga' }
   if (!(input.budget > 0)) return { ok: false, reason: 'sem_orcamento' }
 
-  const avoid = input.avoid ?? []
-  const maxRisk = input.maxRisk ?? 'any'
-  const avoided = (id: number) => avoidMatch(terminals.get(id), avoid) || !riskAllowed(riskOf(terminals.get(id)), maxRisk)
-  const byId = new Map(commodities.map((c) => [c.id, c]))
+  const f = routeFilters(commodities, terminals, input)
   const groups = new Map<number, { buys: PriceRow[]; sells: PriceRow[] }>()
   for (const p of prices) {
     let g = groups.get(p.id_commodity)
@@ -66,49 +123,20 @@ export function computeRoutes(
 
   const out: RouteOption[] = []
   for (const [commodityId, { buys, sells }] of groups) {
-    const c = byId.get(commodityId)
+    const c = f.commodity(commodityId)
     if (!c) continue
-    if (input.excludeIllegal && c.is_illegal) continue
 
     for (const buy of buys) {
       if (input.originSystem && terminals.get(buy.id_terminal)?.star_system_name !== input.originSystem) continue
-      if (avoided(buy.id_terminal)) continue
+      if (input.fromTerminal !== undefined && buy.id_terminal !== input.fromTerminal) continue
+      if (f.avoided(buy.id_terminal)) continue
       const stock = stockOf(buy)
 
       for (const sell of sells) {
-        if (sell.id_terminal === buy.id_terminal || sell.price_sell <= buy.price_buy || avoided(sell.id_terminal)) continue
-        const key = routeKey({ commodityId, buy, sell })
-        if (input.hiddenKeys?.has(key) || (input.onlyKeys && !input.onlyKeys.has(key))) continue
-        const demand = demandOf(sell)
-
-        // Ordem importa: em empate, vale o primeiro limitador da lista.
-        const limits: [LimitedBy, number][] = [
-          ['nave', input.shipScu],
-          ['dinheiro', input.budget / buy.price_buy],
-        ]
-        if (stock > 0) limits.push(['estoque', stock])
-        if (demand > 0) limits.push(['demanda', demand])
-        const min = Math.min(...limits.map(([, v]) => v))
-        const qty = Math.floor(min)
-        if (qty <= 0) continue
-        const limitedBy = limits.find(([, v]) => v === min)![0]
-
-        const cost = qty * buy.price_buy
-        const revenue = qty * sell.price_sell
-        out.push({
-          commodityId,
-          commodityName: c.name,
-          buy,
-          sell,
-          qty,
-          limitedBy,
-          stockKnown: stock > 0,
-          demandKnown: demand > 0,
-          cost,
-          revenue,
-          profit: revenue - cost,
-          roi: ((revenue - cost) / cost) * 100,
-        })
+        if (sell.id_terminal === buy.id_terminal || sell.price_sell <= buy.price_buy || f.avoided(sell.id_terminal)) continue
+        if (f.hidden(routeKey({ commodityId, buy, sell }))) continue
+        const leg = evaluateLeg(c, buy, sell, input.shipScu, input.budget, stock, demandOf(sell))
+        if (leg) out.push(leg)
       }
     }
   }
