@@ -116,6 +116,12 @@ describe('computeRoutes', () => {
     expect(rs.length).toBeGreaterThan(0)
   })
 
+  test('Evitar exclui rotas com compra ou venda no lugar evitado', () => {
+    const prices = [buy8(), sell12(), price(47, 20, { price_buy: 7000, scu_buy: 10 }), price(47, 21, { price_sell: 9000, scu_sell: 10 })]
+    const rs = routes(prices, input({ avoid: [{ system: 'Pyro' }] }))
+    expect(rs.map((r) => [r.buy.id_terminal, r.sell.id_terminal])).toEqual([[8, 12]])
+  })
+
   test('respeita o limite de resultados', () => {
     const prices = [buy8(), sell12(), price(47, 21, { price_sell: 9000, scu_sell: 10 })]
     const r = computeRoutes(prices, [laranite], terminals, input(), 1)

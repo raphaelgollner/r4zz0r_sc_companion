@@ -1,4 +1,5 @@
 import type { Commodity, PriceRow, Terminal } from '../data/types'
+import { avoidMatch, type AvoidEntry } from './avoid'
 
 export type LimitedBy = 'nave' | 'dinheiro' | 'estoque' | 'demanda'
 
@@ -7,6 +8,8 @@ export interface RouteInput {
   budget: number
   excludeIllegal: boolean
   originSystem?: string
+  /** Rotas com compra ou venda nesses lugares são descartadas. */
+  avoid?: AvoidEntry[]
   sortBy: 'profit' | 'roi'
 }
 
@@ -41,6 +44,8 @@ export function computeRoutes(
   if (!(input.shipScu > 0)) return { ok: false, reason: 'nave_sem_carga' }
   if (!(input.budget > 0)) return { ok: false, reason: 'sem_orcamento' }
 
+  const avoid = input.avoid ?? []
+  const avoided = (id: number) => avoidMatch(terminals.get(id), avoid)
   const byId = new Map(commodities.map((c) => [c.id, c]))
   const groups = new Map<number, { buys: PriceRow[]; sells: PriceRow[] }>()
   for (const p of prices) {
@@ -58,10 +63,11 @@ export function computeRoutes(
 
     for (const buy of buys) {
       if (input.originSystem && terminals.get(buy.id_terminal)?.star_system_name !== input.originSystem) continue
+      if (avoided(buy.id_terminal)) continue
       const stock = stockOf(buy)
 
       for (const sell of sells) {
-        if (sell.id_terminal === buy.id_terminal || sell.price_sell <= buy.price_buy) continue
+        if (sell.id_terminal === buy.id_terminal || sell.price_sell <= buy.price_buy || avoided(sell.id_terminal)) continue
         const demand = demandOf(sell)
 
         // Ordem importa: em empate, vale o primeiro limitador da lista.
