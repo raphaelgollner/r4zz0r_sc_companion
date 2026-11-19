@@ -15,7 +15,6 @@ export interface TradePath {
 /** Distância em Gm entre dois terminais: número, null (UEX não sabe) ou undefined (ainda não buscada). */
 export type DistanceOf = (from: number, to: number) => number | null | undefined
 
-const BEAM_WIDTH = 12
 const BEAM_PER_FIRST = 4
 const EXPAND = 6
 const FIRST_CANDIDATES = 15
@@ -119,6 +118,12 @@ function beam(ctx: Ctx, initial: State, n: number, width: number): State[] {
 
 const toPath = (s: State, n: number): TradePath => ({ legs: s.legs, total: s.total, short: s.legs.length < n })
 
+/** Rotas candidatas sempre pelo lucro (mesmo com a lista ordenada por ROI). */
+function topByProfit(prices: PriceRow[], commodities: Commodity[], terminals: Map<number, Terminal>, input: RouteInput, limit: number): RouteOption[] {
+  const r = computeRoutes(prices, commodities, terminals, { ...input, sortBy: 'profit' }, limit)
+  return r.ok ? r.routes : []
+}
+
 /** Melhores caminhos pelo lucro somado (busca em feixe), cada um com um primeiro trecho diferente. */
 export function bestPaths(
   prices: PriceRow[],
@@ -129,23 +134,12 @@ export function bestPaths(
 ): TradePath[] {
   if (!(input.shipScu > 0) || !(input.budget > 0) || n < 1) return []
   const ctx = makeCtx(prices, commodities, terminals, input)
-  let finals: State[]
-  if (from != null) {
-    finals = beam(ctx, start(input.budget, from), n, BEAM_WIDTH).filter((s) => s.legs.length > 0)
-  } else {
-    const first = computeRoutes(prices, commodities, terminals, input, FIRST_CANDIDATES)
-    if (!first.ok) return []
-    finals = first.routes.map((r) => beam(ctx, extend(start(input.budget, r.buy.id_terminal), r), n, BEAM_PER_FIRST)[0])
-  }
-  // Um caminho por primeiro trecho.
-  const best = new Map<string, TradePath>()
-  for (const s of finals) {
-    const k = routeKey(s.legs[0])
-    const p = toPath(s, n)
-    const cur = best.get(k)
-    if (!cur || byQuality(n)(p, cur) < 0) best.set(k, p)
-  }
-  return [...best.values()].sort(byQuality(n)).slice(0, count)
+  // Um feixe por primeiro trecho: assim os caminhos alternativos sempre começam diferente.
+  const firsts = from != null ? legsFrom(ctx, from, input.budget, emptyUsed()).slice(0, FIRST_CANDIDATES) : topByProfit(prices, commodities, terminals, input, FIRST_CANDIDATES)
+  return firsts
+    .map((r) => beam(ctx, extend(start(input.budget, r.buy.id_terminal), r), n, BEAM_PER_FIRST).map((s) => toPath(s, n)).sort(byQuality(n))[0])
+    .sort(byQuality(n))
+    .slice(0, count)
 }
 
 const rate = (profit: number, d: number) => profit / Math.max(d, 1)
@@ -188,10 +182,7 @@ export function greedyPaths(
   const firsts =
     from != null
       ? legsFrom(ctx, from, input.budget, emptyUsed()).slice(0, GREEDY_OPTIONS)
-      : (() => {
-          const r = computeRoutes(prices, commodities, terminals, input, GREEDY_FIRSTS)
-          return r.ok ? r.routes : []
-        })()
+      : topByProfit(prices, commodities, terminals, input, GREEDY_FIRSTS)
   if (ask(firsts)) return { paths: [], pending: [...pending.values()] }
 
   const paths: TradePath[] = []
@@ -237,10 +228,7 @@ export function roundabouts(
     if (!pairs.has(k)) pairs.set(k, [a, b])
   }
   if (from != null) for (const o of legsFrom(ctx, from, input.budget, emptyUsed())) add(from, o.sell.id_terminal)
-  else {
-    const r = computeRoutes(prices, commodities, terminals, input, 40)
-    if (r.ok) for (const o of r.routes) add(o.buy.id_terminal, o.sell.id_terminal)
-  }
+  else for (const o of topByProfit(prices, commodities, terminals, input, 40)) add(o.buy.id_terminal, o.sell.id_terminal)
   const out: TradePath[] = []
   for (const [a, b] of [...pairs.values()].slice(0, 40)) {
     const p = simulateRoundabout(ctx, a, b, input.budget)

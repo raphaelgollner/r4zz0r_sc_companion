@@ -27,7 +27,7 @@ O jogador quer encadear trocas para nunca voar vazio: o lugar de venda de um tre
 ## Calls do construtor
 - Feixe: largura 12, 6 opções expandidas por estado.
 - Ordem dos caminhos: os completos primeiro, depois por lucro total.
-- Preferências novas em `Prefs`: `pathMode`, `shortDistances`, `pathStart`, `pathLegs`.
+- Preferências novas em `Prefs`: `routeMode` (ver adendo), `shortDistances`, `pathStart`, `pathLegs`.
 - "Ver ocultas" mostra a lista de ocultas normal mesmo com CAMINHO ligado.
 
 ## Adendo: ROTATIVO / ROUNDABOUT

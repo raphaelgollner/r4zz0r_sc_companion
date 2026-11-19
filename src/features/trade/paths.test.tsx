@@ -14,7 +14,7 @@ import { RoutesView } from './RoutesView'
 const X = commodity(1, 'Xenon')
 const Y = commodity(2, 'Yarrow')
 const Z = commodity(3, 'Zinc')
-const T = [1, 2, 3, 4].map((id) => terminal(id, { displayname: `Porto ${id}` }))
+const T = [1, 2, 3, 4].map((id) => terminal(id, { displayname: `Porto ${id}`, city_name: `Cidade ${id}` }))
 const chain = [
   price(1, 1, { price_buy: 100, scu_buy: 100, terminal_name: 'Porto 1' }),
   price(1, 2, { price_sell: 110, scu_sell: 1000, terminal_name: 'Porto 2' }),
@@ -91,5 +91,15 @@ describe('CAMINHO, ROTATIVO e REDUZIR DISTÂNCIAS', () => {
     await waitFor(() => expect(firstCard()).toHaveTextContent('TDD Area 18'))
     expect(firstCard()).toHaveTextContent(/1 Gm/)
     expect(firstCard()).toHaveTextContent(/aUEC\/Gm/)
+  })
+
+  test('"Começar em" evitado explica por que não há caminho', async () => {
+    renderIt(<Harness initial={{ routeMode: 'path', pathStart: 1, avoid: [{ system: 'Stanton', planet: 'Hurston', place: 'Cidade 1' }] }} />)
+    expect(screen.getByText(/O ponto de partida está em um lugar evitado/)).toBeInTheDocument()
+  })
+
+  test('"Começar em" que não existe mais é ignorado', () => {
+    renderIt(<Harness initial={{ routeMode: 'path', pathStart: 999, pathLegs: 2 }} />)
+    expect(screen.getByRole('region', { name: /^Caminho 1/ })).toBeInTheDocument()
   })
 })

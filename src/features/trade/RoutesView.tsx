@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react'
 import type { Commodity, PriceRow, Terminal, Vehicle } from '../../data/types'
 import { formatAuec } from '../../domain/format'
-import { bestPaths, greedyPaths, rankByDistance, rankRoundabouts, roundabouts, type DistanceOf, type TradePath } from '../../domain/path'
+import { bestPaths, greedyPaths, rankByDistance, rankRoundabouts, roundabouts, type DistanceOf } from '../../domain/path'
 import { activeMarks, routeKey, toggleMark, type MarkKind } from '../../domain/routeMarks'
-import type { RouteOption } from '../../domain/routes'
+import { routeFilters, type RouteOption } from '../../domain/routes'
 import { useI18n } from '../../i18n/i18n'
 import type { Prefs } from '../../store/prefs'
 import { useRouteMarks } from '../../store/routeMarks'
@@ -72,34 +72,48 @@ export function RoutesView({
   const distanceOf: DistanceOf = useCallback((a, b) => (distances.has(`${a}:${b}`) ? distances.get(`${a}:${b}`) : undefined), [distances])
 
   const routes = useMemo(() => (result?.ok ? result.routes : []), [result])
+  // "Começar em" que sumiu da lista de terminais é ignorado; evitado (Evitar/Risco) é explicado.
+  const startId = prefs.pathStart !== null && terminalMap.has(prefs.pathStart) ? prefs.pathStart : null
+  const startAvoided = useMemo(
+    () => startId !== null && routeFilters(commodities, terminalMap, input).avoided(startId),
+    [startId, commodities, terminalMap, input],
+  )
 
   // Lista solta: com REDUZIR DISTÂNCIAS, as 30 mais lucrativas sobem por lucro por Gm.
   const listView = useMemo(() => {
     if (mode !== 'list' || !short) return { routes, pending: [] as [number, number][] }
-    const top = routes.slice(0, DISTANCE_TOP)
-    const pending = top.filter((r) => distanceOf(r.buy.id_terminal, r.sell.id_terminal) === undefined).map((r) => [r.buy.id_terminal, r.sell.id_terminal] as [number, number])
-    return { routes: [...rankByDistance(top, distanceOf), ...routes.slice(DISTANCE_TOP)], pending }
+    // As 30 mais lucrativas (a lista pode estar por ROI).
+    const top = [...routes].sort((a, b) => b.profit - a.profit).slice(0, DISTANCE_TOP)
+    const topKeys = new Set(top.map(routeKey))
+    const pending = new Map<string, [number, number]>()
+    for (const r of top)
+      if (distanceOf(r.buy.id_terminal, r.sell.id_terminal) === undefined) pending.set(`${r.buy.id_terminal}:${r.sell.id_terminal}`, [r.buy.id_terminal, r.sell.id_terminal])
+    return { routes: [...rankByDistance(top, distanceOf), ...routes.filter((r) => !topKeys.has(routeKey(r)))], pending: [...pending.values()] }
   }, [mode, short, routes, distanceOf])
 
+  // Cálculos pesados ficam fora das distâncias: cada distância que chega só refaz a escolha gulosa/ordenação.
+  const beamPaths = useMemo(
+    () => (mode === 'path' && ship ? bestPaths(prices, commodities, terminalMap, input, { legs: prefs.pathLegs, start: startId }) : []),
+    [mode, ship, prices, commodities, terminalMap, input, prefs.pathLegs, startId],
+  )
   const pathView = useMemo(() => {
-    if (mode !== 'path' || !ship) return { paths: [] as TradePath[], pending: [] as [number, number][] }
-    const opts = { legs: prefs.pathLegs, start: prefs.pathStart }
-    const beam = bestPaths(prices, commodities, terminalMap, input, opts)
-    if (!short) return { paths: beam, pending: [] }
-    const g = greedyPaths(prices, commodities, terminalMap, input, opts, distanceOf)
+    if (mode !== 'path' || !ship || !short) return { paths: beamPaths, pending: [] as [number, number][] }
+    const g = greedyPaths(prices, commodities, terminalMap, input, { legs: prefs.pathLegs, start: startId }, distanceOf)
     // Enquanto as distâncias não chegam, mostra os caminhos pelo lucro.
-    return g.pending.length ? { paths: beam, pending: g.pending } : g
-  }, [mode, ship, prices, commodities, terminalMap, input, prefs.pathLegs, prefs.pathStart, short, distanceOf])
+    return g.pending.length ? { paths: beamPaths, pending: g.pending } : g
+  }, [mode, ship, short, beamPaths, prices, commodities, terminalMap, input, prefs.pathLegs, startId, distanceOf])
 
+  const allRoundabouts = useMemo(
+    () => (mode === 'roundabout' && ship ? roundabouts(prices, commodities, terminalMap, input, { start: startId, count: short ? ROUNDABOUT_TOP : 3 }) : []),
+    [mode, ship, prices, commodities, terminalMap, input, startId, short],
+  )
   const roundaboutView = useMemo(() => {
-    if (mode !== 'roundabout' || !ship) return { paths: [] as TradePath[], pending: [] as [number, number][] }
-    if (!short) return { paths: roundabouts(prices, commodities, terminalMap, input, { start: prefs.pathStart }), pending: [] }
-    const all = roundabouts(prices, commodities, terminalMap, input, { start: prefs.pathStart, count: ROUNDABOUT_TOP })
-    const pending = all
+    if (!short) return { paths: allRoundabouts, pending: [] as [number, number][] }
+    const pending = allRoundabouts
       .map((p) => [p.legs[0].buy.id_terminal, p.legs[0].sell.id_terminal] as [number, number])
       .filter(([a, b]) => distanceOf(a, b) === undefined)
-    return { paths: pending.length ? all.slice(0, 3) : rankRoundabouts(all, distanceOf).slice(0, 3), pending }
-  }, [mode, ship, prices, commodities, terminalMap, input, prefs.pathStart, short, distanceOf])
+    return { paths: pending.length ? allRoundabouts.slice(0, 3) : rankRoundabouts(allRoundabouts, distanceOf).slice(0, 3), pending }
+  }, [short, allRoundabouts, distanceOf])
 
   const pending = mode === 'list' ? listView.pending : mode === 'path' ? pathView.pending : roundaboutView.pending
   const groups = mode === 'path' ? pathView.paths : roundaboutView.paths
@@ -138,7 +152,9 @@ export function RoutesView({
           <button className="btn" onClick={() => setShowHidden(!showHidden)}>
             {showHidden ? t('marks.back') : t('marks.showHidden', { n: hiddenKeys.size })}
           </button>
-          {short && pending.length > 0 && <span className="muted">{t('path.loadingDistances', { n: pending.length })}</span>}
+          <span className="muted" aria-live="polite">
+            {short && pending.length > 0 ? t('path.loadingDistances', { n: pending.length }) : ''}
+          </span>
         </div>
       </Panel>
 
@@ -153,12 +169,12 @@ export function RoutesView({
       ) : mode === 'list' ? (
         <div className="route-grid">{listView.routes.map((r) => card(r))}</div>
       ) : groups.length === 0 ? (
-        <p className="muted">{t(mode === 'path' ? 'path.none' : 'path.noneRoundabout')}</p>
+        <p className="muted">{t(startAvoided ? 'path.startAvoided' : mode === 'path' ? 'path.none' : 'path.noneRoundabout')}</p>
       ) : (
         groups.map((p, i) => {
           const title = t(mode === 'path' ? 'path.title' : 'path.roundaboutTitle', { n: i + 1 })
           return (
-            <div key={i} role="region" aria-label={title} className="path-group">
+            <div key={routeKey(p.legs[0])} role="region" aria-label={title} className="path-group">
               <SectionLabel>
                 {title} · ≈ {formatAuec(p.total)} aUEC · {t('path.legsCount', { n: p.legs.length })}
               </SectionLabel>

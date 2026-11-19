@@ -18,8 +18,6 @@ export interface RouteInput {
   onlyKeys?: ReadonlySet<string>
   /** Nível de perigo máximo aceito na compra e na venda. */
   maxRisk?: MaxRisk
-  /** Só rotas que compram neste terminal (trechos do CAMINHO). */
-  fromTerminal?: number
   sortBy: 'profit' | 'roi'
 }
 
@@ -128,7 +126,6 @@ export function computeRoutes(
 
     for (const buy of buys) {
       if (input.originSystem && terminals.get(buy.id_terminal)?.star_system_name !== input.originSystem) continue
-      if (input.fromTerminal !== undefined && buy.id_terminal !== input.fromTerminal) continue
       if (f.avoided(buy.id_terminal)) continue
       const stock = stockOf(buy)
 

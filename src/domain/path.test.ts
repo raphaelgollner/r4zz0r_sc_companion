@@ -128,3 +128,40 @@ describe('rankRoundabouts', () => {
     expect(rankRoundabouts(list, d).map((p) => p.total)).toEqual([60_000, 100_000, 900_000])
   })
 })
+
+describe('correções da revisão', () => {
+  test('com "Começar em", o feixe não fica só com descendentes de um primeiro trecho', () => {
+    // De 1: X vai a 2 (de onde saem 6 mercadorias ricas para 4, e de 4 outras 6 de volta a 2); Y vai a 3 (beco).
+    const many = Array.from({ length: 12 }, (_, i) => commodity(10 + i, `C${i}`))
+    const prices = [
+      price(1, 1, { price_buy: 100, scu_buy: 100 }),
+      price(1, 2, { price_sell: 110, scu_sell: 1000 }),
+      price(2, 1, { price_buy: 100, scu_buy: 100 }),
+      price(2, 3, { price_sell: 150, scu_sell: 1000 }),
+      ...many.flatMap((c, i) =>
+        i < 6
+          ? [price(c.id, 2, { price_buy: 100, scu_buy: 1000 }), price(c.id, 4, { price_sell: 200 + i, scu_sell: 1000 })]
+          : [price(c.id, 4, { price_buy: 100, scu_buy: 1000 }), price(c.id, 2, { price_sell: 200 + i, scu_sell: 1000 })],
+      ),
+    ]
+    const paths = bestPaths(prices, [X, Y, ...many], terminals, input(), { legs: 3, start: 1 })
+    expect(paths.map((p) => hops(p.legs)[0]).sort()).toEqual(['X:1>2', 'Y:1>3'])
+  })
+
+  test('dentro de um primeiro trecho, o caminho completo vence o curto com lucro maior', () => {
+    const prices = [
+      price(1, 1, { price_buy: 100, scu_buy: 100 }),
+      price(1, 2, { price_sell: 110, scu_sell: 1000 }), // X 1→2
+      price(2, 2, { price_buy: 100, scu_buy: 100 }),
+      price(2, 3, { price_sell: 150, scu_sell: 1000 }), // Y 2→3: 5.000, beco
+      price(3, 2, { price_buy: 100, scu_buy: 1000 }),
+      price(3, 4, { price_sell: 101, scu_sell: 1000 }), // Z 2→4: 1.000
+      price(4, 4, { price_buy: 100, scu_buy: 100 }),
+      price(4, 1, { price_sell: 101, scu_sell: 1000 }), // W 4→1: 100
+    ]
+    const paths = bestPaths(prices, [X, Y, Z, W], terminals, input(), { legs: 3 })
+    const fromX = paths.find((p) => hops(p.legs)[0] === 'X:1>2')!
+    expect(fromX.short).toBe(false)
+    expect(hops(fromX.legs)).toEqual(['X:1>2', 'Z:2>4', 'W:4>1'])
+  })
+})
