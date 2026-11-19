@@ -59,3 +59,8 @@
 **Files:** `CurrenciesView.tsx`, `App.tsx` (Header), `src/ui/openUrl.ts`, `src-tauri/Cargo.toml`, `src-tauri/src/lib.rs`, `src-tauri/capabilities/default.json`, `package.json`, `tauri.conf.json`, `dict.ts`.
 - [ ] RED: Currencies mostra os parágrafos explicativos; header tem link "TAYKO.ORG" que chama `openUrl('https://tayko.org')`.
 - [ ] GREEN; versão 0.5.0 nos três arquivos; `cargo check`; commit.
+
+### Task 7 (adendo): nível de perigo
+**Files:** `src/domain/risk.ts` (+test), `src/data/types.ts` (`faction_name?`), `src/ui/TerminalName.tsx` (+test), `RouteCard.tsx`, `src/domain/routes.ts` (`RouteInput.maxRisk`), `src/store/prefs.ts` (`maxRisk`), `RouteControls.tsx`, `dict.ts`, `theme.css`.
+- [ ] RED: `riskOf` para cada regra do adendo; `computeRoutes` com `maxRisk: 'medium'` descarta rota com venda ARRISCADA; TerminalName mostra "SEGURO" com title de aviso; select "Risco máximo" filtra e mostra o aviso.
+- [ ] GREEN; commit.

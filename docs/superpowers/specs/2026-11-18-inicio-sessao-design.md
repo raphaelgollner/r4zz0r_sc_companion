@@ -99,3 +99,17 @@ A tela de AJUSTES dispara o carregamento de todos os recursos para mostrar a ida
 - `features/home` é removida.
 - Textos exatos dos rótulos ficam a cargo do construtor (PT-BR/EN), seguindo o tom atual.
 - Self-check no lugar do builder check: o usuário pediu execução direta sem perguntas.
+
+## Adendo (pedido durante a execução): nível de perigo dos terminais
+Pedido: mostrar nos cards de Routes e onde houver estação um nível **SEGURO** (verde), **MEDIANO** (azul), **ARRISCADO** (laranja) ou **PERIGOSO** (vermelho), pela segurança do sistema e presença da lei; usar também no filtro; avisar que é estimativa e pode não refletir o momento.
+
+Fonte: o UEX dá `faction_name` por terminal (sistema não traz jurisdição). Regras (`riskOf(t)`):
+- Facção hostil (Nine Tails, Headhunters, XenoThreat, Dusters, Rough & Ready) → PERIGOSO.
+- UEE em Stanton, cidade ou estação espacial → SEGURO; UEE em posto/lua de Stanton ou fora de Stanton → MEDIANO.
+- Citizens For Prosperity, People's Alliance → ARRISCADO.
+- Sem facção: Stanton → MEDIANO; Nyx → ARRISCADO; Pyro e outros → PERIGOSO.
+- Terminal desconhecido → sem nível (nunca filtrado).
+
+Na tela: etiqueta colorida ao lado do nome em `TerminalName` (todas as listas com terminal) e nas linhas de compra/venda do card, com `title` explicando a base (facção) e o aviso. Filtro em Routes: "Risco máximo" (Qualquer / até Arriscado / até Mediano / só Seguro), salvo em prefs (`maxRisk`), aplicado à compra e à venda, com o aviso de estimativa abaixo.
+
+Call: a marcação manual `danger` passa a se chamar **HOSTIL** (pirataria/interdição que você encontrou), para não confundir com o nível PERIGOSO calculado.
