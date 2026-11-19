@@ -71,7 +71,7 @@ export function RoutesView({
   )
   const distanceOf: DistanceOf = useCallback((a, b) => (distances.has(`${a}:${b}`) ? distances.get(`${a}:${b}`) : undefined), [distances])
 
-  const routes = result?.ok ? result.routes : []
+  const routes = useMemo(() => (result?.ok ? result.routes : []), [result])
 
   // Lista solta: com REDUZIR DISTÂNCIAS, as 30 mais lucrativas sobem por lucro por Gm.
   const listView = useMemo(() => {
