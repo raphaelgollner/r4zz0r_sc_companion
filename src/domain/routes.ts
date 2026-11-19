@@ -1,5 +1,6 @@
 import type { Commodity, PriceRow, Terminal } from '../data/types'
 import { avoidMatch, type AvoidEntry } from './avoid'
+import { routeKey } from './routeMarks'
 
 export type LimitedBy = 'nave' | 'dinheiro' | 'estoque' | 'demanda'
 
@@ -10,6 +11,10 @@ export interface RouteInput {
   originSystem?: string
   /** Rotas com compra ou venda nesses lugares são descartadas. */
   avoid?: AvoidEntry[]
+  /** Rotas ocultas pelo jogador: saem antes do limite. */
+  hiddenKeys?: ReadonlySet<string>
+  /** Só estas rotas (lista de ocultas). */
+  onlyKeys?: ReadonlySet<string>
   sortBy: 'profit' | 'roi'
 }
 
@@ -68,6 +73,8 @@ export function computeRoutes(
 
       for (const sell of sells) {
         if (sell.id_terminal === buy.id_terminal || sell.price_sell <= buy.price_buy || avoided(sell.id_terminal)) continue
+        const key = routeKey({ commodityId, buy, sell })
+        if (input.hiddenKeys?.has(key) || (input.onlyKeys && !input.onlyKeys.has(key))) continue
         const demand = demandOf(sell)
 
         // Ordem importa: em empate, vale o primeiro limitador da lista.
