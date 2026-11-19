@@ -184,6 +184,11 @@ export const pt = {
   'routes.perScu': '/SCU',
   'routes.resetScu': 'usar SCU do UEX ({scu})',
   'routes.useBalance': 'Usar meu saldo',
+  'routes.avoid': 'Evitar',
+  'routes.avoidAdd': 'Adicionar lugar a evitar…',
+  'routes.avoidRemove': 'Remover {name}',
+  'routes.avoidSystem': 'sistema',
+  'routes.avoidPlanet': 'planeta',
 
   'home.overview': 'Visão geral',
   'home.topRoutes': 'Melhores rotas agora',
@@ -533,6 +538,11 @@ export const en: Record<DictKey, string> = {
   'routes.perScu': '/SCU',
   'routes.resetScu': 'use UEX SCU ({scu})',
   'routes.useBalance': 'Use my balance',
+  'routes.avoid': 'Avoid',
+  'routes.avoidAdd': 'Add a place to avoid…',
+  'routes.avoidRemove': 'Remove {name}',
+  'routes.avoidSystem': 'system',
+  'routes.avoidPlanet': 'planet',
 
   'home.overview': 'Overview',
   'home.topRoutes': 'Best routes now',

@@ -5,6 +5,7 @@ import { useFleet } from '../../store/fleet'
 import { useI18n } from '../../i18n/i18n'
 import { effectiveScu, type Prefs } from '../../store/prefs'
 import { Tooltip } from '../../ui/Tooltip'
+import { AvoidPicker } from './AvoidPicker'
 
 /**
  * Texto de um campo numérico: enquanto o campo está em foco, mantém exatamente o que foi digitado;
@@ -135,6 +136,7 @@ export function RouteControls({
           </button>
         </Tooltip>
       )}
+      <AvoidPicker terminals={terminals} value={prefs.avoid} onChange={(avoid) => onPrefs({ avoid })} />
       {!compact && (
         <>
           <label className="field">

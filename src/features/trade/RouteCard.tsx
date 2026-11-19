@@ -22,15 +22,18 @@ export function RouteCard({
     <article className="route-card">
       <header>
         <h3>{r.commodityName}</h3>
-        <span className="route-path">
-          <TerminalName id={r.buy.id_terminal} fallback={r.buy.terminal_name} /> <span className="arrow">→</span>{' '}
-          <TerminalName id={r.sell.id_terminal} fallback={r.sell.terminal_name} />
+        <span className="route-profit">
+          <span className="num profit">≈ {formatAuec(r.profit)} aUEC</span>
+          <span className="muted"> · ROI {formatPercent(r.roi)}</span>
         </span>
       </header>
       <dl>
         <dt>{t('routes.buy')}</dt>
         <dd>
-          <span className="num">{formatAuec(r.buy.price_buy)}{t('routes.perScu')}</span>
+          <div className="route-stop">
+            <TerminalName id={r.buy.id_terminal} fallback={r.buy.terminal_name} />
+          </div>
+          <span className="num price">{formatAuec(r.buy.price_buy)}{t('routes.perScu')}</span>
           {' · '}
           {r.stockKnown ? (
             t('routes.stockLabel', { scu: formatScu(r.buy.scu_buy > 0 ? r.buy.scu_buy : r.buy.scu_buy_avg) })
@@ -53,7 +56,10 @@ export function RouteCard({
 
         <dt>{t('routes.sell')}</dt>
         <dd>
-          <span className="num">{formatAuec(r.sell.price_sell)}{t('routes.perScu')}</span>
+          <div className="route-stop">
+            <TerminalName id={r.sell.id_terminal} fallback={r.sell.terminal_name} />
+          </div>
+          <span className="num price">{formatAuec(r.sell.price_sell)}{t('routes.perScu')}</span>
           {' · '}
           {r.demandKnown ? (
             t('routes.demandLabel', { scu: formatScu(r.sell.scu_sell > 0 ? r.sell.scu_sell : r.sell.scu_sell_avg) })
@@ -64,11 +70,6 @@ export function RouteCard({
           <FreshnessBadge dateModifiedSec={r.sell.date_modified} {...fresh} />
         </dd>
 
-        <dt>{t('routes.profit')}</dt>
-        <dd className="profit-line">
-          <span className="num profit">≈ {formatAuec(r.profit)} aUEC</span>
-          <span className="muted"> · ROI {formatPercent(r.roi)}</span>
-        </dd>
       </dl>
     </article>
   )
