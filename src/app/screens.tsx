@@ -1,7 +1,7 @@
 import { FleetScreen } from '../features/fleet/screens'
 import { EquipmentScreen, GroundScreen, OresScreen, PlannerScreen, RefineriesScreen } from '../features/mining/screens'
 import { MaterialsScreen, SalvageEquipmentScreen, SalvagePlannerScreen, SalvageShipsScreen } from '../features/salvage/screens'
-import { ProgressView } from '../features/progress/ProgressView'
+import { InicioScreen } from '../features/progress/InicioScreen'
 import { SettingsScreen } from '../features/settings/SettingsScreen'
 import { ShipsScreen } from '../features/ships/ShipsScreen'
 import {
@@ -16,7 +16,7 @@ import type { Screens } from './App'
 
 /** Telas do app. Cada tarefa registra a sua aqui. */
 export const screens: Screens = {
-  home: () => <ProgressView />,
+  home: () => <InicioScreen />,
   ships: () => <ShipsScreen />,
   fleet: () => <FleetScreen />,
   settings: () => <SettingsScreen version={__APP_VERSION__} />,

@@ -3,11 +3,13 @@ import {
   activeSession,
   addTx,
   balance,
+  clearProgress,
+  commoditySummary,
   endSession,
+  placesVisited,
   removeTx,
   sessionSummary,
   setBalance,
-  setProfile,
   startSession,
   TX_CATEGORIES,
   updateTx,
@@ -15,12 +17,14 @@ import {
   type Tx,
   type TxCategory,
 } from '../../domain/progress'
-import { formatAuec, parseAmount } from '../../domain/format'
+import type { Commodity, Terminal } from '../../data/types'
+import { formatAuec, formatScu, parseAmount } from '../../domain/format'
+import { locationPath } from '../../domain/location'
 import { useI18n } from '../../i18n/i18n'
 import { useProgress } from '../../store/progress'
 import { DataTable, Panel, SectionLabel } from '../../ui/components'
 import { Dialog } from '../../ui/Dialog'
-import { resizePhoto } from './photo'
+import { SearchPicker } from '../../ui/SearchPicker'
 
 const newId = () => (typeof globalThis.crypto?.randomUUID === 'function' ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`)
 
@@ -54,16 +58,28 @@ interface FormState {
   category: TxCategory
   description: string
   at: string
+  commodity: { id: number; name: string } | null
+  terminal: { id: number; name: string } | null
+  scu: string
+  price: string
 }
 
 /** `at` vazio = "agora": a data é pega na hora de salvar. */
-const emptyForm = (): FormState => ({ editingId: null, kind: 'in', value: '', category: 'trade', description: '', at: '' })
+const emptyForm = (): FormState => ({
+  editingId: null, kind: 'in', value: '', category: 'trade', description: '', at: '', commodity: null, terminal: null, scu: '', price: '',
+})
 
-export function ProgressView() {
+const positive = (text: string) => {
+  const n = parseAmount(text)
+  return Number.isFinite(n) && n > 0 ? n : null
+}
+
+/** INÍCIO: saldo, sessão e transações. Sem `commodities`/`terminals` (UEX não carregou), os campos de busca ficam desabilitados. */
+export function ProgressView({ commodities, terminals }: { commodities?: Commodity[]; terminals?: Terminal[] } = {}) {
   const { t, lang } = useI18n()
   const { data, ready, loadFailed, apply } = useProgress()
   const now = useNow()
-  const [photoError, setPhotoError] = useState(false)
+  const [confirmClear, setConfirmClear] = useState(false)
   const [editingBalance, setEditingBalance] = useState(false)
   const [balanceText, setBalanceText] = useState('')
   const [form, setForm] = useState<FormState>(emptyForm)
@@ -95,22 +111,22 @@ export function ProgressView() {
       </div>
     )
 
-  const onPhoto = async (file: File | undefined) => {
-    if (!file) return
-    try {
-      const photo = await resizePhoto(file)
-      setPhotoError(false)
-      apply((d) => setProfile(d, { photo }))
-    } catch {
-      setPhotoError(true)
-    }
-  }
-
   const save = () => {
     if (!canSave) return
     const amount = form.kind === 'in' ? formValue : -formValue
     const at = (form.at && new Date(form.at).getTime()) || Date.now()
-    const fields = { amount, category: form.category, description: form.description.trim(), at }
+    const fields = {
+      amount,
+      category: form.category,
+      description: form.description.trim(),
+      at,
+      commodityId: form.commodity?.id,
+      commodityName: form.commodity?.name,
+      terminalId: form.terminal?.id,
+      terminalName: form.terminal?.name,
+      scu: positive(form.scu) ?? undefined,
+      pricePerScu: positive(form.price) ?? undefined,
+    }
     if (form.editingId) apply((d) => updateTx(d, form.editingId!, fields))
     else apply((d) => addTx(d, fields, newId()))
     setForm(emptyForm())
@@ -124,52 +140,29 @@ export function ProgressView() {
       category: x.category,
       description: x.description,
       at: toLocalInput(x.at),
+      commodity: x.commodityId !== undefined ? { id: x.commodityId, name: x.commodityName ?? '?' } : null,
+      terminal: x.terminalId !== undefined ? { id: x.terminalId, name: x.terminalName ?? '?' } : null,
+      scu: x.scu ? formatAuec(x.scu) : '',
+      price: x.pricePerScu ? formatAuec(x.pricePerScu) : '',
     })
 
+  /** SCU ou preço mudou: com os dois válidos, o valor vira SCU × preço (o usuário ainda pode editar o valor). */
+  const setQty = (patch: Partial<Pick<FormState, 'scu' | 'price'>>) => {
+    const next = { ...form, ...patch }
+    const scu = positive(next.scu)
+    const price = positive(next.price)
+    setForm(scu && price ? { ...next, value: formatAuec(Math.round(scu * price)) } : next)
+  }
+
   const describe = (x: Tx) => (x.kind === 'adjust' ? t('progress.adjust') : x.description || t(`cat.${x.category}`))
-  const initials = (data.profile.name || 'T').slice(0, 2).toUpperCase()
+  const summarySession = sessionsById.get(filter) ?? session
+  const summaryTxs = summarySession ? data.txs.filter((x) => x.sessionId === summarySession.id) : []
+  const byCommodity = commoditySummary(summaryTxs)
+  const places = placesVisited(summaryTxs)
 
   return (
     <div className="progress-page">
       <div className="progress-top">
-        <Panel>
-          <SectionLabel>{t('progress.profile')}</SectionLabel>
-          <div className="profile">
-            <div className="avatar">{data.profile.photo ? <img src={data.profile.photo} alt={data.profile.name || 'avatar'} /> : <span>{initials}</span>}</div>
-            <div className="stack" style={{ gap: 8 }}>
-              <label className="field">
-                {t('progress.name')}
-                <input
-                  className="input"
-                  value={data.profile.name}
-                  placeholder={t('progress.namePlaceholder')}
-                  onChange={(e) => apply((d) => setProfile(d, { name: e.target.value }))}
-                />
-              </label>
-              <div className="row" style={{ gap: 8 }}>
-                <label className="btn file-btn">
-                  {t('progress.changePhoto')}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    aria-label={t('progress.changePhoto')}
-                    onChange={(e) => {
-                      onPhoto(e.target.files?.[0])
-                      e.target.value = ''
-                    }}
-                  />
-                </label>
-                {data.profile.photo && (
-                  <button className="btn-link" onClick={() => apply((d) => setProfile(d, { photo: null }))}>
-                    {t('progress.removePhoto')}
-                  </button>
-                )}
-              </div>
-              {photoError && <p className="warn-text">{t('progress.photoError')}</p>}
-            </div>
-          </div>
-        </Panel>
-
         <Panel glow>
           <SectionLabel>{t('progress.balance')}</SectionLabel>
           <div className="big-number" data-testid="balance">
@@ -281,6 +274,57 @@ export function ProgressView() {
               </label>
             </div>
             <div className="row">
+              <div className="field">
+                <span>{t('progress.resource')}</span>
+                <div className="pick-clear">
+                  <SearchPicker
+                    items={commodities ?? []}
+                    label={(c) => c.name}
+                    text={(c) => `${c.name} ${c.code}`}
+                    value={null}
+                    onPick={(c) => setForm({ ...form, commodity: { id: c.id, name: c.name } })}
+                    ariaLabel={t('progress.resource')}
+                    placeholder={form.commodity?.name ?? t('progress.pick')}
+                    disabled={!commodities}
+                  />
+                  {form.commodity && (
+                    <button className="btn-link" aria-label={t('progress.clearOf', { name: form.commodity.name })} onClick={() => setForm({ ...form, commodity: null })}>
+                      ×
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="field">
+                <span>{t('progress.place')}</span>
+                <div className="pick-clear">
+                  <SearchPicker
+                    items={terminals ?? []}
+                    label={(x) => x.displayname}
+                    text={(x) => `${x.displayname} ${locationPath(x).join(' ')}`}
+                    sub={(x) => locationPath(x).join(' › ')}
+                    value={null}
+                    onPick={(x) => setForm({ ...form, terminal: { id: x.id, name: x.displayname } })}
+                    ariaLabel={t('progress.place')}
+                    placeholder={form.terminal?.name ?? t('progress.pick')}
+                    disabled={!terminals}
+                  />
+                  {form.terminal && (
+                    <button className="btn-link" aria-label={t('progress.clearOf', { name: form.terminal.name })} onClick={() => setForm({ ...form, terminal: null })}>
+                      ×
+                    </button>
+                  )}
+                </div>
+              </div>
+              <label className="field">
+                SCU
+                <input className="input num" inputMode="numeric" style={{ width: 100 }} value={form.scu} onChange={(e) => setQty({ scu: e.target.value })} />
+              </label>
+              <label className="field">
+                {t('progress.pricePerScu')}
+                <input className="input num" inputMode="numeric" style={{ width: 120 }} value={form.price} onChange={(e) => setQty({ price: e.target.value })} />
+              </label>
+            </div>
+            <div className="row">
               <label className="field" style={{ flex: 1 }}>
                 {t('progress.description')}
                 <input className="input" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
@@ -333,6 +377,47 @@ export function ProgressView() {
         </div>
       </div>
 
+      {summarySession && (
+        <div role="region" aria-label={t('progress.summary')}>
+          <Panel>
+            <SectionLabel>
+              {t('progress.summary')} · {dateFmt(summarySession.startedAt)}
+            </SectionLabel>
+            {byCommodity.length === 0 && places.length === 0 ? (
+              <p className="muted">{t('progress.summaryEmpty')}</p>
+            ) : (
+              <div className="grid-2">
+                <DataTable
+                  rows={byCommodity}
+                  rowKey={(c) => c.commodityId}
+                  empty={t('progress.summaryEmpty')}
+                  columns={[
+                    { key: 'n', header: t('progress.resource'), render: (c) => c.name },
+                    { key: 'b', header: t('progress.bought'), align: 'right', render: (c) => formatScu(c.boughtScu) },
+                    { key: 's', header: t('progress.sold'), align: 'right', render: (c) => formatScu(c.soldScu) },
+                    { key: 'net', header: t('progress.net'), align: 'right', render: (c) => <span className={c.net >= 0 ? 'profit' : 'loss'}>{signed(c.net)}</span> },
+                  ]}
+                />
+                <DataTable
+                  rows={places}
+                  rowKey={(p) => p.terminalId}
+                  empty={t('progress.summaryEmpty')}
+                  columns={[
+                    { key: 'p', header: t('progress.visited'), render: (p) => p.name },
+                    {
+                      key: 'a',
+                      header: t('progress.didThere'),
+                      render: (p) =>
+                        p.actions.length ? p.actions.map((a) => t(a.kind === 'buy' ? 'progress.boughtX' : 'progress.soldX', { name: a.commodity })).join(' · ') : '—',
+                    },
+                  ]}
+                />
+              </div>
+            )}
+          </Panel>
+        </div>
+      )}
+
       <Panel>
         <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
           <SectionLabel>{t('progress.txs')}</SectionLabel>
@@ -352,6 +437,12 @@ export function ProgressView() {
           columns={[
             { key: 'at', header: t('progress.colDate'), render: (x) => dateFmt(x.at) },
             { key: 'desc', header: t('progress.description'), render: (x) => describe(x) },
+            {
+              key: 'res',
+              header: t('progress.resource'),
+              render: (x) => (x.commodityName ? (x.scu ? `${x.commodityName} · ${formatScu(x.scu)}` : x.commodityName) : '—'),
+            },
+            { key: 'place', header: t('progress.place'), render: (x) => x.terminalName ?? '—' },
             { key: 'cat', header: t('progress.category'), render: (x) => (x.kind === 'adjust' ? '—' : <span className="chip">{t(`cat.${x.category}`)}</span>) },
             { key: 'val', header: t('progress.value'), align: 'right', render: (x) => <span className={x.amount >= 0 ? 'profit' : 'loss'}>{signed(x.amount)}</span> },
             {
@@ -373,6 +464,34 @@ export function ProgressView() {
           ]}
         />
       </Panel>
+
+      <div>
+        <button className="btn danger" onClick={() => setConfirmClear(true)}>
+          {t('progress.clearAll')}
+        </button>
+      </div>
+
+      {confirmClear && (
+        <Dialog title={t('progress.clearConfirm')} onClose={() => setConfirmClear(false)}>
+          <p>{t('progress.clearWarn')}</p>
+          <div className="row">
+            <button
+              className="btn primary"
+              onClick={() => {
+                apply(() => clearProgress())
+                setFilter('all')
+                setForm(emptyForm())
+                setConfirmClear(false)
+              }}
+            >
+              {t('progress.clearDo')}
+            </button>
+            <button className="btn-link" onClick={() => setConfirmClear(false)}>
+              {t('common.cancel')}
+            </button>
+          </div>
+        </Dialog>
+      )}
 
       {toDelete && (
         <Dialog title={t('progress.deleteConfirm')} onClose={() => setToDelete(null)}>

@@ -12,6 +12,7 @@ export function SearchPicker<T>({
   sub,
   ariaLabel,
   placeholder,
+  disabled = false,
 }: {
   items: T[]
   label: (x: T) => string
@@ -21,12 +22,13 @@ export function SearchPicker<T>({
   sub?: (x: T) => string | null
   ariaLabel: string
   placeholder?: string
+  disabled?: boolean
 }) {
   const [q, setQ] = useState('')
   const opts = useMemo(() => (q.trim() ? items.filter((x) => norm(text(x)).includes(norm(q.trim()))).slice(0, 12) : []), [items, q, text])
   return (
     <div className="picker">
-      <input className="input" role="combobox" aria-label={ariaLabel} aria-expanded={opts.length > 0} placeholder={value ? label(value) : placeholder ?? '…'} value={q} onChange={(e) => setQ(e.target.value)} />
+      <input className="input" role="combobox" disabled={disabled} aria-label={ariaLabel} aria-expanded={opts.length > 0} placeholder={value ? label(value) : placeholder ?? '…'} value={q} onChange={(e) => setQ(e.target.value)} />
       {opts.length > 0 && (
         <ul className="picker-list" role="listbox">
           {opts.map((x, i) => (

@@ -5,13 +5,21 @@ import { describe, expect, test } from 'vitest'
 import { memoryStore } from '../../cache/store'
 import { I18nProvider } from '../../i18n/i18n'
 import { ProgressProvider, useOptionalBalance, useProgress } from '../../store/progress'
+import { commodity, terminal } from '../../test/fixtures'
+import type { Commodity, Terminal } from '../../data/types'
 import { ProgressView } from './ProgressView'
 
-function renderView() {
+const COMMODITIES = [commodity(1, 'Quartz'), commodity(2, 'Gold')]
+const TERMINALS = [
+  terminal(10, { displayname: 'Shubin SAL-2', planet_name: 'ArcCorp', moon_name: 'Lyria', outpost_name: 'Shubin Mining Facility SAL-2' }),
+  terminal(20, { displayname: 'MIC-L5', planet_name: 'microTech', space_station_name: 'MIC-L5 Modern Icarus Station' }),
+]
+
+function renderView(uex: { commodities?: Commodity[]; terminals?: Terminal[] } = { commodities: COMMODITIES, terminals: TERMINALS }) {
   render(
     <I18nProvider initial="pt">
       <ProgressProvider store={memoryStore()}>
-        <ProgressView />
+        <ProgressView {...uex} />
       </ProgressProvider>
     </I18nProvider>,
   )
@@ -75,18 +83,57 @@ describe('ProgressView', () => {
     expect(save).toBeEnabled()
   })
 
-  test('foto que não é imagem mostra aviso', async () => {
+  test('sem seção de perfil', async () => {
     renderView()
-    const input = await screen.findByLabelText('Trocar foto')
-    await userEvent.upload(input, new File(['oi'], 'nota.txt', { type: 'text/plain' }), { applyAccept: false })
-    expect(await screen.findByText('Escolha um arquivo de imagem de até 10 MB.')).toBeInTheDocument()
+    await screen.findByRole('button', { name: 'Salvar' })
+    expect(screen.queryByText('Perfil')).toBeNull()
+    expect(screen.queryByLabelText('Trocar foto')).toBeNull()
   })
 
-  test('nome do perfil é salvo', async () => {
+  test('recurso, local, SCU e preço: valor calculado e resumo da sessão', async () => {
     renderView()
-    const name = await screen.findByLabelText('Nome')
-    await userEvent.type(name, 'Rapha')
-    expect(name).toHaveValue('Rapha')
+    await userEvent.click(await screen.findByRole('button', { name: 'Iniciar sessão' }))
+    await userEvent.selectOptions(screen.getByLabelText('Tipo'), 'Saída')
+    await userEvent.type(screen.getByRole('combobox', { name: 'Recurso' }), 'Qua')
+    await userEvent.click(screen.getByRole('option', { name: /^Quartz/ }))
+    await userEvent.type(screen.getByRole('combobox', { name: 'Local' }), 'SAL')
+    await userEvent.click(screen.getByRole('option', { name: /^Shubin SAL-2/ }))
+    await userEvent.type(screen.getByLabelText('SCU'), '100')
+    await userEvent.type(screen.getByLabelText('Preço/SCU'), '2.500')
+    expect(screen.getByLabelText('Valor (aUEC)')).toHaveValue('250.000')
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }))
+
+    const row = screen.getAllByRole('row').filter((r) => r.textContent?.includes('−250.000')).at(-1)!
+    expect(row).toHaveTextContent('Quartz')
+    expect(row).toHaveTextContent('Shubin SAL-2')
+    const summary = screen.getByRole('region', { name: 'Resumo da sessão' })
+    expect(summary).toHaveTextContent(/Quartz.*100 SCU/)
+    expect(summary).toHaveTextContent('Comprou Quartz')
+  })
+
+  test('sem dados do UEX os campos de busca ficam desabilitados e o resto funciona', async () => {
+    renderView({})
+    const save = await screen.findByRole('button', { name: 'Salvar' })
+    expect(screen.getByRole('combobox', { name: 'Recurso' })).toBeDisabled()
+    expect(screen.getByRole('combobox', { name: 'Local' })).toBeDisabled()
+    await userEvent.type(screen.getByLabelText('Valor (aUEC)'), '10')
+    expect(save).toBeEnabled()
+  })
+
+  test('LIMPAR DADOS pede confirmação; cancelar mantém, limpar zera', async () => {
+    renderView()
+    await screen.findByRole('button', { name: 'Definir saldo' })
+    await setBalanceTo('1.000.000')
+    await userEvent.click(screen.getByRole('button', { name: 'Limpar dados' }))
+    let dialog = screen.getByRole('dialog', { name: 'Limpar dados?' })
+    expect(dialog).toHaveTextContent('serão perdidos')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Cancelar' }))
+    expect(screen.getByTestId('balance')).toHaveTextContent('1.000.000')
+    await userEvent.click(screen.getByRole('button', { name: 'Limpar dados' }))
+    dialog = screen.getByRole('dialog', { name: 'Limpar dados?' })
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Limpar' }))
+    expect(screen.getByTestId('balance')).toHaveTextContent(/^0/)
+    expect(screen.queryByRole('dialog')).toBeNull()
   })
 })
 
