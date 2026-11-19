@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import type { Vehicle } from '../data/types'
+import type { AvoidEntry } from '../domain/avoid'
 
 export interface Prefs {
   shipId: number | null
@@ -11,6 +12,8 @@ export interface Prefs {
   staleDays: number
   /** SCU digitado pelo usuário por nave (ex.: Galaxy com módulo de carga). */
   scuOverrides: Record<number, number>
+  /** Lugares fora das rotas (compra e venda). */
+  avoid: AvoidEntry[]
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -22,6 +25,7 @@ export const DEFAULT_PREFS: Prefs = {
   warnHours: 24,
   staleDays: 7,
   scuOverrides: {},
+  avoid: [],
 }
 
 const KEY = 'tayko.prefs'
@@ -32,12 +36,19 @@ export function effectiveScu(prefs: Prefs, ship: Vehicle | null): number {
   return prefs.scuOverrides[ship.id] ?? ship.scu
 }
 
+function cleanAvoid(v: unknown): AvoidEntry[] {
+  if (!Array.isArray(v)) return []
+  return v.filter((e): e is AvoidEntry => typeof e === 'object' && e !== null && typeof (e as AvoidEntry).system === 'string')
+}
+
 export function loadPrefs(): Prefs {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return { ...DEFAULT_PREFS }
     const parsed = JSON.parse(raw)
-    return typeof parsed === 'object' && parsed ? { ...DEFAULT_PREFS, ...parsed } : { ...DEFAULT_PREFS }
+    if (typeof parsed !== 'object' || !parsed) return { ...DEFAULT_PREFS }
+    const p = { ...DEFAULT_PREFS, ...parsed }
+    return { ...p, avoid: cleanAvoid(p.avoid) }
   } catch {
     return { ...DEFAULT_PREFS }
   }

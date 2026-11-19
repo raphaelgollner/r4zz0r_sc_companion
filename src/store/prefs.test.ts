@@ -7,7 +7,7 @@ describe('prefs', () => {
   test('sem nada salvo devolve o padrão', () => {
     expect(loadPrefs()).toEqual(DEFAULT_PREFS)
     expect(DEFAULT_PREFS).toEqual({
-      shipId: null, budget: 0, excludeIllegal: true, originSystem: '', sortBy: 'profit', warnHours: 24, staleDays: 7, scuOverrides: {},
+      shipId: null, budget: 0, excludeIllegal: true, originSystem: '', sortBy: 'profit', warnHours: 24, staleDays: 7, scuOverrides: {}, avoid: [],
     })
   })
 
@@ -24,6 +24,18 @@ describe('prefs', () => {
   test('campos faltando são completados com o padrão', () => {
     localStorage.setItem('tayko.prefs', JSON.stringify({ budget: 10 }))
     expect(loadPrefs()).toEqual({ ...DEFAULT_PREFS, budget: 10 })
+  })
+})
+
+describe('prefs.avoid', () => {
+  beforeEach(() => localStorage.clear())
+  test('salvo malformado vira lista vazia', () => {
+    localStorage.setItem('tayko.prefs', JSON.stringify({ avoid: 'x' }))
+    expect(loadPrefs().avoid).toEqual([])
+  })
+  test('descarta itens sem sistema e guarda os válidos', () => {
+    localStorage.setItem('tayko.prefs', JSON.stringify({ avoid: [{ system: 'Nyx' }, { planet: 'X' }, null, { system: 'Stanton', planet: 'Crusader' }] }))
+    expect(loadPrefs().avoid).toEqual([{ system: 'Nyx' }, { system: 'Stanton', planet: 'Crusader' }])
   })
 })
 
