@@ -461,6 +461,60 @@ select {
   letter-spacing: 0.2em;
 }
 
+/* ---------- Marcações ---------- */
+.mark-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: -2px 0 10px;
+}
+.mark-tag {
+  font-family: var(--font-title);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 2px 8px;
+  border: 1px solid var(--steel);
+  color: var(--steel);
+}
+.mark-done { border-color: var(--profit); color: var(--profit); }
+.mark-lowStock, .mark-noDemand, .mark-priceOff { border-color: var(--orange); color: var(--orange-light); }
+.mark-danger { border-color: var(--danger); color: var(--danger); }
+.mark-hidden { border-color: var(--muted); color: var(--muted); }
+.mark-menu {
+  position: relative;
+  font-size: 12px;
+}
+.mark-menu summary {
+  cursor: pointer;
+  color: var(--gold);
+  list-style: none;
+}
+.mark-menu summary::-webkit-details-marker { display: none; }
+.mark-menu summary::before { content: '✎ '; }
+.mark-options {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border: 1px solid var(--gold-dark);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+.orphan-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 /* ---------- Evitar ---------- */
 .avoid-row {
   /* o rótulo .field é maiúsculo e cinza; etiquetas e lista não devem herdar isso */

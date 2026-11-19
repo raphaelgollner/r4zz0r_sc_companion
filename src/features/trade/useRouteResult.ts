@@ -13,6 +13,7 @@ export function useRouteResult(
   prefs: Prefs,
   t: TFunction,
   limit = 50,
+  keys: { hiddenKeys?: ReadonlySet<string>; onlyKeys?: ReadonlySet<string> } = {},
 ): { result: RouteResult | null; message: string | null; ship: Vehicle | null } {
   const ship = vehicles.find((v) => v.id === prefs.shipId) ?? null
   const terminalMap = useMemo(() => new Map(terminals.map((x) => [x.id, x])), [terminals])
@@ -25,11 +26,11 @@ export function useRouteResult(
             prices,
             commodities,
             terminalMap,
-            { shipScu: scu, budget, excludeIllegal, originSystem: originSystem || undefined, sortBy, avoid },
+            { shipScu: scu, budget, excludeIllegal, originSystem: originSystem || undefined, sortBy, avoid, hiddenKeys: keys.hiddenKeys, onlyKeys: keys.onlyKeys },
             limit,
           )
         : null,
-    [ship, scu, prices, commodities, terminalMap, budget, excludeIllegal, originSystem, sortBy, avoid, limit],
+    [ship, scu, prices, commodities, terminalMap, budget, excludeIllegal, originSystem, sortBy, avoid, limit, keys.hiddenKeys, keys.onlyKeys],
   )
   let message: string | null = null
   if (!ship) message = t('routes.needShip')
