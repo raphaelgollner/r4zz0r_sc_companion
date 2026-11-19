@@ -13,6 +13,14 @@ export interface Tx {
   description: string
   at: number
   sessionId: string | null
+  /** Recurso negociado (commodity do UEX) e o nome no momento do lançamento. */
+  commodityId?: number
+  commodityName?: string
+  /** Terminal onde aconteceu e o nome no momento do lançamento. */
+  terminalId?: number
+  terminalName?: string
+  scu?: number
+  pricePerScu?: number
 }
 
 export interface Session {
@@ -82,4 +90,50 @@ export function endSession(d: ProgressData, at: number): ProgressData {
 
 export function setProfile(d: ProgressData, patch: Partial<Profile>): ProgressData {
   return { ...d, profile: { ...d.profile, ...patch } }
+}
+
+export function clearProgress(): ProgressData {
+  return { profile: { name: '', photo: null }, txs: [], sessions: [] }
+}
+
+export interface CommodityLine {
+  commodityId: number
+  name: string
+  boughtScu: number
+  soldScu: number
+  net: number
+}
+
+/** Quanto entrou e saiu por recurso (só lançamentos normais com recurso), do maior líquido ao menor. */
+export function commoditySummary(txs: Tx[]): CommodityLine[] {
+  const out = new Map<number, CommodityLine>()
+  for (const t of txs) {
+    if (t.kind !== 'normal' || t.commodityId === undefined) continue
+    let line = out.get(t.commodityId)
+    if (!line) out.set(t.commodityId, (line = { commodityId: t.commodityId, name: t.commodityName ?? '?', boughtScu: 0, soldScu: 0, net: 0 }))
+    line.net += t.amount
+    if (t.amount < 0) line.boughtScu += t.scu ?? 0
+    else line.soldScu += t.scu ?? 0
+  }
+  return [...out.values()].sort((a, b) => b.net - a.net)
+}
+
+export interface PlaceVisit {
+  terminalId: number
+  name: string
+  actions: { kind: 'buy' | 'sell'; commodity: string }[]
+}
+
+/** Lugares dos lançamentos, na ordem da primeira visita, com o que foi comprado e vendido em cada um. */
+export function placesVisited(txs: Tx[]): PlaceVisit[] {
+  const out = new Map<number, PlaceVisit>()
+  for (const t of [...txs].sort((a, b) => a.at - b.at)) {
+    if (t.kind !== 'normal' || t.terminalId === undefined) continue
+    let place = out.get(t.terminalId)
+    if (!place) out.set(t.terminalId, (place = { terminalId: t.terminalId, name: t.terminalName ?? '?', actions: [] }))
+    if (!t.commodityName) continue
+    const kind = t.amount < 0 ? 'buy' : 'sell'
+    if (!place.actions.some((a) => a.kind === kind && a.commodity === t.commodityName)) place.actions.push({ kind, commodity: t.commodityName })
+  }
+  return [...out.values()]
 }
