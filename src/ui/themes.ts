@@ -124,12 +124,11 @@ export const THEMES: Theme[] = [
   theme('slime', 'SLIME', { gold: '#9cff2e', goldLight: '#c4ff6b', goldDark: '#6fbf1c', orange: '#e1ff3c', orangeLight: '#f0ff85', accent: '#5fe000', black: '#080d06', panel: '#0e160c' }, gray('#141c11', '#22301c', '#304226')),
   theme('pinky', 'PINKY WINKY', { gold: '#ff5fb7', goldLight: '#ff94d0', goldDark: '#c43d88', orange: '#d65bff', orangeLight: '#e48bff', accent: '#ff3d9a', black: '#140a12', panel: '#1f1020' }, gray('#24141f', '#3a2033', '#4d2b44')),
   // Preto, cinza-chumbo e vermelho-sangue: o visual "fora da lei" das naves Drake.
-  theme('drake', 'DRAKE', { gold: '#c8161e', goldLight: '#e5484d', goldDark: '#86100f', orange: '#6e747b', orangeLight: '#9aa1a8', accent: '#e02428', black: '#040404', panel: '#0e0e0f' }, gray('#141415', '#262628', '#36363a')),
+  theme('drake', 'DRAKE', { gold: '#c8161e', goldLight: '#e5484d', goldDark: '#86100f', orange: '#6e747b', orangeLight: '#9aa1a8', accent: '#e02428', black: '#040404', panel: '#0e0e0f' }),
   theme('rsi', 'RSI', { gold: '#4aa8ff', goldLight: '#8cc9ff', goldDark: '#2d6fb0', orange: '#dce8f5', orangeLight: '#ffffff', accent: '#6fb8ff', black: '#071125', panel: '#0d1b36' }, gray('#13213d', '#22355a', '#2f4772')),
   // Cinza-chumbo industrial.
   theme('argo', 'ARGO', { gold: '#ff8a1c', goldLight: '#ffab5c', goldDark: '#c4650f', orange: '#ffd23f', orangeLight: '#ffe27a', accent: '#ff6a00', black: '#1c1d20', panel: '#25272b' }, gray('#2c2e33', '#3c3f45', '#4c5058')),
-  // Aço cinza-azulado.
-  theme('aegis', 'AEGIS', { gold: '#d0353f', goldLight: '#e0606a', goldDark: '#8f1f27', orange: '#a9b4bf', orangeLight: '#cfd8e0', accent: '#e04848', black: '#191c21', panel: '#22262c' }, gray('#292e35', '#383e47', '#48505b')),
+  theme('aegis', 'AEGIS', { gold: '#c8323c', goldLight: '#e0606a', goldDark: '#8f1f27', orange: '#a9b4bf', orangeLight: '#cfd8e0', accent: '#e04848', black: '#0a0b0d', panel: '#14171b' }),
   // Cinza-oliva militar.
   theme('anvil', 'ANVIL', { gold: '#a8b45a', goldLight: '#c8d27e', goldDark: '#6f7a33', orange: '#d8c08a', orangeLight: '#eadbb0', accent: '#b9a35c', black: '#1b1d16', panel: '#24271d' }, gray('#2b2e23', '#3a3e2f', '#4a4f3c')),
   // Modo claro: fundo gelo, painéis brancos, texto grafite e detalhes em bronze-champanhe.
