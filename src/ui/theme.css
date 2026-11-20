@@ -26,6 +26,14 @@
   --glow-soft: rgba(var(--gold-rgb), 0.15);
   --profit: #3ddc84;
   --danger: #ff4d4d;
+  /* MEDIANO, distâncias e afins */
+  --info: #5fb4ff;
+  /* Texto sobre o destaque (aba ativa, botão principal) */
+  --on-accent: #0a0a0f;
+  --dark-gray-rgb: 26, 26, 26;
+  --mid-gray-rgb: 42, 42, 42;
+  --shadow-rgb: 0, 0, 0;
+  --backdrop-rgb: 5, 5, 8;
 
   --font-title: 'Orbitron', sans-serif;
   --font-body: 'Exo 2', sans-serif;
@@ -47,11 +55,11 @@ body,
 }
 
 body {
-  background-color: var(--black);
+  background-color: var(--on-accent);
   background-image:
     radial-gradient(ellipse at top, rgba(var(--gold-rgb), 0.06), transparent 60%),
-    linear-gradient(rgba(42, 42, 42, 0.35) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(42, 42, 42, 0.35) 1px, transparent 1px);
+    linear-gradient(rgba(var(--mid-gray-rgb), 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--mid-gray-rgb), 0.35) 1px, transparent 1px);
   background-size: 100% 100%, 40px 40px, 40px 40px;
   color: var(--white);
   font-family: var(--font-body);
@@ -156,7 +164,7 @@ select {
 }
 .lang-toggle button[aria-pressed='true'] {
   background: var(--gold);
-  color: var(--black);
+  color: var(--on-accent);
 }
 
 .main {
@@ -243,7 +251,7 @@ select {
 /* ---------- Panel ---------- */
 .panel {
   position: relative;
-  background: linear-gradient(160deg, rgba(26, 26, 26, 0.92), rgba(var(--panel-rgb), 0.92));
+  background: linear-gradient(160deg, rgba(var(--dark-gray-rgb), 0.92), rgba(var(--panel-rgb), 0.92));
   clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, var(--chamfer) 100%, 0 calc(100% - var(--chamfer)));
   padding: 18px 20px;
 }
@@ -344,11 +352,11 @@ select {
 }
 .btn:hover {
   background: var(--gold);
-  color: var(--black);
+  color: var(--on-accent);
 }
 .btn.primary {
   background: var(--gold);
-  color: var(--black);
+  color: var(--on-accent);
 }
 .btn.primary:hover {
   background: var(--gold-light);
@@ -431,7 +439,7 @@ select {
   color: var(--warn);
 }
 .status-blue {
-  color: #5fb4ff;
+  color: var(--info);
 }
 .status-green {
   color: var(--profit);
@@ -513,7 +521,7 @@ select {
   cursor: help;
 }
 .risk-safe { color: var(--profit); }
-.risk-medium { color: #5fb4ff; }
+.risk-medium { color: var(--info); }
 .risk-risky { color: var(--warn); }
 .risk-dangerous { color: var(--danger); }
 .risk-note {
@@ -534,7 +542,7 @@ select {
   padding: 1px 8px;
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: var(--black, #000);
+  color: var(--on-accent);
   background: var(--gold);
   vertical-align: middle;
 }
@@ -542,7 +550,7 @@ select {
   display: block;
   margin-top: 2px;
   font-size: 12px;
-  color: #5fb4ff;
+  color: var(--info);
   text-align: right;
 }
 .path-group {
@@ -595,7 +603,7 @@ select {
   gap: 4px 14px;
   margin-top: 6px;
   padding: 8px 10px;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(var(--shadow-rgb), 0.35);
   border: 1px solid var(--gold-dark);
 }
 .orphan-list {
@@ -662,7 +670,7 @@ select {
   border: 1px solid var(--gold-dark);
   max-height: 320px;
   overflow-y: auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(var(--shadow-rgb), 0.6);
 }
 .picker-list li {
   padding: 7px 10px;
@@ -731,7 +739,7 @@ select {
   gap: 14px;
 }
 .route-card {
-  background: linear-gradient(160deg, rgba(26, 26, 26, 0.95), rgba(var(--panel-rgb), 0.95));
+  background: linear-gradient(160deg, rgba(var(--dark-gray-rgb), 0.95), rgba(var(--panel-rgb), 0.95));
   border-left: 3px solid var(--gold);
   padding: 14px 16px;
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
@@ -849,7 +857,7 @@ code {
   letter-spacing: normal;
   text-transform: none;
   white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 6px 18px rgba(var(--shadow-rgb), 0.7);
   pointer-events: none;
 }
 .terminal-name .place {
@@ -876,7 +884,7 @@ code {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(5, 5, 8, 0.75);
+  background: rgba(var(--backdrop-rgb), 0.75);
   backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
@@ -1063,7 +1071,7 @@ input[type='datetime-local'] {
 .copy-btn {
   background: none;
   border: 0;
-  color: var(--muted, #8a8f98);
+  color: var(--muted);
   cursor: pointer;
   font-size: 0.85em;
   padding: 0 2px;
@@ -1096,7 +1104,7 @@ input[type='datetime-local'] {
 .setup-desc { max-height: 120px; overflow: auto; font-size: 0.9em; }
 .build-list { display: grid; gap: 8px; }
 .build { display: grid; grid-template-columns: 120px 1fr auto; gap: 10px; align-items: center; }
-.setup-group { display: grid; gap: 6px; padding: 8px 0; border-bottom: 1px solid var(--line, rgba(255,255,255,0.08)); }
+.setup-group { display: grid; gap: 6px; padding: 8px 0; border-bottom: 1px solid var(--mid-gray); }
 .setup-slot select { max-width: 100%; }
 .setup-footer { justify-content: space-between; margin-top: 8px; }
 @media (max-width: 600px) { .build { grid-template-columns: 1fr; } }
