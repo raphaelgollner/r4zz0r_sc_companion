@@ -31,7 +31,7 @@ describe('temas', () => {
   })
 
   test('cores com significado não fazem parte do tema', () => {
-    for (const t of THEMES) for (const k of Object.keys(t.vars)) expect(['--profit', '--danger']).not.toContain(k)
+    for (const t of THEMES) for (const k of Object.keys(t.vars)) expect(['--profit', '--danger', '--warn', '--warn-light', '--warn-rgb']).not.toContain(k)
   })
 
   test('isThemeId', () => {
