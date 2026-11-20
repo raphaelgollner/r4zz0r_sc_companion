@@ -14,8 +14,13 @@
   --steel: #9aa3ad;
   --white: #e8e8e8;
   --muted: #8b8b95;
-  --glow-gold: rgba(244, 196, 48, 0.5);
-  --glow-soft: rgba(244, 196, 48, 0.15);
+  --gold-rgb: 244, 196, 48;
+  --orange-rgb: 255, 140, 0;
+  --panel-rgb: 15, 15, 26;
+  --black-rgb: 10, 10, 15;
+  --glow-gold: rgba(var(--gold-rgb), 0.5);
+  --glow-soft: rgba(var(--gold-rgb), 0.15);
+  --logo-filter: none;
   --profit: #3ddc84;
   --danger: #ff4d4d;
 
@@ -41,7 +46,7 @@ body,
 body {
   background-color: var(--black);
   background-image:
-    radial-gradient(ellipse at top, rgba(244, 196, 48, 0.06), transparent 60%),
+    radial-gradient(ellipse at top, rgba(var(--gold-rgb), 0.06), transparent 60%),
     linear-gradient(rgba(42, 42, 42, 0.35) 1px, transparent 1px),
     linear-gradient(90deg, rgba(42, 42, 42, 0.35) 1px, transparent 1px);
   background-size: 100% 100%, 40px 40px, 40px 40px;
@@ -109,9 +114,10 @@ select {
   gap: 16px;
   padding: 12px 24px;
   border-bottom: 1px solid var(--mid-gray);
-  background: linear-gradient(180deg, rgba(15, 15, 26, 0.95), rgba(10, 10, 15, 0.9));
+  background: linear-gradient(180deg, rgba(var(--panel-rgb), 0.95), rgba(var(--black-rgb), 0.9));
 }
 .header img {
+  filter: var(--logo-filter);
   height: 48px;
   filter: drop-shadow(0 0 8px var(--glow-soft));
 }
@@ -234,7 +240,7 @@ select {
 /* ---------- Panel ---------- */
 .panel {
   position: relative;
-  background: linear-gradient(160deg, rgba(26, 26, 26, 0.92), rgba(15, 15, 26, 0.92));
+  background: linear-gradient(160deg, rgba(26, 26, 26, 0.92), rgba(var(--panel-rgb), 0.92));
   clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, var(--chamfer) 100%, 0 calc(100% - var(--chamfer)));
   padding: 18px 20px;
 }
@@ -386,10 +392,10 @@ select {
   cursor: pointer;
 }
 .table tbody tr:hover {
-  background: rgba(244, 196, 48, 0.05);
+  background: rgba(var(--gold-rgb), 0.05);
 }
 .table tbody tr[aria-selected='true'] {
-  background: rgba(244, 196, 48, 0.12);
+  background: rgba(var(--gold-rgb), 0.12);
 }
 .empty {
   padding: 18px 10px;
@@ -448,7 +454,7 @@ select {
 }
 .load-warning {
   border-left: 3px solid var(--orange);
-  background: rgba(255, 140, 0, 0.08);
+  background: rgba(var(--orange-rgb), 0.08);
   color: var(--orange-light);
   padding: 8px 12px;
   margin-bottom: 14px;
@@ -476,7 +482,7 @@ select {
 }
 .org-link:hover,
 .org-link:focus-visible {
-  background: rgba(244, 196, 48, 0.12);
+  background: rgba(var(--gold-rgb), 0.12);
 }
 .currencies-help {
   margin-top: 14px;
@@ -618,7 +624,7 @@ select {
   gap: 4px;
   padding: 3px 4px 3px 10px;
   font-size: 12.5px;
-  background: rgba(255, 140, 0, 0.12);
+  background: rgba(var(--orange-rgb), 0.12);
   border: 1px solid var(--orange);
   color: var(--orange-light);
 }
@@ -661,7 +667,7 @@ select {
 }
 .picker-list li:hover,
 .picker-list li[aria-selected='true'] {
-  background: rgba(244, 196, 48, 0.12);
+  background: rgba(var(--gold-rgb), 0.12);
 }
 .picker .input::placeholder {
   color: var(--white);
@@ -699,12 +705,12 @@ select {
 }
 .tree-node:hover,
 .tree-leaf:hover {
-  background: rgba(244, 196, 48, 0.06);
+  background: rgba(var(--gold-rgb), 0.06);
   color: var(--white);
 }
 .tree-leaf[aria-current='true'] {
   color: var(--gold);
-  background: rgba(244, 196, 48, 0.1);
+  background: rgba(var(--gold-rgb), 0.1);
 }
 .big-number {
   font-family: var(--font-title);
@@ -722,7 +728,7 @@ select {
   gap: 14px;
 }
 .route-card {
-  background: linear-gradient(160deg, rgba(26, 26, 26, 0.95), rgba(15, 15, 26, 0.95));
+  background: linear-gradient(160deg, rgba(26, 26, 26, 0.95), rgba(var(--panel-rgb), 0.95));
   border-left: 3px solid var(--gold);
   padding: 14px 16px;
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
@@ -1066,7 +1072,7 @@ input[type='datetime-local'] {
 }
 .copy-btn:hover,
 .copy-btn:focus-visible {
-  color: var(--gold, #f4c430);
+  color: var(--gold);
 }
 .copy-status {
   font-size: 0.75em;
@@ -1091,3 +1097,39 @@ input[type='datetime-local'] {
 .setup-slot select { max-width: 100%; }
 .setup-footer { justify-content: space-between; margin-top: 8px; }
 @media (max-width: 600px) { .build { grid-template-columns: 1fr; } }
+
+/* ---------- Temas ---------- */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.theme-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--dark-gray);
+  border: 1px solid var(--mid-gray);
+  color: var(--white);
+  font-family: var(--font-title);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-align: left;
+  cursor: pointer;
+}
+.theme-swatch[aria-checked='true'] {
+  border-color: var(--gold);
+  box-shadow: 0 0 10px var(--glow-soft);
+}
+.theme-swatch:hover,
+.theme-swatch:focus-visible {
+  border-color: var(--gold-dark);
+}
+.theme-colors {
+  display: flex;
+  height: 14px;
+}
+.theme-colors span {
+  flex: 1;
+}

@@ -3,6 +3,7 @@ import { formatAge } from '../../domain/freshness'
 import { useI18n, type Lang } from '../../i18n/i18n'
 import { usePrefs } from '../../store/prefs'
 import { DataTable, Panel, SectionLabel } from '../../ui/components'
+import { applyTheme, THEMES } from '../../ui/themes'
 
 export interface CacheInfo {
   resource: string
@@ -44,6 +45,32 @@ export function SettingsView({
             <option value="en">English</option>
           </select>
         </label>
+      </Panel>
+
+      <Panel>
+        <SectionLabel>{t('settings.theme')}</SectionLabel>
+        <div className="theme-grid" role="radiogroup" aria-label={t('settings.theme')}>
+          {THEMES.map((th) => (
+            <button
+              key={th.id}
+              type="button"
+              role="radio"
+              aria-checked={prefs.theme === th.id}
+              className="theme-swatch"
+              onClick={() => {
+                applyTheme(th.id)
+                setPrefs({ theme: th.id })
+              }}
+            >
+              <span className="theme-colors" aria-hidden="true">
+                <span style={{ background: th.colors.gold }} />
+                <span style={{ background: th.colors.orange }} />
+                <span style={{ background: th.colors.panel }} />
+              </span>
+              {th.name}
+            </button>
+          ))}
+        </div>
       </Panel>
 
       <Panel>
