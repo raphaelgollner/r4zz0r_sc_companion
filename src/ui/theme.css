@@ -24,7 +24,6 @@
   --black-rgb: 10, 10, 15;
   --glow-gold: rgba(var(--gold-rgb), 0.5);
   --glow-soft: rgba(var(--gold-rgb), 0.15);
-  --logo-filter: saturate(1);
   --profit: #3ddc84;
   --danger: #ff4d4d;
 
@@ -122,8 +121,8 @@ select {
 }
 .header img {
   height: 48px;
-  /* tom do tema + brilho */
-  filter: var(--logo-filter) drop-shadow(0 0 8px var(--glow-soft));
+  /* O logo é sempre o do TAYKO CARGO, com o brilho dourado, em qualquer tema. */
+  filter: drop-shadow(0 0 8px rgba(244, 196, 48, 0.15));
 }
 .header h1 {
   font-size: 22px;

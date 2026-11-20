@@ -53,4 +53,8 @@ describe('temas', () => {
     expect(hsl(drake.panel).l).toBeLessThan(0.08)
     expect(hsl(drake.orange).h === 0 || Math.abs(parseInt(drake.orange.slice(1, 3), 16) - parseInt(drake.orange.slice(5, 7), 16)) < 24).toBe(true)
   })
+
+  test('o logo da Tayko Corp nunca muda de cor: nenhum tema mexe nele', () => {
+    for (const t of THEMES) expect(Object.keys(t.vars).filter((k) => k.includes('logo'))).toEqual([])
+  })
 })
