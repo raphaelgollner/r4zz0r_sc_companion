@@ -38,4 +38,19 @@ describe('temas', () => {
     expect(isThemeId('slime')).toBe(true)
     expect(isThemeId('xpto')).toBe(false)
   })
+
+  test('DRAKE é escuro e vermelho, bem diferente do TAYKO CARGO', () => {
+    const drake = THEMES.find((t) => t.id === 'drake')!.colors
+    const hsl = (hex: string) => {
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min
+      const h = d === 0 ? 0 : max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4
+      return { h: (h * 60 + 360) % 360, l: (max + min) / 2 }
+    }
+    const h = hsl(drake.gold).h
+    expect(h < 12 || h > 345).toBe(true)
+    expect(hsl(drake.black).l).toBeLessThan(0.04)
+    expect(hsl(drake.panel).l).toBeLessThan(0.08)
+    expect(hsl(drake.orange).h === 0 || Math.abs(parseInt(drake.orange.slice(1, 3), 16) - parseInt(drake.orange.slice(5, 7), 16)) < 24).toBe(true)
+  })
 })

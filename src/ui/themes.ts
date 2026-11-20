@@ -61,7 +61,8 @@ export const THEMES: Theme[] = [
   theme('salvage', 'TAYKO SALVAGE', { gold: '#22c7ff', goldLight: '#7ee3ff', goldDark: '#1592b8', orange: '#4f7bff', orangeLight: '#7d9dff', accent: '#2f5bff', black: '#070a12', panel: '#0c1220' }, 'hue-rotate(150deg) saturate(1.2)'),
   theme('slime', 'SLIME', { gold: '#9cff2e', goldLight: '#c4ff6b', goldDark: '#6fbf1c', orange: '#e1ff3c', orangeLight: '#f0ff85', accent: '#5fe000', black: '#080d06', panel: '#0e160c' }, 'hue-rotate(42deg) saturate(1.4)'),
   theme('pinky', 'PINKY WINKY', { gold: '#ff5fb7', goldLight: '#ff94d0', goldDark: '#c43d88', orange: '#d65bff', orangeLight: '#e48bff', accent: '#ff3d9a', black: '#0f080d', panel: '#1a0d17' }, 'hue-rotate(-79deg) saturate(1.2)'),
-  theme('drake', 'DRAKE', { gold: '#ffcc00', goldLight: '#ffe066', goldDark: '#b8920a', orange: '#c8551b', orangeLight: '#e0763d', accent: '#e0601a', black: '#0b0b0b', panel: '#151515' }, 'saturate(1.2)'),
+  // Preto, cinza-chumbo e vermelho-sangue: o visual "fora da lei" das naves Drake.
+  theme('drake', 'DRAKE', { gold: '#c8161e', goldLight: '#e5484d', goldDark: '#86100f', orange: '#6e747b', orangeLight: '#9aa1a8', accent: '#e02428', black: '#040404', panel: '#0e0e0f' }, 'hue-rotate(-48deg) saturate(1.3) brightness(0.8)'),
   theme('rsi', 'RSI', { gold: '#4aa8ff', goldLight: '#8cc9ff', goldDark: '#2d6fb0', orange: '#dce8f5', orangeLight: '#ffffff', accent: '#6fb8ff', black: '#050a14', panel: '#0a1426' }, 'hue-rotate(163deg)'),
   theme('argo', 'ARGO', { gold: '#ff8a1c', goldLight: '#ffab5c', goldDark: '#c4650f', orange: '#ffd23f', orangeLight: '#ffe27a', accent: '#ff6a00', black: '#0c0c0d', panel: '#18191b' }, 'hue-rotate(-18deg) saturate(1.2)'),
   theme('aegis', 'AEGIS', { gold: '#c8323c', goldLight: '#e0606a', goldDark: '#8f1f27', orange: '#a9b4bf', orangeLight: '#cfd8e0', accent: '#e04848', black: '#0a0b0d', panel: '#14171b' }, 'hue-rotate(-51deg) saturate(1.1)'),
