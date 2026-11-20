@@ -1,10 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { I18nProvider } from '../../i18n/i18n'
 import { updatePrefs, DEFAULT_PREFS } from '../../store/prefs'
 import { NOW, SEC } from '../../test/fixtures'
 import { FreshnessBadge } from '../../ui/components'
+import { applyTheme } from '../../ui/themes'
 import { SettingsView } from './SettingsView'
 
 function renderAll(onClearCache = vi.fn(async () => {})) {
@@ -78,5 +79,16 @@ describe('falha ao limpar cache', () => {
     expect(screen.getByRole('row', { name: /vehicles/ })).toHaveTextContent('ainda não baixado')
     await userEvent.click(screen.getByRole('button', { name: 'Atualizar tudo' }))
     expect(onRefreshAll).toHaveBeenCalled()
+  })
+
+  test('Tema: escolher TAYKO MINER troca as cores na hora e fica salvo', async () => {
+    renderAll()
+    const group = screen.getByRole('radiogroup', { name: 'Tema' })
+    expect(within(group).getByRole('radio', { name: /TAYKO CARGO/ })).toHaveAttribute('aria-checked', 'true')
+    await userEvent.click(within(group).getByRole('radio', { name: /TAYKO MINER/ }))
+    expect(within(group).getByRole('radio', { name: /TAYKO MINER/ })).toHaveAttribute('aria-checked', 'true')
+    expect(document.documentElement.style.getPropertyValue('--gold')).toBe('#ff6a3d')
+    expect(JSON.parse(localStorage.getItem('tayko.prefs')!).theme).toBe('miner')
+    applyTheme('cargo')
   })
 })

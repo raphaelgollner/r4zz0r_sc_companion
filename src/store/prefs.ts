@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react'
 import type { Vehicle } from '../data/types'
 import type { AvoidEntry } from '../domain/avoid'
 import { RISKS, type MaxRisk } from '../domain/risk'
+import { DEFAULT_THEME, isThemeId, type ThemeId } from '../ui/themes'
 
 export interface Prefs {
   shipId: number | null
@@ -25,6 +26,8 @@ export interface Prefs {
   pathStart: number | null
   /** Trechos do CAMINHO (2 a 8). */
   pathLegs: number
+  /** Tema de cores da interface. */
+  theme: ThemeId
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -42,6 +45,7 @@ export const DEFAULT_PREFS: Prefs = {
   shortDistances: false,
   pathStart: null,
   pathLegs: 4,
+  theme: DEFAULT_THEME,
 }
 
 const KEY = 'tayko.prefs'
@@ -68,7 +72,7 @@ export function loadPrefs(): Prefs {
     const routeMode: Prefs['routeMode'] = ['list', 'path', 'roundabout'].includes(p.routeMode) ? p.routeMode : 'list'
     const pathLegs = Number.isInteger(p.pathLegs) && p.pathLegs >= 2 && p.pathLegs <= 8 ? p.pathLegs : 4
     const pathStart = Number.isInteger(p.pathStart) ? p.pathStart : null
-    return { ...p, avoid: cleanAvoid(p.avoid), maxRisk, routeMode, shortDistances: p.shortDistances === true, pathStart, pathLegs }
+    return { ...p, avoid: cleanAvoid(p.avoid), maxRisk, routeMode, shortDistances: p.shortDistances === true, pathStart, pathLegs, theme: isThemeId(p.theme) ? p.theme : DEFAULT_THEME }
   } catch {
     return { ...DEFAULT_PREFS }
   }
