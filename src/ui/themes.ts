@@ -56,7 +56,7 @@ function theme(id: ThemeId, name: string, colors: Palette, logoFilter: string): 
 }
 
 export const THEMES: Theme[] = [
-  theme('cargo', 'TAYKO CARGO', { gold: '#f4c430', goldLight: '#ffd700', goldDark: '#c9a22b', orange: '#ff8c00', orangeLight: '#ffa500', accent: '#ff6b00', black: '#0a0a0f', panel: '#0f0f1a' }, 'none'),
+  theme('cargo', 'TAYKO CARGO', { gold: '#f4c430', goldLight: '#ffd700', goldDark: '#c9a22b', orange: '#ff8c00', orangeLight: '#ffa500', accent: '#ff6b00', black: '#0a0a0f', panel: '#0f0f1a' }, 'saturate(1)'),
   theme('miner', 'TAYKO MINER', { gold: '#ff6a3d', goldLight: '#ff9166', goldDark: '#c2401f', orange: '#ffb03a', orangeLight: '#ffc766', accent: '#ff3b1f', black: '#0f0908', panel: '#1a0f0d' }, 'hue-rotate(-32deg) saturate(1.3)'),
   theme('salvage', 'TAYKO SALVAGE', { gold: '#22c7ff', goldLight: '#7ee3ff', goldDark: '#1592b8', orange: '#4f7bff', orangeLight: '#7d9dff', accent: '#2f5bff', black: '#070a12', panel: '#0c1220' }, 'hue-rotate(150deg) saturate(1.2)'),
   theme('slime', 'SLIME', { gold: '#9cff2e', goldLight: '#c4ff6b', goldDark: '#6fbf1c', orange: '#e1ff3c', orangeLight: '#f0ff85', accent: '#5fe000', black: '#080d06', panel: '#0e160c' }, 'hue-rotate(42deg) saturate(1.4)'),

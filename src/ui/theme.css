@@ -20,7 +20,7 @@
   --black-rgb: 10, 10, 15;
   --glow-gold: rgba(var(--gold-rgb), 0.5);
   --glow-soft: rgba(var(--gold-rgb), 0.15);
-  --logo-filter: none;
+  --logo-filter: saturate(1);
   --profit: #3ddc84;
   --danger: #ff4d4d;
 
@@ -117,9 +117,9 @@ select {
   background: linear-gradient(180deg, rgba(var(--panel-rgb), 0.95), rgba(var(--black-rgb), 0.9));
 }
 .header img {
-  filter: var(--logo-filter);
   height: 48px;
-  filter: drop-shadow(0 0 8px var(--glow-soft));
+  /* tom do tema + brilho */
+  filter: var(--logo-filter) drop-shadow(0 0 8px var(--glow-soft));
 }
 .header h1 {
   font-size: 22px;
