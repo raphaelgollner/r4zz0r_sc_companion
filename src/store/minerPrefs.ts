@@ -26,7 +26,6 @@ export function saveMinerPrefs(p: MinerPrefs): void {
   try {
     localStorage.setItem(KEY, JSON.stringify(p))
   } catch {
-    // sem armazenamento: vale só nesta sessão
   }
 }
 

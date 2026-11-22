@@ -31,7 +31,6 @@ let current: RouteMarks | null = null
 const subscribers = new Set<() => void>()
 const getSnapshot = () => (current ??= loadRouteMarks())
 
-/** Grava (ou apaga, com `undefined`) as marcações de uma rota. */
 export function setRouteMark(key: string, rec: MarkRecord | undefined) {
   const next = { ...getSnapshot() }
   if (rec) next[key] = rec
@@ -40,7 +39,6 @@ export function setRouteMark(key: string, rec: MarkRecord | undefined) {
   try {
     localStorage.setItem(KEY, JSON.stringify(next))
   } catch {
-    // sem armazenamento: vale só nesta sessão
   }
   subscribers.forEach((s) => s())
 }

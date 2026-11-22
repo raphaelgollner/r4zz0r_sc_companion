@@ -4,7 +4,6 @@ import { computeRoutes, needsLoadingDock, type RouteInput, type RouteResult } fr
 import type { TFunction } from '../../i18n/i18n'
 import { effectiveScu, type Prefs } from '../../store/prefs'
 
-/** Rotas para as preferências atuais e a mensagem a mostrar quando não há rotas. */
 export function useRouteResult(
   vehicles: Vehicle[],
   commodities: Commodity[],

@@ -27,7 +27,6 @@ export async function peekResource<T>(key: string, store: KVStore): Promise<Cach
   return isEntry<T>(raw) ? { data: raw.data, fetchedAt: raw.fetchedAt, fromCache: true } : null
 }
 
-/** Buscas em andamento por store/chave: telas que pedem o mesmo recurso ao mesmo tempo compartilham a busca. */
 const inFlight = new WeakMap<KVStore, Map<string, Promise<Entry<unknown>>>>()
 
 function fetchOnce<T>(key: string, fetcher: () => Promise<T>, store: KVStore, now: () => number): Promise<Entry<T>> {
@@ -41,7 +40,6 @@ function fetchOnce<T>(key: string, fetcher: () => Promise<T>, store: KVStore, no
     try {
       await store.set(key, { data, fetchedAt })
     } catch {
-      // cache indisponível: segue só com o dado em memória
     }
     return { data, fetchedAt }
   })().finally(() => byKey!.delete(key))
@@ -49,10 +47,6 @@ function fetchOnce<T>(key: string, fetcher: () => Promise<T>, store: KVStore, no
   return p
 }
 
-/**
- * Devolve o recurso do cache se ainda estiver no prazo; senão busca e grava.
- * Se a busca falhar e houver cache (mesmo vencido), devolve o cache com `error`.
- */
 export async function getResource<T>(
   key: string,
   ttlMs: number,

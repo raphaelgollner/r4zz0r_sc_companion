@@ -4,7 +4,6 @@ import { avoidKey, avoidLabel, avoidOptions, type AvoidEntry } from '../../domai
 import { useI18n } from '../../i18n/i18n'
 import { SearchPicker } from '../../ui/SearchPicker'
 
-/** Lugares fora das rotas: busca para adicionar e etiquetas com × para remover. */
 export function AvoidPicker({ terminals, value, onChange }: { terminals: Terminal[]; value: AvoidEntry[]; onChange: (v: AvoidEntry[]) => void }) {
   const { t } = useI18n()
   const chosen = useMemo(() => new Set(value.map(avoidKey)), [value])

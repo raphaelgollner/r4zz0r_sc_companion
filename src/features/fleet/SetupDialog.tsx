@@ -12,7 +12,6 @@ import { SectionLabel } from '../../ui/components'
 import { Dialog } from '../../ui/Dialog'
 import { formatUsd } from './FleetView'
 
-/** Categorias do UEX com preço dos itens de cada função (lasers, módulos, scraper, tractor, salvage beams). */
 const UEX_CATEGORIES: Record<SetupFunction, number[]> = { mining: [29, 30], salvage: [31, 110], tractor: [67] }
 
 const pct = (n: number) => `${n > 0 ? '+' : ''}${Math.round(n * 10) / 10}%`
@@ -26,7 +25,7 @@ const STAT_LABEL: Record<string, (n: number) => string> = {
   salvage_speed: (n) => `Speed ×${n}`,
   extraction_efficiency: (n) => `Efficiency ×${n}`,
 }
-/** Resumo dos atributos principais (nomes como no jogo, em inglês). */
+
 const statsText = (i: WikiItem) =>
   Object.entries(STAT_LABEL)
     .filter(([k]) => i.stats[k] !== undefined)
@@ -56,7 +55,7 @@ export function SetupDialog({
   const salvage = has('salvage')
   const tractor = has('tractor')
   const cat = (on: boolean, id: number) => (on ? { id_category: id } : null)
-  // Consultas fixas; as de funções que a nave não tem ficam desligadas (parâmetro null).
+
   const wLaser = useWikiItems(mining ? 'WeaponMining' : null)
   const wModule = useWikiItems(mining ? 'MiningModifier' : null)
   const wHead = useWikiItems(salvage ? 'SalvageHead' : null)
@@ -84,7 +83,7 @@ export function SetupDialog({
     [pLaser.data, pModule.data, pScraper.data, pBeam.data, pTractor.data],
   )
   const slots = useMemo(() => (v ? industrialSlots(v) : []), [v])
-  // Itens de fábrica da nave (inclusive módulos declarados): têm preferência quando a Wiki repete o nome.
+
   const stock = useMemo(() => {
     const s = new Set<string>()
     const walk = (ports: WikiPort[]) => ports.forEach((p) => (p.equippedUuid && s.add(p.equippedUuid), walk(p.ports)))
@@ -100,7 +99,7 @@ export function SetupDialog({
   const cost = setupCost(entry.setup, uexByUuid, prices)
   const loadingItems = wikiLists.some((l) => l.loading && !l.data)
   const itemsFailed = wikiLists.some((l) => l.error && !l.data)
-  // Sem a lista de itens, trocar um encaixe poderia apagar módulos salvos: os encaixes ficam travados.
+
   const locked = loadingItems || itemsFailed
 
   const save = (setup: Record<string, string>) => onUpdate({ setup: v ? pruneSetup(setup, v, itemMap) : setup })
@@ -115,7 +114,7 @@ export function SetupDialog({
     const cands = items.filter((i) => fits(i, port, vehicle.id, uexByUuid)).sort((a, b) => a.name.localeCompare(b.name))
     const value = entry.setup[port.path] ?? port.equippedUuid ?? ''
     const stockMissing = port.equippedUuid && !cands.some((c) => c.uuid === port.equippedUuid)
-    // O valor atual sempre tem uma opção, para a tela nunca mostrar outra coisa como escolhida.
+
     const savedMissing = !!value && value !== port.equippedUuid && !cands.some((c) => c.uuid === value)
     return (
       <label className="field setup-slot" key={port.path}>

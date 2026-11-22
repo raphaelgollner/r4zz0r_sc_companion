@@ -13,7 +13,6 @@ import { HarvestablesView } from './HarvestablesView'
 import { LocationsView } from './LocationsView'
 import { PriceFinderView } from './PriceFinderView'
 
-/** Junta vários recursos num só estado de carregamento. */
 export function useMany(states: UexState<unknown>[]) {
   return {
     loading: states.some((s) => s.loading),
@@ -46,7 +45,6 @@ export function useTradeBase() {
   const status = useUex<CommodityStatus>('commodities_status')
   return { commodities, prices, status }
 }
-
 
 export function CommoditiesScreen() {
   const { commodities, prices, status } = useTradeBase()

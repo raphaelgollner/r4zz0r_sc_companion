@@ -46,7 +46,7 @@ export function FleetView({
   onUpdate: (id: string, patch: Partial<Omit<FleetEntry, 'id'>>) => void
   onRemove: (id: string) => void
   onOpenSetup: (id: string) => void
-  /** A frota salva não pôde ser lida: nada é gravado, então não deixamos adicionar. */
+
   loadFailed?: boolean
 }) {
   const { t } = useI18n()

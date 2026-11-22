@@ -10,15 +10,15 @@ export interface RouteInput {
   budget: number
   excludeIllegal: boolean
   originSystem?: string
-  /** Rotas com compra ou venda nesses lugares são descartadas. */
+
   avoid?: AvoidEntry[]
-  /** Rotas ocultas pelo jogador: saem antes do limite. */
+
   hiddenKeys?: ReadonlySet<string>
-  /** Só estas rotas (lista de ocultas). */
+
   onlyKeys?: ReadonlySet<string>
-  /** Nível de perigo máximo aceito na compra e na venda. */
+
   maxRisk?: MaxRisk
-  /** Nave que só carrega em doca de carga externa: só terminais com doca (compra e venda). */
+
   dockOnly?: boolean
   sortBy: 'profit' | 'roi'
 }
@@ -43,10 +43,6 @@ export type RouteResult = { ok: true; routes: RouteOption[] } | { ok: false; rea
 export const stockOf = (r: PriceRow) => (r.scu_buy > 0 ? r.scu_buy : r.scu_buy_avg)
 export const demandOf = (r: PriceRow) => (r.scu_sell > 0 ? r.scu_sell : r.scu_sell_avg)
 
-/**
- * Um trecho compra → venda: quanto levar e quanto rende. `stock`/`demand` = 0 quando desconhecidos.
- * Devolve null quando não dá para levar nada.
- */
 export function evaluateLeg(
   c: Commodity,
   buy: PriceRow,
@@ -57,7 +53,6 @@ export function evaluateLeg(
   demand: number,
   known = { stock: stock > 0, demand: demand > 0 },
 ): RouteOption | null {
-  // Ordem importa: em empate, vale o primeiro limitador da lista.
   const limits: [LimitedBy, number][] = [
     ['nave', shipScu],
     ['dinheiro', budget / buy.price_buy],
@@ -86,13 +81,10 @@ export function evaluateLeg(
   }
 }
 
-/** Terminal com doca de carga externa (UEX). Desconhecido conta como sem doca. */
 export const hasLoadingDock = (t: Terminal | undefined) => t?.has_loading_dock === 1
 
-/** Nave que só carrega em doca de carga externa (UEX; ex.: Hull C). */
 export const needsLoadingDock = (v: Vehicle | null | undefined) => v?.is_loading_dock === 1
 
-/** Filtros comuns das rotas: mercadoria permitida, terminal evitado (Evitar/Risco), rota oculta. */
 export function routeFilters(commodities: Commodity[], terminals: Map<number, Terminal>, input: RouteInput) {
   const avoid = input.avoid ?? []
   const maxRisk = input.maxRisk ?? 'any'
@@ -110,7 +102,6 @@ export function routeFilters(commodities: Commodity[], terminals: Map<number, Te
   }
 }
 
-/** Calcula as melhores rotas compra → venda para a nave e o orçamento informados (spec §7.1). */
 export function computeRoutes(
   prices: PriceRow[],
   commodities: Commodity[],

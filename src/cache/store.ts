@@ -17,7 +17,6 @@ export function memoryStore(): KVStore {
   }
 }
 
-/** Cache persistente no IndexedDB do WebView (fica no PC do usuário). */
 export function idbStore(): KVStore {
   const db = createStore('tayko-companion', 'uex-cache')
   return {

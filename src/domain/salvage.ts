@@ -1,6 +1,5 @@
 import type { Commodity, PriceRow } from '../data/types'
 
-/** Materiais que o salvage rende, pelo código do UEX, na ordem da tela. */
 export const SALVAGE_CODES = ['RMC', 'CMAT', 'SCRA', 'WAST']
 
 export function salvageMaterials(commodities: Commodity[]): Commodity[] {
@@ -15,26 +14,25 @@ export interface SalvageLine {
 export interface SalvagePlanRow {
   terminalId: number
   terminalName: string
-  /** Σ SCU × preço de venda dos materiais que o terminal compra. */
+
   value: number
-  /** Materiais com demanda conhecida menor que a carga. */
+
   short: number[]
-  /** Materiais da carga que o terminal não compra. */
+
   missing: number[]
   distance: number | null
-  /** Linhas de preço usadas (para mostrar preço e data). */
+
   rows: PriceRow[]
 }
 
 const valid = (cargo: SalvageLine[]) => cargo.filter((l) => l.commodityId > 0 && Number.isFinite(l.scu) && l.scu > 0)
 
-/** Junta linhas do mesmo material (ex.: 60 + 60 SCU de RMC = 120). */
 function merged(cargo: SalvageLine[]): SalvageLine[] {
   const m = new Map<number, number>()
   for (const l of valid(cargo)) m.set(l.commodityId, (m.get(l.commodityId) ?? 0) + l.scu)
   return [...m].map(([commodityId, scu]) => ({ commodityId, scu }))
 }
-/** Demanda do terminal: a atual ou, sem ela, a média (como nas rotas). */
+
 const demandOf = (r: PriceRow) => (r.scu_sell > 0 ? r.scu_sell : r.scu_sell_avg)
 
 export function salvagePlan(cargo: SalvageLine[], prices: PriceRow[], distance: (terminalId: number) => number | null, sortBy: 'value' | 'distance'): SalvagePlanRow[] {
@@ -65,7 +63,6 @@ export function salvagePlan(cargo: SalvageLine[], prices: PriceRow[], distance: 
   return rows
 }
 
-/** A carga digitada passa da capacidade da nave? Capacidade 0 = desconhecida, sem aviso. */
 export function capacityWarning(cargo: SalvageLine[], scu: number): boolean {
   if (!(scu > 0)) return false
   return valid(cargo).reduce((s, l) => s + l.scu, 0) > scu

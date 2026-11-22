@@ -102,8 +102,8 @@ describe('computeRoutes', () => {
   test('ordena por lucro e por roi', () => {
     const gold = commodity(30, 'Gold')
     const prices = [
-      buy8(), sell12(), // lucro 630.602, roi ~20,6%
-      price(30, 8, { price_buy: 100, scu_buy: 100 }), price(30, 12, { price_sell: 200, scu_sell: 100 }), // lucro 10.000, roi 100%
+      buy8(), sell12(),
+      price(30, 8, { price_buy: 100, scu_buy: 100 }), price(30, 12, { price_sell: 200, scu_sell: 100 }),
     ]
     expect(routes(prices, input(), [laranite, gold]).map((r) => r.commodityName)).toEqual(['Laranite', 'Gold'])
     expect(routes(prices, input({ sortBy: 'roi' }), [laranite, gold]).map((r) => r.commodityName)).toEqual(['Gold', 'Laranite'])

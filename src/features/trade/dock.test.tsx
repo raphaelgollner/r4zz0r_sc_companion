@@ -8,7 +8,7 @@ import { GOLD, LARANITE, NOW, PRICES, terminal, vehicle } from '../../test/fixtu
 import { RoutesView } from './RoutesView'
 
 const vehicles = [vehicle(1, 'Caterpillar', 576, { name_full: 'Drake Caterpillar' }), vehicle(9, 'Hull C', 4608, { name_full: 'MISC Hull C', is_loading_dock: 1 })]
-// Só 8 (compra) e 13 (venda) têm doca; 12 não.
+
 const terminals = [terminal(8, { has_loading_dock: 1 }), terminal(12), terminal(13, { has_loading_dock: 1 })]
 
 function Harness({ initial = {} }: { initial?: Partial<Prefs> }) {

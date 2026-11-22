@@ -1,7 +1,6 @@
 import { useCallback, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
-/** Posição da dica: acima do alvo, ou abaixo se não couber; sempre dentro da largura da janela. */
 export function placeTooltip(
   target: DOMRect,
   box: { width: number; height: number },
@@ -14,12 +13,6 @@ export function placeTooltip(
   return { top, left, below }
 }
 
-/**
- * Dica que aparece ao passar o mouse. É desenhada num portal no <body>, então
- * cards e painéis com cantos recortados não cortam a dica.
- * `focusable` também a mostra pelo teclado (Tab); desligado por padrão para não
- * criar dezenas de paradas de Tab nas tabelas.
- */
 export function Tooltip({ content, children, focusable = false }: { content: ReactNode; children: ReactNode; focusable?: boolean }) {
   const [open, setOpen] = useState(false)
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null)
@@ -61,7 +54,6 @@ export function Tooltip({ content, children, focusable = false }: { content: Rea
       onBlur={() => setOpen(false)}
       onKeyDown={(e) => {
         if (e.key === 'Escape' && open) {
-          // fecha só a dica, não a janela onde ela está
           e.stopPropagation()
           e.nativeEvent.stopImmediatePropagation()
           setOpen(false)

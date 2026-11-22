@@ -1,5 +1,3 @@
-/** Tipos dos recursos do UEX usados pelo app (só os campos que o app lê). */
-
 export interface Commodity {
   id: number
   name: string
@@ -18,7 +16,6 @@ export interface Commodity {
   date_modified: number
 }
 
-/** Linha de `commodities_prices_all`. Preços por SCU; datas em segundos Unix. */
 export interface PriceRow {
   id: number
   id_commodity: number
@@ -54,7 +51,7 @@ export interface CommodityStatus {
 
 export interface Vehicle {
   id: number
-  /** Identificador do jogo: liga a nave à Star Citizen Wiki. */
+
   uuid?: string
   name: string
   name_full: string
@@ -62,7 +59,7 @@ export interface Vehicle {
   scu: number
   crew?: string
   pad_type?: string | null
-  /** 1 = só carrega em doca de carga externa (ex.: Hull C). */
+
   is_loading_dock?: number
   url_photo?: string | null
   is_cargo: number
@@ -91,7 +88,6 @@ export interface Vehicle {
   is_industrial?: number
 }
 
-/** Preço de pledge (dinheiro real) por moeda (`vehicles_prices`). */
 export interface PledgePrice {
   id: number
   id_vehicle: number
@@ -131,9 +127,9 @@ export interface Terminal {
   space_station_name: string | null
   city_name: string | null
   outpost_name: string | null
-  /** Facção que controla o local (UEX); base do nível de perigo. */
+
   faction_name?: string | null
-  /** 1 = tem doca de carga externa (naves como a Hull C só carregam nela). */
+
   has_loading_dock?: number
 }
 
@@ -211,9 +207,9 @@ export interface RawPriceRow {
 
 export interface Item {
   id: number
-  /** Identificador do jogo: liga o item à Star Citizen Wiki. */
+
   uuid?: string | null
-  /** > 0 quando o item é exclusivo de uma nave (ex.: Pitman → Golem). */
+
   id_vehicle?: number
   vehicle_name?: string | null
   id_category: number

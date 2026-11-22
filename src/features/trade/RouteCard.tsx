@@ -21,15 +21,15 @@ export function RouteCard({
   now: number
   warnHours?: number
   staleDays?: number
-  /** Marcações válidas desta rota. */
+
   marks?: MarkKind[]
-  /** Sem isso, o card não mostra o menu Marcar. */
+
   onToggleMark?: (kind: MarkKind) => void
-  /** "1 de 4" no CAMINHO/ROTATIVO. */
+
   legLabel?: string
-  /** Distância compra → venda em Gm (REDUZIR DISTÂNCIAS); undefined = não mostrar. */
+
   distance?: number | null
-  /** Terminais com doca de carga externa, para o selo (só quando a nave precisa da doca). */
+
   dockIds?: ReadonlySet<number>
 }) {
   const { t } = useI18n()

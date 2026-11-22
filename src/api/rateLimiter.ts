@@ -11,7 +11,6 @@ interface RateLimiterOptions {
 
 const realSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
-/** Janela deslizante: no máximo `maxPerWindow` chamadas iniciadas a cada `windowMs`. */
 export function createRateLimiter({
   maxPerWindow,
   windowMs,
@@ -19,7 +18,7 @@ export function createRateLimiter({
   sleep = realSleep,
 }: RateLimiterOptions): RateLimiter {
   const started: number[] = []
-  // Fila de "vagas": cada chamada espera a anterior conseguir sua vaga antes de calcular a sua.
+
   let slotQueue: Promise<void> = Promise.resolve()
 
   async function takeSlot() {

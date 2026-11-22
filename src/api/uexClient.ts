@@ -2,7 +2,6 @@ import { createRateLimiter, type RateLimiter } from './rateLimiter'
 
 export const UEX_BASE = 'https://api.uexcorp.uk/2.0'
 
-/** Erro da API do UEX. `code` é o `status` devolvido pela API, `http_<n>` ou `network`. */
 export class UexError extends Error {
   code: string
   constructor(code: string, message?: string) {
@@ -12,7 +11,6 @@ export class UexError extends Error {
   }
 }
 
-/** Tempo máximo de uma requisição antes de desistir e mostrar "Tentar de novo". */
 const REQUEST_TIMEOUT_MS = 20_000
 
 const defaultLimiter = createRateLimiter({ maxPerWindow: 100, windowMs: 60_000 })
@@ -55,7 +53,7 @@ export async function fetchUex<T>(
       throw new UexError('invalid_json')
     }
     if (body.status !== 'ok') throw new UexError(body.status ?? 'unknown')
-    // Resposta sem dados não pode ir para o cache: as telas esperam lista/objeto.
+
     if (body.data === null || typeof body.data !== 'object') throw new UexError('invalid_data')
     return body.data as T
   })

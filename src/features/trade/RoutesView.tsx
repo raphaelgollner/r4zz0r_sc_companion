@@ -13,12 +13,10 @@ import { RouteCard } from './RouteCard'
 import { RouteControls } from './RouteControls'
 import { useRouteResult } from './useRouteResult'
 
-/** Rotas mais lucrativas que têm a distância buscada no modo REDUZIR DISTÂNCIAS. */
 const DISTANCE_TOP = 30
-/** Pares do ROTATIVO que têm a distância buscada. */
+
 const ROUNDABOUT_TOP = 15
 
-/** Busca a distância de um par e devolve com a chave "origem:destino". */
 function PairDistance({ from, to, onPair }: { from: number; to: number; onPair: (key: string, d: number | null) => void }) {
   const onDistance = useCallback((dest: number, d: number | null) => onPair(`${from}:${dest}`, d), [from, onPair])
   return <DistanceFetcher origin={from} destination={to} onDistance={onDistance} />
@@ -72,7 +70,7 @@ export function RoutesView({
   const distanceOf: DistanceOf = useCallback((a, b) => (distances.has(`${a}:${b}`) ? distances.get(`${a}:${b}`) : undefined), [distances])
 
   const routes = useMemo(() => (result?.ok ? result.routes : []), [result])
-  // "Começar em" que sumiu da lista de terminais é ignorado; evitado (Evitar/Risco) é explicado.
+
   const dockIds = useMemo(
     () => (needsLoadingDock(ship) ? new Set(terminals.filter(hasLoadingDock).map((x) => x.id)) : undefined),
     [ship, terminals],
@@ -83,10 +81,9 @@ export function RoutesView({
     [startId, commodities, terminalMap, input],
   )
 
-  // Lista solta: com REDUZIR DISTÂNCIAS, as 30 mais lucrativas sobem por lucro por Gm.
   const listView = useMemo(() => {
     if (mode !== 'list' || !short) return { routes, pending: [] as [number, number][] }
-    // As 30 mais lucrativas (a lista pode estar por ROI).
+
     const top = [...routes].sort((a, b) => b.profit - a.profit).slice(0, DISTANCE_TOP)
     const topKeys = new Set(top.map(routeKey))
     const pending = new Map<string, [number, number]>()
@@ -95,7 +92,6 @@ export function RoutesView({
     return { routes: [...rankByDistance(top, distanceOf), ...routes.filter((r) => !topKeys.has(routeKey(r)))], pending: [...pending.values()] }
   }, [mode, short, routes, distanceOf])
 
-  // Cálculos pesados ficam fora das distâncias: cada distância que chega só refaz a escolha gulosa/ordenação.
   const beamPaths = useMemo(
     () => (mode === 'path' && ship ? bestPaths(prices, commodities, terminalMap, input, { legs: prefs.pathLegs, start: startId }) : []),
     [mode, ship, prices, commodities, terminalMap, input, prefs.pathLegs, startId],
@@ -103,7 +99,7 @@ export function RoutesView({
   const pathView = useMemo(() => {
     if (mode !== 'path' || !ship || !short) return { paths: beamPaths, pending: [] as [number, number][] }
     const g = greedyPaths(prices, commodities, terminalMap, input, { legs: prefs.pathLegs, start: startId }, distanceOf)
-    // Enquanto as distâncias não chegam, mostra os caminhos pelo lucro.
+
     return g.pending.length ? { paths: beamPaths, pending: g.pending } : g
   }, [mode, ship, short, beamPaths, prices, commodities, terminalMap, input, prefs.pathLegs, startId, distanceOf])
 

@@ -2,7 +2,6 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import type { Terminal } from './types'
 import { useUex } from './useUex'
 
-/** Todos os terminais do UEX por id, para qualquer tela mostrar nome do lugar e localização. */
 export const TerminalsContext = createContext<Map<number, Terminal>>(new Map())
 
 export function TerminalsProvider({ children }: { children: ReactNode }) {

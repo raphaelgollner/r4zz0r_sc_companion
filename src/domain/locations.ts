@@ -14,7 +14,6 @@ function child(parent: Map<string, LocationNode>, label: string): LocationNode {
   return n
 }
 
-/** Sistema → planeta → (lua/estação/cidade/posto) → terminais. */
 export function buildLocationTree(
   terminals: Terminal[],
   types: string[] = ['commodity', 'commodity_raw'],
@@ -60,7 +59,6 @@ const ids = (csv: string | null | undefined) =>
     .map((x) => Number(x.trim()))
     .filter((n) => Number.isInteger(n) && n > 0)
 
-/** Planetas e luas onde a commodity aparece, segundo `ids_planets`/`ids_moons` do UEX. */
 export function whereFound(c: Commodity, planets: Map<number, Planet>, moons: Map<number, Moon>): string[] {
   const names = new Set<string>()
   ids(c.ids_planets).forEach((id) => planets.get(id) && names.add(planets.get(id)!.name))

@@ -2,7 +2,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, test } from 'vitest'
 
-// Lido do disco: o Vitest entrega CSS vazio em imports.
 const css = readFileSync('src/ui/theme.css', 'utf-8')
 
 describe('theme.css', () => {

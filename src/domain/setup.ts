@@ -1,17 +1,15 @@
 import type { Item, ItemPrice } from '../data/types'
 import type { WikiItem, WikiPort, WikiVehicle } from './wiki'
 
-/** Funções industriais com setup. Combate nunca entra. */
 export type SetupFunction = 'mining' | 'salvage' | 'tractor'
 
-/** Tipos de encaixe principais de cada função. */
 export const SLOT_TYPES: Record<SetupFunction, string[]> = {
   mining: ['WeaponMining'],
   salvage: ['SalvageHead'],
   tractor: ['TractorBeam'],
 }
 const FUNCTIONS = Object.keys(SLOT_TYPES) as SetupFunction[]
-/** Tipo dos encaixes-filho (módulos) de cada encaixe principal. */
+
 export const CHILD_TYPE: Record<string, string> = { WeaponMining: 'MiningModifier', SalvageHead: 'SalvageModifier' }
 const SLOT_LABEL: Record<SetupFunction, string> = { mining: 'Laser', salvage: 'Salvage Head', tractor: 'Tractor Beam' }
 
@@ -23,7 +21,6 @@ export interface Slot {
 
 const fnOf = (type: string): SetupFunction | null => FUNCTIONS.find((f) => SLOT_TYPES[f].includes(type)) ?? null
 
-/** Encaixes industriais editáveis da nave, na ordem da Wiki. */
 export function industrialSlots(v: WikiVehicle): Slot[] {
   const out: Slot[] = []
   const count: Record<SetupFunction, number> = { mining: 0, salvage: 0, tractor: 0 }
@@ -42,13 +39,11 @@ export function industrialSlots(v: WikiVehicle): Slot[] {
   return out
 }
 
-/** Funções que a nave tem de fato: só as que têm encaixes. */
 export function functionsOf(v: WikiVehicle): SetupFunction[] {
   const present = new Set(industrialSlots(v).map((s) => s.fn))
   return FUNCTIONS.filter((f) => present.has(f))
 }
 
-/** O item cabe no encaixe desta nave? */
 export function fits(item: WikiItem, port: WikiPort, vehicleUexId: number, uexByUuid: Map<string, Item>): boolean {
   if (item.type !== port.type) return false
   if (item.subType !== port.subType) return false
@@ -59,17 +54,11 @@ export function fits(item: WikiItem, port: WikiPort, vehicleUexId: number, uexBy
   return true
 }
 
-/** Item no encaixe: o escolhido no setup ou o de fábrica. */
 export function chosenItem(port: WikiPort, setup: Record<string, string>, items: Map<string, WikiItem>): WikiItem | null {
   const uuid = setup[port.path] ?? port.equippedUuid
   return uuid ? items.get(uuid) ?? null : null
 }
 
-/**
- * Encaixes de módulo de um encaixe principal.
- * De fábrica: os que a nave declara ou, se ela não declara, os do item de fábrica.
- * Trocado: os do item escolhido.
- */
 export function childPorts(port: WikiPort, setup: Record<string, string>, items: Map<string, WikiItem>): WikiPort[] {
   const childType = CHILD_TYPE[port.type]
   if (!childType) return []
@@ -84,10 +73,9 @@ export function childPorts(port: WikiPort, setup: Record<string, string>, items:
   return item.ports.filter((c) => c.type === childType).map((c) => ({ ...c, path: `${port.path}/${c.name}`, editable: true }))
 }
 
-/** Remove do setup os caminhos que não existem mais (ex.: laser trocado por um com menos módulos). */
 export function pruneSetup(setup: Record<string, string>, v: WikiVehicle, items: Map<string, WikiItem>): Record<string, string> {
   const valid = new Set<string>()
-  // Item trocado que ainda não carregou (ou a lista falhou): não dá para saber os módulos; mantém os salvos.
+
   const unknownParents: string[] = []
   for (const s of industrialSlots(v)) {
     valid.add(s.port.path)
@@ -98,7 +86,6 @@ export function pruneSetup(setup: Record<string, string>, v: WikiVehicle, items:
   return Object.fromEntries(Object.entries(setup).filter(([k]) => valid.has(k) || unknownParents.some((p) => k.startsWith(p))))
 }
 
-/** Aplica uma build trocando só os encaixes da função dela; as escolhas das outras funções ficam. */
 export function applyBuild(setup: Record<string, string>, build: Build, v: WikiVehicle): Record<string, string> {
   const own = industrialSlots(v)
     .filter((s) => s.fn === build.fn)
@@ -109,10 +96,6 @@ export function applyBuild(setup: Record<string, string>, build: Build, v: WikiV
 
 const TEST_VARIANT = /test|_arm$|placeholder/i
 
-/**
- * A Wiki lista variantes de teste e de veículo com o mesmo nome (ex.: três "Arbor MH1").
- * Tira as de teste e deixa uma por nome+tipo+tamanho: a de fábrica, senão a que o UEX conhece, senão a primeira.
- */
 export function cleanItems(items: WikiItem[], stock: Set<string>, uexByUuid: Map<string, Item>): WikiItem[] {
   const groups = new Map<string, WikiItem[]>()
   for (const i of items) {
@@ -126,9 +109,9 @@ export function cleanItems(items: WikiItem[], stock: Set<string>, uexByUuid: Map
 export interface Build {
   id: string
   fn: SetupFunction
-  /** Chave do dicionário com o nome da build. */
+
   nameKey: string
-  /** Chave do dicionário com o critério usado. */
+
   criterionKey: string
   setup: Record<string, string>
 }
@@ -138,12 +121,10 @@ const s = (i: WikiItem, k: string) => i.stats[k] ?? 0
 const stableScore: Score = (i) => -s(i, 'laser_instability') + s(i, 'optimal_charge_window_size')
 const powerScore: Score = (i) => (i.type === 'WeaponMining' ? s(i, 'power_max') : s(i, 'power_modifier'))
 
-/** Ordena candidatos pela pontuação; empate: o de fábrica, depois o nome. */
 function rank(cands: WikiItem[], score: Score, stockUuid: string | null): WikiItem[] {
   return [...cands].sort((a, b) => score(b) - score(a) || Number(b.uuid === stockUuid) - Number(a.uuid === stockUuid) || a.name.localeCompare(b.name))
 }
 
-/** Pontuação "equilibrada": soma das posições nas ordens estável e potência (menor é melhor). */
 function balancedScore(cands: WikiItem[], stockUuid: string | null): Score {
   const pos = (list: WikiItem[]) => new Map(list.map((x, i) => [x.uuid, i]))
   const a = pos(rank(cands, stableScore, stockUuid))
@@ -151,7 +132,6 @@ function balancedScore(cands: WikiItem[], stockUuid: string | null): Score {
   return (i) => -((a.get(i.uuid) ?? 0) + (b.get(i.uuid) ?? 0))
 }
 
-/** Melhor item para o encaixe. Módulo ativo só entra se melhorar e nenhum passivo melhorar. */
 function pick(port: WikiPort, cands: WikiItem[], scoreFor: (c: WikiItem[]) => Score): WikiItem | null {
   if (!cands.length) return null
   const isModule = port.type === CHILD_TYPE.WeaponMining || port.type === CHILD_TYPE.SalvageHead
@@ -178,7 +158,6 @@ const CRITERIA: Record<SetupFunction, { id: string; score: (port: WikiPort) => (
   tractor: [],
 }
 
-/** Builds recomendadas, só para as funções que a nave tem. */
 export function buildsFor(v: WikiVehicle, items: WikiItem[], vehicleUexId: number, uexByUuid: Map<string, Item>): Build[] {
   const slots = industrialSlots(v)
   const byUuid = new Map(items.map((i) => [i.uuid, i]))
@@ -187,7 +166,6 @@ export function buildsFor(v: WikiVehicle, items: WikiItem[], vehicleUexId: numbe
     for (const c of CRITERIA[fn]) {
       const setup: Record<string, string> = {}
       for (const slot of slots.filter((x) => x.fn === fn)) {
-        // O item de fábrica não é troca: não entra no setup (nem no custo).
         const main = pick(slot.port, items.filter((i) => fits(i, slot.port, vehicleUexId, uexByUuid)), c.score(slot.port))
         if (main && main.uuid !== slot.port.equippedUuid) setup[slot.port.path] = main.uuid
         for (const child of childPorts(slot.port, setup, byUuid)) {
@@ -201,7 +179,6 @@ export function buildsFor(v: WikiVehicle, items: WikiItem[], vehicleUexId: numbe
   return out
 }
 
-/** Custo das trocas em aUEC: menor preço de cada item no UEX; sem preço é contado à parte. */
 export function setupCost(setup: Record<string, string>, uexByUuid: Map<string, Item>, prices: ItemPrice[]): { total: number; missing: number } {
   let total = 0
   let missing = 0

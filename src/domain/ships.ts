@@ -5,7 +5,6 @@ export type ShipRole =
   | 'refinery' | 'refuel' | 'repair' | 'medical' | 'science' | 'stealth' | 'starter' | 'construction'
   | 'datarunner' | 'interdiction' | 'carrier'
 
-/** Tipo da nave a partir das flags do UEX, na ordem em que aparecem na tela. */
 const RULES: [ShipRole, (v: Vehicle) => unknown][] = [
   ['cargo', (v) => v.is_cargo],
   ['mining', (v) => v.is_mining],

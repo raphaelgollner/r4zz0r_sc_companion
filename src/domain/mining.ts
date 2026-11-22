@@ -2,10 +2,8 @@ import type { Commodity, ItemAttribute, PriceRow, RawPriceRow, RefineryYield } f
 
 const SUFFIX = / \((Raw|Ore)\)$/
 
-/** É minério bruto (nome termina em "(Raw)" ou "(Ore)"). */
 export const isRawOre = (c: Commodity) => SUFFIX.test(c.name)
 
-/** Commodity refinada correspondente: mesmo nome sem "(Raw)"/"(Ore)". */
 export function refinedOf(raw: Commodity, all: Commodity[]): Commodity | null {
   if (!SUFFIX.test(raw.name)) return null
   const name = raw.name.replace(SUFFIX, '')
@@ -17,7 +15,7 @@ export interface OreRow {
   refined: Commodity | null
   bestRaw: RawPriceRow | null
   bestRefined: PriceRow | null
-  /** Quanto o refinado vale a mais que o bruto, em %. */
+
   uplift: number | null
 }
 
@@ -62,21 +60,17 @@ export interface CargoLine {
 export interface RefinePlanRow {
   terminalId: number
   terminalName: string
-  /** Bônus médio da refinaria para a carga, ponderado por SCU (%). */
+
   avgBonus: number
-  /** Σ SCU × melhor preço do refinado × (1 + bônus/100). Estimativa. */
+
   estValue: number
-  /** Minérios da carga sem preço de refinado (ficam fora do valor). */
+
   missingPrice: number[]
   distance: number | null
 }
 
 const validCargo = (cargo: CargoLine[]) => cargo.filter((c) => c.oreId > 0 && Number.isFinite(c.scu) && c.scu > 0)
 
-/**
- * Distâncias do local atual até cada refinaria, a partir do cache `local:refinaria`.
- * A refinaria onde o jogador já está tem distância 0.
- */
 export function distancesFor(locationId: number | null, refineryIds: number[], cache: Map<string, number | null>): Map<number, number | null> {
   const m = new Map<number, number | null>()
   if (locationId === null) return m
@@ -127,7 +121,6 @@ export function sellRawValue(cargo: CargoLine[], bestRawPrice: (oreId: number) =
   }, 0)
 }
 
-/** Valor de um atributo de item com a unidade ("-10 %"); vazio ou ausente → null. */
 export function attr(attrs: ItemAttribute[], itemId: number, name: string): string | null {
   const a = attrs.find((x) => x.id_item === itemId && x.attribute_name === name)
   if (!a || a.value === '' || a.value === null) return null

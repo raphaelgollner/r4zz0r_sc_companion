@@ -1,12 +1,11 @@
 import { createRateLimiter } from './rateLimiter'
 import { UexError, type UexDeps } from './uexClient'
 
-/** Star Citizen Wiki API: encaixes, componentes e descrições gerados dos arquivos do jogo. */
 export const WIKI_BASE = 'https://api.star-citizen.wiki/api/v2'
 
 const REQUEST_TIMEOUT_MS = 20_000
 const MAX_PAGES = 20
-/** A Wiki não declara limite; ficamos bem abaixo do que o UEX permite. */
+
 const defaultLimiter = createRateLimiter({ maxPerWindow: 60, windowMs: 60_000 })
 
 interface Page<T> {
@@ -38,12 +37,10 @@ async function fetchPage<T>(path: string, deps: UexDeps): Promise<Page<T>> {
   })
 }
 
-/** Um recurso da Wiki (ex.: `vehicles/<uuid>`). Devolve `data`. */
 export async function fetchWiki<T>(path: string, deps: UexDeps = {}): Promise<T> {
   return (await fetchPage<T>(path, deps)).data as T
 }
 
-/** Todos os itens de um tipo (ex.: `WeaponMining`), juntando as páginas. */
 export async function fetchWikiItemsByType(type: string, deps: UexDeps = {}): Promise<unknown[]> {
   const out: unknown[] = []
   for (let page = 1; page <= MAX_PAGES; page++) {

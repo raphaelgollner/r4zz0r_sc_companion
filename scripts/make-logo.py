@@ -1,4 +1,3 @@
-"""Gera src/assets/logo.png com fundo transparente a partir da logo original (fundo branco)."""
 import sys
 from pathlib import Path
 from PIL import Image
@@ -20,7 +19,7 @@ def main() -> int:
             if m >= 245:
                 px[x, y] = (r, g, b, 0)
             elif m >= 225:
-                # borda suave: quanto mais claro, mais transparente
+
                 px[x, y] = (r, g, b, int(a * (245 - m) / 20))
     bbox = img.getbbox()
     if bbox:
@@ -28,7 +27,7 @@ def main() -> int:
     DST.parent.mkdir(parents=True, exist_ok=True)
     img.save(DST)
     print(f"ok {DST} {img.size}")
-    # ícone: só a engrenagem (parte de cima, antes do texto), em quadrado com margem
+
     gear = img.crop((0, 0, img.width, int(img.height * 0.62)))
     gear = gear.crop(gear.getbbox())
     side = int(max(gear.size) * 1.08)

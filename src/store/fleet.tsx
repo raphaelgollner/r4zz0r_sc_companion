@@ -6,19 +6,16 @@ import type { FleetEntry } from '../domain/fleet'
 const KEY = 'data'
 const WRITE_DELAY_MS = 400
 
-/** Banco separado do cache do UEX: "Limpar cache" não apaga a frota. */
 export function fleetStore(): KVStore {
   const db = createStore('tayko-companion-fleet', 'fleet')
   return {
     get: (key) => get(key, db),
     set: (key, value) => set(key, value, db),
     clear: async () => {
-      // nunca limpamos a frota por aqui
     },
   }
 }
 
-/** Aceita só entradas bem formadas; o resto é descartado. */
 function sanitize(raw: unknown): FleetEntry[] {
   const list = raw && typeof raw === 'object' ? (raw as { entries?: unknown }).entries : null
   if (!Array.isArray(list)) return []
@@ -37,7 +34,7 @@ function sanitize(raw: unknown): FleetEntry[] {
 export interface FleetValue {
   entries: FleetEntry[]
   ready: boolean
-  /** true quando não deu para ler a frota salva: nada é gravado para não sobrescrever. */
+
   loadFailed: boolean
   add: (vehicleId: number) => string
   update: (id: string, patch: Partial<Omit<FleetEntry, 'id'>>) => void
@@ -65,7 +62,6 @@ export function FleetProvider({ store, children }: { store?: KVStore; children: 
     if (!pending.current) return
     pending.current = false
     kv.set(KEY, { entries: ref.current }).catch(() => {
-      // falha ao gravar: segue em memória nesta sessão
     })
   }, [kv])
 
@@ -128,7 +124,6 @@ export function FleetProvider({ store, children }: { store?: KVStore; children: 
 
 const EMPTY: FleetValue = { entries: [], ready: true, loadFailed: false, add: () => '', update: () => {}, remove: () => {} }
 
-/** Frota pessoal. Sem provider (ex.: telas testadas isoladas), devolve uma frota vazia. */
 export function useFleet(): FleetValue {
   return useContext(FleetContext) ?? EMPTY
 }

@@ -19,7 +19,7 @@ export function SettingsView({
 }: {
   version: string
   onClearCache: () => Promise<void>
-  /** Idade de cada recurso do UEX; sem isso, o painel "Dados salvos" não aparece. */
+
   cache?: CacheInfo[]
   refreshing?: boolean
   onRefreshAll?: () => void

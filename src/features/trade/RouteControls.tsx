@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Terminal, Vehicle } from '../../data/types'
 import { formatAuec, parseAmount } from '../../domain/format'
 import type { MaxRisk } from '../../domain/risk'
@@ -11,20 +11,12 @@ import { SearchPicker } from '../../ui/SearchPicker'
 import { locationPath } from '../../domain/location'
 import { hasLoadingDock, needsLoadingDock } from '../../domain/routes'
 
-/**
- * Texto de um campo numérico: enquanto o campo está em foco, mantém exatamente o que foi digitado;
- * fora de foco, mostra o valor salvo formatado.
- */
 function useAmountText(value: number) {
   const fmt = (v: number) => (v > 0 ? formatAuec(v) : '')
-  const [text, setText] = useState(fmt(value))
-  const [focused, setFocused] = useState(false)
-  useEffect(() => {
-    if (!focused) setText(fmt(value))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, focused])
-  const bind = { onFocus: () => setFocused(true), onBlur: () => setFocused(false) }
-  return [text, setText, bind] as const
+  const [draft, setDraft] = useState<string | null>(null)
+  const text = draft ?? fmt(value)
+  const bind = { onFocus: () => setDraft(fmt(value)), onBlur: () => setDraft(null) }
+  return [text, setDraft, bind] as const
 }
 
 export function RouteControls({
@@ -73,7 +65,7 @@ export function RouteControls({
   const setScu = (text: string) => {
     setScuText(text)
     if (!ship) return
-    // campo vazio = usar o SCU do UEX
+
     if (text.trim() === '') return resetScu()
     const n = parseAmount(text)
     if (!Number.isFinite(n) || n < 0) return

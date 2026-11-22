@@ -2,17 +2,15 @@ import type { Commodity, PriceRow, Terminal } from '../data/types'
 import { routeKey } from './routeMarks'
 import { computeRoutes, demandOf, evaluateLeg, routeFilters, stockOf, type RouteInput, type RouteOption } from './routes'
 
-/** Sequência de trechos em que a venda de um é a compra do próximo. */
 export interface TradePath {
   legs: RouteOption[]
   total: number
-  /** Terminou antes do número de trechos pedido (nada lucrativo saía dali). */
+
   short: boolean
-  /** ROTATIVO que parou no teto de trechos (estoque desconhecido ou que não acaba). */
+
   capped?: boolean
 }
 
-/** Distância em Gm entre dois terminais: número, null (UEX não sabe) ou undefined (ainda não buscada). */
 export type DistanceOf = (from: number, to: number) => number | null | undefined
 
 const BEAM_PER_FIRST = 4
@@ -22,7 +20,6 @@ const GREEDY_OPTIONS = 5
 const GREEDY_FIRSTS = 30
 export const ROUNDABOUT_MAX_LEGS = 10
 
-/** O que já foi comprado/vendido em cada linha de preço (id) neste caminho. */
 interface Used {
   bought: Map<number, number>
   sold: Map<number, number>
@@ -55,7 +52,6 @@ function makeCtx(prices: PriceRow[], commodities: Commodity[], terminals: Map<nu
 }
 type Ctx = ReturnType<typeof makeCtx>
 
-/** Trechos que saem de `at` com o dinheiro e o estoque/demanda que sobraram, do mais lucrativo ao menos. */
 function legsFrom(ctx: Ctx, at: number, money: number, used: Used, opts: { to?: number; exclude?: Set<string> } = {}): RouteOption[] {
   const { f, input } = ctx
   if (f.avoided(at)) return []
@@ -94,7 +90,6 @@ function extend(s: { legs: RouteOption[]; total: number; money: number } & Used,
 
 const start = (money: number, at: number): State => ({ legs: [], total: 0, money, at, done: false, ...emptyUsed() })
 
-/** Completos primeiro; depois o maior lucro somado. */
 const byQuality = (n: number) => (a: TradePath, b: TradePath) => Number(b.legs.length >= n) - Number(a.legs.length >= n) || b.total - a.total
 
 function beam(ctx: Ctx, initial: State, n: number, width: number): State[] {
@@ -118,13 +113,11 @@ function beam(ctx: Ctx, initial: State, n: number, width: number): State[] {
 
 const toPath = (s: State, n: number): TradePath => ({ legs: s.legs, total: s.total, short: s.legs.length < n })
 
-/** Rotas candidatas sempre pelo lucro (mesmo com a lista ordenada por ROI). */
 function topByProfit(prices: PriceRow[], commodities: Commodity[], terminals: Map<number, Terminal>, input: RouteInput, limit: number): RouteOption[] {
   const r = computeRoutes(prices, commodities, terminals, { ...input, sortBy: 'profit' }, limit)
   return r.ok ? r.routes : []
 }
 
-/** Melhores caminhos pelo lucro somado (busca em feixe), cada um com um primeiro trecho diferente. */
 export function bestPaths(
   prices: PriceRow[],
   commodities: Commodity[],
@@ -134,7 +127,7 @@ export function bestPaths(
 ): TradePath[] {
   if (!(input.shipScu > 0) || !(input.budget > 0) || n < 1) return []
   const ctx = makeCtx(prices, commodities, terminals, input)
-  // Um feixe por primeiro trecho: assim os caminhos alternativos sempre começam diferente.
+
   const firsts = from != null ? legsFrom(ctx, from, input.budget, emptyUsed()).slice(0, FIRST_CANDIDATES) : topByProfit(prices, commodities, terminals, input, FIRST_CANDIDATES)
   return firsts
     .map((r) => beam(ctx, extend(start(input.budget, r.buy.id_terminal), r), n, BEAM_PER_FIRST).map((s) => toPath(s, n)).sort(byQuality(n))[0])
@@ -144,7 +137,6 @@ export function bestPaths(
 
 const rate = (profit: number, d: number) => profit / Math.max(d, 1)
 
-/** Ordena por lucro por Gm. Sem distância conhecida vai ao fim, pelo lucro. */
 export function rankByDistance<T extends Pick<RouteOption, 'profit' | 'buy' | 'sell'>>(routes: T[], distanceOf: DistanceOf): T[] {
   const d = (r: T) => distanceOf(r.buy.id_terminal, r.sell.id_terminal)
   const known = routes.filter((r) => typeof d(r) === 'number')
@@ -154,10 +146,6 @@ export function rankByDistance<T extends Pick<RouteOption, 'profit' | 'buy' | 's
   return [...known, ...unknown]
 }
 
-/**
- * Caminhos escolhendo, em cada trecho, o melhor lucro por Gm entre as 5 melhores opções.
- * Enquanto faltar distância, devolve em `pending` os pares a buscar.
- */
 export function greedyPaths(
   prices: PriceRow[],
   commodities: Commodity[],
@@ -198,7 +186,6 @@ export function greedyPaths(
   return { paths, pending: [...pending.values()] }
 }
 
-/** Vai e volta entre A e B, sempre com carga, descontando o estoque e a demanda usados, até acabar. */
 function simulateRoundabout(ctx: Ctx, a: number, b: number, budget: number): TradePath | null {
   let s = start(budget, a)
   let to = b
@@ -212,7 +199,6 @@ function simulateRoundabout(ctx: Ctx, a: number, b: number, budget: number): Tra
   return { legs: s.legs, total: s.total, short: false, capped: s.legs.length >= ROUNDABOUT_MAX_LEGS }
 }
 
-/** ROTATIVO: os melhores pares A ⇄ B, com carga nos dois sentidos, pelo lucro total. */
 export function roundabouts(
   prices: PriceRow[],
   commodities: Commodity[],
@@ -237,7 +223,6 @@ export function roundabouts(
   return out.sort((x, y) => y.total - x.total).slice(0, count)
 }
 
-/** ROTATIVO com REDUZIR DISTÂNCIAS: lucro total ÷ (distância A↔B × trechos). Sem distância vai ao fim. */
 export function rankRoundabouts(list: TradePath[], distanceOf: DistanceOf): TradePath[] {
   const d = (p: TradePath) => distanceOf(p.legs[0].buy.id_terminal, p.legs[0].sell.id_terminal)
   const known = list.filter((p) => typeof d(p) === 'number')

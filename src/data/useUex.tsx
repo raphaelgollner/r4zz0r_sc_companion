@@ -19,7 +19,6 @@ function getDefaultStore() {
 
 const UexContext = createContext<UexContextValue | null>(null)
 
-/** Troca a fonte de dados (usado nos testes). Sem provider, usa IndexedDB e a API real. */
 export function UexProvider({ value, children }: { value: UexContextValue; children: ReactNode }) {
   return <UexContext.Provider value={value}>{children}</UexContext.Provider>
 }
@@ -28,7 +27,6 @@ function useUexContext(): UexContextValue {
   return useContext(UexContext) ?? { store: getDefaultStore() }
 }
 
-/** Avisa todos os hooks montados que devem recarregar (ex.: "Atualizar tudo", "Limpar cache"). */
 const listeners = new Set<(force: boolean) => void>()
 export function refreshAll(force = true) {
   listeners.forEach((l) => l(force))
@@ -47,7 +45,6 @@ export interface UexState<T> {
   refresh: () => void
 }
 
-/** Chave de cache: recurso + parâmetros em ordem alfabética (ex.: `items?id_category=29`). */
 export function queryKey(resource: string, params?: Record<string, string | number> | null): string {
   if (!params) return resource
   const q = Object.keys(params)
@@ -57,20 +54,15 @@ export function queryKey(resource: string, params?: Record<string, string | numb
   return q ? `${resource}?${q}` : resource
 }
 
-/** Dependências de rede vindas do contexto (nos testes, `fetchFn` e `limiter` falsos). */
 export type FetchDeps = { fetchFn?: typeof fetch; limiter?: RateLimiter }
 
-/**
- * Busca com cache, deduplicação e "Atualizar tudo" para qualquer fonte (UEX, Wiki).
- * `key` identifica a consulta no cache; `fetcher` é lido sempre na versão mais recente.
- */
 export function useCachedQuery<T>(key: string, fetcher: (deps: FetchDeps) => Promise<T>, ttlMs: number, enabled: boolean): UexState<T> {
   const { store, fetchFn, limiter } = useUexContext()
   const fetcherRef = useRef(fetcher)
   fetcherRef.current = fetcher
   type S = Omit<UexState<T>, 'refresh'> & { key: string }
   const [raw, setRaw] = useState<S>({ key, data: null, fetchedAt: null, loading: enabled, error: null })
-  // Ao trocar de consulta (ex.: outra categoria), nunca mostra os dados da consulta anterior.
+
   const state: S = raw.key === key ? raw : { key, data: null, fetchedAt: null, loading: enabled, error: null }
   const setState = useCallback(
     (next: Omit<S, 'key'> | ((s: Omit<S, 'key'>) => Omit<S, 'key'>)) =>
@@ -137,7 +129,6 @@ export function useUex<T>(resource: UexResource): UexState<T> {
   return useUexBase<T>(resource, undefined, TTL_MS[resource], true)
 }
 
-/** Consulta com parâmetros (ex.: itens de uma categoria). `params === null` não busca nada. */
 export function useUexQuery<T>(resource: string, params: Record<string, string | number> | null, ttlMs: number): UexState<T> {
   return useUexBase<T>(resource, params, ttlMs, params !== null)
 }

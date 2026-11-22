@@ -11,7 +11,6 @@ const terminals = new Map([1, 2, 3, 4].map((id) => [id, terminal(id)]))
 const input = (extra: Partial<RouteInput> = {}): RouteInput => ({ shipScu: 1000, budget: 1_000_000, excludeIllegal: true, sortBy: 'profit', ...extra })
 const hops = (legs: RouteOption[]) => legs.map((l) => `${l.commodityName}:${l.buy.id_terminal}>${l.sell.id_terminal}`)
 
-// De 1: X vai a 2 (lucro pequeno, mas de 2 sai Z muito lucrativo); Y vai a 3 (lucro maior, mas 3 é beco sem saída).
 const chain = [
   price(1, 1, { price_buy: 100, scu_buy: 100 }),
   price(1, 2, { price_sell: 110, scu_sell: 1000 }),
@@ -65,7 +64,7 @@ describe('roundabouts', () => {
     price(1, 2, { price_sell: 200, scu_sell: 1000 }),
     price(2, 2, { price_buy: 100, scu_buy: 1000 }),
     price(2, 1, { price_sell: 150, scu_sell: 1000 }),
-    // W só tem ida (1 → 3): não forma rotativo
+
     price(4, 1, { price_buy: 10, scu_buy: 1000 }),
     price(4, 3, { price_sell: 9000, scu_sell: 1000 }),
   ]
@@ -93,9 +92,9 @@ describe('roundabouts', () => {
 describe('distâncias', () => {
   const twoWays = [
     price(1, 1, { price_buy: 100, scu_buy: 100 }),
-    price(1, 2, { price_sell: 110, scu_sell: 1000 }), // lucro 1.000 em 1 Gm
+    price(1, 2, { price_sell: 110, scu_sell: 1000 }),
     price(2, 1, { price_buy: 100, scu_buy: 100 }),
-    price(2, 3, { price_sell: 150, scu_sell: 1000 }), // lucro 5.000 em 100 Gm
+    price(2, 3, { price_sell: 150, scu_sell: 1000 }),
   ]
   const dist: Record<string, number> = { '1:2': 1, '1:3': 100 }
 
@@ -131,7 +130,6 @@ describe('rankRoundabouts', () => {
 
 describe('correções da revisão', () => {
   test('com "Começar em", o feixe não fica só com descendentes de um primeiro trecho', () => {
-    // De 1: X vai a 2 (de onde saem 6 mercadorias ricas para 4, e de 4 outras 6 de volta a 2); Y vai a 3 (beco).
     const many = Array.from({ length: 12 }, (_, i) => commodity(10 + i, `C${i}`))
     const prices = [
       price(1, 1, { price_buy: 100, scu_buy: 100 }),
@@ -151,13 +149,13 @@ describe('correções da revisão', () => {
   test('dentro de um primeiro trecho, o caminho completo vence o curto com lucro maior', () => {
     const prices = [
       price(1, 1, { price_buy: 100, scu_buy: 100 }),
-      price(1, 2, { price_sell: 110, scu_sell: 1000 }), // X 1→2
+      price(1, 2, { price_sell: 110, scu_sell: 1000 }),
       price(2, 2, { price_buy: 100, scu_buy: 100 }),
-      price(2, 3, { price_sell: 150, scu_sell: 1000 }), // Y 2→3: 5.000, beco
+      price(2, 3, { price_sell: 150, scu_sell: 1000 }),
       price(3, 2, { price_buy: 100, scu_buy: 1000 }),
-      price(3, 4, { price_sell: 101, scu_sell: 1000 }), // Z 2→4: 1.000
+      price(3, 4, { price_sell: 101, scu_sell: 1000 }),
       price(4, 4, { price_buy: 100, scu_buy: 100 }),
-      price(4, 1, { price_sell: 101, scu_sell: 1000 }), // W 4→1: 100
+      price(4, 1, { price_sell: 101, scu_sell: 1000 }),
     ]
     const paths = bestPaths(prices, [X, Y, Z, W], terminals, input(), { legs: 3 })
     const fromX = paths.find((p) => hops(p.legs)[0] === 'X:1>2')!

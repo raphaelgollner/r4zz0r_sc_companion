@@ -1,7 +1,3 @@
-/**
- * Textos da interface. Nomes de produtos (commodities, naves, fabricantes, terminais, locais)
- * NUNCA passam por aqui: vêm do UEX em inglês, como no jogo.
- */
 export const pt = {
   'app.title': 'TAYKO CORP COMPANION',
   'app.subtitle': 'Heavy Industry Division',

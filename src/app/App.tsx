@@ -22,9 +22,7 @@ export interface Nav {
   salvage: SalvageTab
 }
 
-/** Telas registradas pelas tarefas seguintes. Sem registro, mostra um espaço vazio. */
 export interface Screens {
-  /** INÍCIO: saldo, sessões e transações. */
   home?: () => ReactNode
   ships?: () => ReactNode
   fleet?: () => ReactNode
@@ -84,7 +82,6 @@ const TRADE: TradeTab[] = ['routes', 'commodities', 'locations', 'harvestables',
 const MINING: MiningTab[] = ['ores', 'refineries', 'planner', 'equipment', 'ground']
 const SALVAGE: SalvageTab[] = ['materials', 'planner', 'equipment', 'ships']
 
-/** Lê a aba inicial do endereço, ex.: `#trade/finder`. */
 function navFromHash(): Nav {
   const [main, sub] = window.location.hash.replace(/^#/, '').split('/')
   return {

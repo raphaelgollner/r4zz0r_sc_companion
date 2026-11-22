@@ -1,22 +1,20 @@
-/** Controle manual do dinheiro do jogador: saldo, lançamentos e sessões de jogo. */
-
 export type TxCategory = 'trade' | 'mining' | 'salvage' | 'fuel' | 'repair' | 'purchase' | 'other'
 export const TX_CATEGORIES: TxCategory[] = ['trade', 'mining', 'salvage', 'fuel', 'repair', 'purchase', 'other']
 
 export interface Tx {
   id: string
-  /** Positivo = entrada, negativo = saída. */
+
   amount: number
-  /** 'adjust' = correção do saldo; não conta como ganho de sessão. */
+
   kind: 'normal' | 'adjust'
   category: TxCategory
   description: string
   at: number
   sessionId: string | null
-  /** Recurso negociado (commodity do UEX) e o nome no momento do lançamento. */
+
   commodityId?: number
   commodityName?: string
-  /** Terminal onde aconteceu e o nome no momento do lançamento. */
+
   terminalId?: number
   terminalName?: string
   scu?: number
@@ -92,7 +90,6 @@ export function setProfile(d: ProgressData, patch: Partial<Profile>): ProgressDa
   return { ...d, profile: { ...d.profile, ...patch } }
 }
 
-/** Zera saldo, transações e sessões. O perfil antigo (nome/foto, que não aparece mais) fica como estava. */
 export function clearProgress(d: ProgressData): ProgressData {
   return { profile: d.profile, txs: [], sessions: [] }
 }
@@ -105,7 +102,6 @@ export interface CommodityLine {
   net: number
 }
 
-/** Quanto entrou e saiu por recurso (só lançamentos normais com recurso), do maior líquido ao menor. */
 export function commoditySummary(txs: Tx[]): CommodityLine[] {
   const out = new Map<number, CommodityLine>()
   for (const t of txs) {
@@ -125,7 +121,6 @@ export interface PlaceVisit {
   actions: { kind: 'buy' | 'sell'; commodity: string }[]
 }
 
-/** Lugares dos lançamentos, na ordem da primeira visita, com o que foi comprado e vendido em cada um. */
 export function placesVisited(txs: Tx[]): PlaceVisit[] {
   const out = new Map<number, PlaceVisit>()
   for (const t of [...txs].sort((a, b) => a.at - b.at)) {

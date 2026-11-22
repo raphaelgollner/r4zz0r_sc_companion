@@ -24,7 +24,7 @@ export function SalvagePlannerView({
 }: {
   materials: Commodity[]
   prices: PriceRow[]
-  /** Naves de salvage (todas). As da frota aparecem primeiro. */
+
   ships: Vehicle[]
   fleetIds: Set<number>
   scuOf: (v: Vehicle) => number

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-/** SCU com decimal: mantém o texto enquanto digita ("3," / "3,5") e só reformata ao sair do campo. */
 export function ScuInput({ label, value, onChange }: { label: string; value: number; onChange: (scu: number) => void }) {
   const show = (v: number) => (v > 0 ? String(v).replace('.', ',') : '')
   const [text, setText] = useState(show(value))
@@ -26,4 +25,3 @@ export function ScuInput({ label, value, onChange }: { label: string; value: num
     />
   )
 }
-

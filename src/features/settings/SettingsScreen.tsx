@@ -1,7 +1,6 @@
 import { clearCache, refreshAll, useUex, type UexState } from '../../data/useUex'
 import { SettingsView } from './SettingsView'
 
-/** AJUSTES com o painel "Dados salvos": carrega todos os recursos para mostrar a idade de cada um. */
 export function SettingsScreen({ version }: { version: string }) {
   const all: [string, UexState<unknown>][] = [
     ['commodities', useUex('commodities')],

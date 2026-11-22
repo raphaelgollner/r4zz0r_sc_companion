@@ -1,14 +1,8 @@
-/**
- * Dados da Star Citizen Wiki (gerados dos arquivos do jogo), reduzidos ao que o setup usa.
- * A leitura é defensiva: campo ausente vira null/[]/{}; nada aqui lança erro.
- */
-
 export interface WikiPort {
-  /** Nomes do pai até a porta, unidos com "/". Identifica a porta no setup salvo. */
   path: string
   name: string
   type: string
-  /** '' quando a Wiki diz UNDEFINED ou nada. */
+
   subType: string
   minSize: number
   maxSize: number
@@ -31,7 +25,7 @@ export interface WikiVehicle {
 export interface WikiItem {
   uuid: string
   name: string
-  /** Nome interno do jogo (ex.: `Mining_Laser_TEST_Best`), usado para tirar variantes de teste. */
+
   className: string
   type: string
   subType: string
@@ -39,9 +33,9 @@ export interface WikiItem {
   manufacturer: string | null
   tags: string[]
   ports: WikiPort[]
-  /** Atributos numéricos usados para comparar e montar builds. */
+
   stats: Record<string, number>
-  /** Módulo ativo (usos limitados). */
+
   active: boolean
   charges: number | null
 }
@@ -127,7 +121,7 @@ export function normalizeItem(raw: unknown): WikiItem {
     if (pm !== null) stats.power_modifier = pm
     addNumbers(stats, mod.modifier_map)
   }
-  // Os multiplicadores de salvage aparecem neutros (1) em itens de mineração: só valem para itens de salvage.
+
   if (type.startsWith('Salvage')) {
     const s = obj(obj(d.weapon_modifier).salvage)
     const speed = num(s.salvage_speed_multiplier)
@@ -154,7 +148,6 @@ export function normalizeItem(raw: unknown): WikiItem {
   }
 }
 
-/** Procura uma porta pelo caminho em toda a árvore. */
 export function findPort(ports: WikiPort[], path: string): WikiPort | null {
   for (const p of ports) {
     if (p.path === path) return p

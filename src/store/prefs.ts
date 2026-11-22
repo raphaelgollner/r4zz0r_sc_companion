@@ -12,23 +12,23 @@ export interface Prefs {
   sortBy: 'profit' | 'roi'
   warnHours: number
   staleDays: number
-  /** SCU digitado pelo usuário por nave (ex.: Galaxy com módulo de carga). */
+
   scuOverrides: Record<number, number>
-  /** Lugares fora das rotas (compra e venda). */
+
   avoid: AvoidEntry[]
-  /** Nível de perigo máximo aceito nas rotas. */
+
   maxRisk: MaxRisk
-  /** Como as rotas aparecem: soltas, CAMINHO encadeado ou ROTATIVO (A ⇄ B). */
+
   routeMode: 'list' | 'path' | 'roundabout'
-  /** REDUZIR DISTÂNCIAS: ordena por lucro por Gm. */
+
   shortDistances: boolean
-  /** "Começar em" do CAMINHO/ROTATIVO (terminal) ou null = o app escolhe. */
+
   pathStart: number | null
-  /** Trechos do CAMINHO (2 a 8). */
+
   pathLegs: number
-  /** Tema de cores da interface. */
+
   theme: ThemeId
-  /** Naves que só carregam em doca de carga externa: rotas só por terminais com doca. */
+
   dockFilter: boolean
 }
 
@@ -53,7 +53,6 @@ export const DEFAULT_PREFS: Prefs = {
 
 const KEY = 'tayko.prefs'
 
-/** SCU que vale para a nave: o digitado pelo usuário ou o do UEX. */
 export function effectiveScu(prefs: Prefs, ship: Vehicle | null): number {
   if (!ship) return 0
   return prefs.scuOverrides[ship.id] ?? ship.scu
@@ -85,11 +84,9 @@ export function savePrefs(p: Prefs): void {
   try {
     localStorage.setItem(KEY, JSON.stringify(p))
   } catch {
-    // sem armazenamento: vale só nesta sessão
   }
 }
 
-// Estado compartilhado entre telas (INÍCIO, Routes e AJUSTES leem as mesmas preferências).
 let current: Prefs | null = null
 const subscribers = new Set<() => void>()
 const getSnapshot = () => (current ??= loadPrefs())

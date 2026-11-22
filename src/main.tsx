@@ -11,7 +11,6 @@ import { applyTheme } from './ui/themes'
 import './ui/fonts'
 import './ui/theme.css'
 
-// Tema salvo antes do primeiro desenho, para não piscar o dourado.
 applyTheme(loadPrefs().theme)
 
 createRoot(document.getElementById('root')!).render(

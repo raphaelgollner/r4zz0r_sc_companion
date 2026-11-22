@@ -4,17 +4,15 @@ import type { KVStore } from '../cache/store'
 import { EMPTY_PROGRESS, type ProgressData } from '../domain/progress'
 
 const KEY = 'data'
-/** Atraso para juntar várias mudanças seguidas (ex.: digitação) numa só gravação. */
+
 const WRITE_DELAY_MS = 400
 
-/** Banco separado do cache do UEX: "Limpar cache" não apaga o progresso. */
 export function progressStore(): KVStore {
   const db = createStore('tayko-companion-progress', 'progress')
   return {
     get: (key) => get(key, db),
     set: (key, value) => set(key, value, db),
     clear: async () => {
-      // nunca limpamos o progresso por aqui
     },
   }
 }
@@ -22,7 +20,7 @@ export function progressStore(): KVStore {
 interface ProgressValue {
   data: ProgressData
   ready: boolean
-  /** true quando não deu para ler o progresso salvo: nada é gravado para não sobrescrever. */
+
   loadFailed: boolean
   apply: (fn: (d: ProgressData) => ProgressData) => void
 }
@@ -47,7 +45,6 @@ export function ProgressProvider({ store, children }: { store?: KVStore; childre
     if (!pending.current) return
     pending.current = false
     kv.set(KEY, dataRef.current).catch(() => {
-      // falha ao gravar: segue em memória nesta sessão
     })
   }, [kv])
 
@@ -83,7 +80,6 @@ export function ProgressProvider({ store, children }: { store?: KVStore; childre
     [kv, flush],
   )
 
-  // Grava o que estiver pendente ao fechar, minimizar ou desmontar.
   useEffect(() => {
     const onHide = () => document.visibilityState === 'hidden' && flush()
     window.addEventListener('beforeunload', flush)
@@ -105,7 +101,6 @@ export function useProgress(): ProgressValue {
   return v
 }
 
-/** Saldo atual, ou null sem ProgressProvider/sem lançamentos (usado pelo botão "Usar meu saldo"). */
 export function useOptionalBalance(): number | null {
   const v = useContext(ProgressContext)
   if (!v || v.data.txs.length === 0) return null

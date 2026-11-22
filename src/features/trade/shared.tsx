@@ -12,7 +12,6 @@ export function matches(text: string, query: string) {
   return norm(text).includes(norm(query.trim()))
 }
 
-/** Campo de busca com lista de commodities (nomes sempre como no jogo). */
 export function CommodityPicker({
   commodities,
   value,
@@ -69,7 +68,6 @@ export function CommodityPicker({
   )
 }
 
-/** Tabela de preços por terminal (ou por commodity, em Locations). */
 export function PriceTable({
   rows,
   status,

@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
-/** Campo de busca genérico com lista de opções. */
 export function SearchPicker<T>({
   items,
   label,
@@ -49,4 +48,3 @@ export function SearchPicker<T>({
     </div>
   )
 }
-

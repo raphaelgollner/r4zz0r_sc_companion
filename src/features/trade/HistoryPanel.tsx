@@ -46,7 +46,6 @@ export function HistoryView({ terminalName, points }: { terminalName: string; po
   )
 }
 
-/** Busca o histórico de um par commodity/terminal e mostra o gráfico. */
 export function HistoryPanel({ commodityId, terminalId, terminalName }: { commodityId: number; terminalId: number; terminalName: string }) {
   const { t } = useI18n()
   const h = useUexQuery<PriceHistoryPoint[]>(

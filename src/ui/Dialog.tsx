@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { useI18n } from '../i18n/i18n'
 
-/** Janela modal: fecha com Esc, clique fora ou botão Fechar. */
 export function Dialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   const { t } = useI18n()
   const ref = useRef<HTMLDivElement>(null)
@@ -9,7 +8,6 @@ export function Dialog({ title, onClose, children }: { title: string; onClose: (
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
 
-  // Foca a janela só ao abrir e devolve o foco a quem a abriu ao fechar.
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null
     ref.current?.focus()

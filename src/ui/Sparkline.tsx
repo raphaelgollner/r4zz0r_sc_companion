@@ -4,7 +4,6 @@ export interface SparkSeries {
   label: string
 }
 
-/** Linhas simples em SVG; valores maiores ficam mais acima. Várias séries dividem a mesma escala. */
 export function Sparkline({
   points,
   series,

@@ -33,7 +33,6 @@ export function I18nProvider({ initial, children }: { initial?: Lang; children: 
     try {
       localStorage.setItem(STORAGE_KEY, l)
     } catch {
-      // sem armazenamento: vale só nesta sessão
     }
   }, [])
 

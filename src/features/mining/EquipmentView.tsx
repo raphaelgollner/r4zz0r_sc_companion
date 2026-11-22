@@ -12,16 +12,14 @@ import { ItemStoreDialog } from './ItemStoreDialog'
 export type EquipmentKind = 'lasers' | 'modules' | 'gadgets'
 export const EQUIPMENT_CATEGORY: Record<EquipmentKind, number> = { lasers: 29, modules: 30, gadgets: 28 }
 
-/** Uma aba de equipamentos: categoria do UEX e, opcionalmente, atributos que viram colunas. */
 export interface EquipmentKindDef<K extends string = string> {
   key: K
-  /** Rótulo da aba: chave do dicionário ou texto fixo (nomes como no jogo). */
+
   label: string
   category: number
   columns?: string[]
 }
 
-/** Atributos de laser que viram colunas (nomes como no jogo). */
 const LASER_COLUMNS = [
   'Mining Laser Power',
   'Extraction Laser Power',
@@ -45,7 +43,6 @@ export function EquipmentView<K extends string = EquipmentKind>({
   prices,
   now,
 }: {
-  /** Abas; sem elas, as de mineração (lasers, módulos, gadgets). */
   kinds?: EquipmentKindDef<K>[]
   kind: K
   onKind: (k: K) => void

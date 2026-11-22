@@ -13,7 +13,6 @@ function Fallback({ onRetry }: { onRetry: () => void }) {
   )
 }
 
-/** Se uma tela quebrar (ex.: dado inesperado do UEX), mostra o erro só nela em vez de apagar o app inteiro. */
 export class ErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false }
 

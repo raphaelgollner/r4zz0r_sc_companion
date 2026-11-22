@@ -3,10 +3,6 @@ import { QUERY_TTL } from '../../data/ttl'
 import type { TerminalDistance } from '../../data/types'
 import { useUexQuery } from '../../data/useUex'
 
-/**
- * Busca a distância (Gm) entre dois terminais e avisa o pai. Não desenha nada.
- * Cada par fica no cache por 7 dias; mudar a carga não refaz a consulta.
- */
 export function DistanceFetcher({
   origin,
   destination,

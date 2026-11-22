@@ -39,7 +39,6 @@ function formatDuration(ms: number): string {
   return `${Math.floor(min / 60)}h${String(min % 60).padStart(2, '0')}`
 }
 
-/** Atualiza o "agora" a cada 30 s para a duração da sessão andar sozinha. */
 function useNow(intervalMs = 30_000) {
   const [now, setNow] = useState(Date.now())
   useEffect(() => {
@@ -64,12 +63,10 @@ interface FormState {
   price: string
 }
 
-/** `at` vazio = "agora": a data é pega na hora de salvar. */
 const emptyForm = (): FormState => ({
   editingId: null, kind: 'in', value: '', category: 'trade', description: '', at: '', commodity: null, terminal: null, scu: '', price: '',
 })
 
-/** Número para o campo de edição sem perder casas decimais (2.5 → "2,5"). */
 const editNumber = (n: number) => (Number.isInteger(n) ? formatAuec(n) : String(n).replace('.', ','))
 
 const positive = (text: string) => {
@@ -77,7 +74,6 @@ const positive = (text: string) => {
   return Number.isFinite(n) && n > 0 ? n : null
 }
 
-/** INÍCIO: saldo, sessão e transações. Sem `commodities`/`terminals` (UEX não carregou), os campos de busca ficam desabilitados. */
 export function ProgressView({ commodities, terminals }: { commodities?: Commodity[]; terminals?: Terminal[] } = {}) {
   const { t, lang } = useI18n()
   const { data, ready, loadFailed, apply } = useProgress()
@@ -149,7 +145,6 @@ export function ProgressView({ commodities, terminals }: { commodities?: Commodi
       price: x.pricePerScu ? editNumber(x.pricePerScu) : '',
     })
 
-  /** SCU ou preço mudou: com os dois válidos, o valor vira SCU × preço (o usuário ainda pode editar o valor). */
   const setQty = (patch: Partial<Pick<FormState, 'scu' | 'price'>>) => {
     const next = { ...form, ...patch }
     const scu = positive(next.scu)

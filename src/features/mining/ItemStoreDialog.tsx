@@ -6,7 +6,6 @@ import { useI18n } from '../../i18n/i18n'
 import { DataTable, FreshnessBadge } from '../../ui/components'
 import { Dialog } from '../../ui/Dialog'
 
-/** Loja de equipamentos: onde fica e os itens desta categoria vendidos ali. */
 export function ItemStoreDialog({
   terminalId,
   terminalName,

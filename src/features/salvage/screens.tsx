@@ -17,14 +17,13 @@ import { SalvageShipsView } from './SalvageShipsView'
 
 const all = (...s: UexState<unknown>[]) => s
 
-/** Categorias de equipamento de salvage no UEX (nomes como no UEX/jogo). */
 export type SalvageKind = 'scraper' | 'tractor' | 'salvage'
 export const SALVAGE_KINDS: EquipmentKindDef<SalvageKind>[] = [
   { key: 'scraper', label: 'Scraper Beams', category: 31 },
   { key: 'tractor', label: 'Tractor Beams', category: 67 },
   { key: 'salvage', label: 'Salvage Beams', category: 110 },
 ]
-/** Distâncias buscadas só para os terminais mais valiosos (o RMC tem dezenas de compradores). */
+
 const MAX_DISTANCES = 15
 
 export function MaterialsScreen() {
@@ -60,7 +59,7 @@ export function SalvagePlannerScreen() {
   const ships = useMemo(() => (vehicles.data ?? []).filter((v) => v.is_salvage), [vehicles.data])
   const fleetIds = useMemo(() => new Set(entries.map((e) => e.vehicleId)), [entries])
   const tradeTerminals = useMemo(() => (terminals.data ?? []).filter((x) => x.type !== 'item' && x.type !== 'fuel'), [terminals.data])
-  // Terminais candidatos: os mais valiosos para a carga atual (independe da distância).
+
   const candidates = useMemo(
     () => salvagePlan(prefs.cargo, prices.data ?? [], () => null, 'value').slice(0, MAX_DISTANCES).map((r) => r.terminalId),
     [prefs.cargo, prices.data],

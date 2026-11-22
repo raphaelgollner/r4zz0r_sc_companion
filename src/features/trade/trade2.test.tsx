@@ -68,7 +68,7 @@ describe('CurrenciesView', () => {
     expect(row).toHaveTextContent('175')
     const line = screen.getByTestId('sparkline').querySelector('polyline')!
     const ys = line.getAttribute('points')!.split(' ').map((p) => Number(p.split(',')[1]))
-    // em ordem de data: 600 (menor → embaixo), 620, 640 (maior → em cima)
+
     expect(ys[0]).toBeGreaterThan(ys[1])
     expect(ys[1]).toBeGreaterThan(ys[2])
   })

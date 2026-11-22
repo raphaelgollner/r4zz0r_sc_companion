@@ -1,9 +1,5 @@
 import type { Terminal } from '../data/types'
 
-/**
- * Nível de perigo estimado de um terminal, pela facção que controla o local segundo o UEX.
- * É uma estimativa: não sabe de jogadores, interdições ou eventos no momento.
- */
 export type Risk = 'safe' | 'medium' | 'risky' | 'dangerous'
 export type MaxRisk = Risk | 'any'
 
@@ -29,7 +25,6 @@ export function riskOf(t: Terminal | undefined): Risk | null {
   return 'dangerous'
 }
 
-/** O nível está dentro do máximo aceito? Sem nível conhecido, sempre passa. */
 export function riskAllowed(risk: Risk | null, max: MaxRisk): boolean {
   if (max === 'any' || risk === null) return true
   return RISKS.indexOf(risk) <= RISKS.indexOf(max)

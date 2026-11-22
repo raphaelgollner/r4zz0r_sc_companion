@@ -1,4 +1,3 @@
-# Roda os testes e a checagem de tipos em cada envio para a main.
 name: CI
 
 on:

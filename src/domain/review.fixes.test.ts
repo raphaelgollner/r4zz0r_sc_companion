@@ -14,7 +14,6 @@ const item = (uuid: string, type: string, stats: Record<string, number> = {}, ex
   uuid, name: uuid, className: uuid, type, subType: '', size: 1, manufacturer: null, tags: [], ports: [], stats, active: false, charges: null, ...extra,
 })
 
-// Nave de salvage: cabeça de fábrica sem atributos e um módulo de fábrica que já é o melhor.
 const head = port('arm/head', 'SalvageHead', {
   equippedUuid: 'baler',
   ports: [port('arm/head/sub1', 'SalvageModifier', { equippedUuid: 'fast', maxSize: 1 })],

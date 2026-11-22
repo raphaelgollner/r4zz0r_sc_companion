@@ -6,7 +6,6 @@ import { DataTable, FreshnessBadge, Panel, SectionLabel } from '../../ui/compone
 import { TerminalName } from '../../ui/TerminalName'
 import { CommoditiesView } from '../trade/CommoditiesView'
 
-/** Melhor venda de cada material de salvage. */
 export function MaterialsSummary({ materials, prices, now }: { materials: Commodity[]; prices: PriceRow[]; now: number }) {
   const { t } = useI18n()
   const rows = useMemo(

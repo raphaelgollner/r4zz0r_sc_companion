@@ -29,7 +29,6 @@ function save(p: SalvagePrefs): void {
   try {
     localStorage.setItem(KEY, JSON.stringify(p))
   } catch {
-    // sem armazenamento: vale só nesta sessão
   }
 }
 

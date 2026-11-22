@@ -6,7 +6,7 @@ import { bestPaths, roundabouts } from './path'
 
 const laranite = { id: 47, name: 'Laranite', is_illegal: 0 } as Commodity
 const input = (extra: Partial<RouteInput> = {}): RouteInput => ({ shipScu: 576, budget: 5_000_000, excludeIllegal: true, sortBy: 'profit', ...extra })
-// 8 vende, 12 e 13 compram; só 13 tem doca de carga externa.
+
 const map = (dock: number[]) => new Map<number, Terminal>([8, 12, 13].map((id) => [id, terminal(id, { has_loading_dock: dock.includes(id) ? 1 : 0 })]))
 
 const sells = (dock: number[], extra: Partial<RouteInput> = {}) => {

@@ -19,7 +19,6 @@ export type UexResource =
 const MIN = 60_000
 const HOUR = 60 * MIN
 
-/** Tempo de vida do cache por recurso (segue a frequência de atualização do UEX). */
 export const TTL_MS: Record<UexResource, number> = {
   commodities: 1 * HOUR,
   commodities_prices_all: 30 * MIN,
@@ -39,7 +38,6 @@ export const TTL_MS: Record<UexResource, number> = {
   vehicles_prices: 24 * HOUR,
 }
 
-/** Tempo de vida das consultas com parâmetros. */
 export const QUERY_TTL = {
   items: 12 * HOUR,
   items_attributes: 12 * HOUR,
@@ -48,7 +46,6 @@ export const QUERY_TTL = {
   terminals_distances: 7 * 24 * HOUR,
 } as const
 
-/** Dados da Star Citizen Wiki mudam só com patches do jogo. */
 export const WIKI_TTL = 7 * 24 * HOUR
 
 export const ALL_RESOURCES = Object.keys(TTL_MS) as UexResource[]

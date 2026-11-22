@@ -1,6 +1,5 @@
 export type AgeLevel = 'fresh' | 'aging' | 'stale' | 'unknown'
 
-/** Classifica a idade de um dado do UEX (`date_modified` em segundos Unix). */
 export function ageLevel(
   dateModifiedSec: number | null | undefined,
   nowMs: number,

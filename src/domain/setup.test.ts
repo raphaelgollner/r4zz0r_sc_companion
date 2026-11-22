@@ -14,7 +14,6 @@ const item = (uuid: string, type: string, size: number, stats: Record<string, nu
 })
 const modPorts = (n: number) => Array.from({ length: n }, (_, i) => port(`BONE_ItemPort_Consumable_${i + 1}`, 'MiningModifier', 1, 1))
 
-// Nave com 1 laser S1 de fábrica (stock), que tem 1 encaixe de módulo.
 const ship: WikiVehicle = {
   uuid: 'ship', name: 'Test', role: 'Light Mining', description: null, msrp: null,
   ports: [port('turret', 'UtilityTurret', 1, 1, { editable: false, ports: [port('turret/laser', 'WeaponMining', 1, 1, { equippedUuid: 'stock', requiredTags: ['miningMount'] })] }), port('gun', 'WeaponGun', 1, 1)],

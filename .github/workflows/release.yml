@@ -1,5 +1,3 @@
-# Gera o instalador no GitHub, a partir deste código, e publica com hash SHA-256 e atestado de origem.
-# Dispara ao enviar uma tag vX.Y.Z (ex.: git tag v0.9.0 && git push origin v0.9.0).
 name: Release
 
 on:
@@ -7,8 +5,8 @@ on:
     tags: ['v*']
 
 permissions:
-  contents: write # criar a release
-  id-token: write # atestado de origem
+  contents: write
+  id-token: write
   attestations: write
 
 jobs:
@@ -42,7 +40,6 @@ jobs:
         run: |
           $exe = Get-ChildItem src-tauri/target/release/bundle/nsis/*-setup.exe | Select-Object -First 1
           New-Item -ItemType Directory -Force out | Out-Null
-          # Sem espaços: é o nome que o GitHub dá ao arquivo na release, e o SHA256SUMS precisa bater.
           $name = $exe.Name -replace ' ', '.'
           Copy-Item $exe.FullName "out/$name"
           $h = (Get-FileHash $exe.FullName -Algorithm SHA256).Hash.ToLower()

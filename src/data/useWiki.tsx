@@ -3,7 +3,6 @@ import { normalizeItem, normalizeVehicle, type WikiItem, type WikiVehicle } from
 import { WIKI_TTL } from './ttl'
 import { useCachedQuery, type UexState } from './useUex'
 
-/** Nave da Wiki pelo uuid do jogo (o mesmo do UEX). `null` não busca. */
 export function useWikiVehicle(uuid: string | null): UexState<WikiVehicle> {
   return useCachedQuery<WikiVehicle>(
     `wiki:vehicle:${uuid ?? ''}`,
@@ -13,7 +12,6 @@ export function useWikiVehicle(uuid: string | null): UexState<WikiVehicle> {
   )
 }
 
-/** Todos os itens de um tipo da Wiki (ex.: `WeaponMining`). `null` não busca. */
 export function useWikiItems(type: string | null): UexState<WikiItem[]> {
   return useCachedQuery<WikiItem[]>(
     `wiki:items:${type ?? ''}`,
