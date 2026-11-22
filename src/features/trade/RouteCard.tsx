@@ -15,6 +15,7 @@ export function RouteCard({
   onToggleMark,
   legLabel,
   distance,
+  dockIds,
 }: {
   route: RouteOption
   now: number
@@ -28,6 +29,8 @@ export function RouteCard({
   legLabel?: string
   /** Distância compra → venda em Gm (REDUZIR DISTÂNCIAS); undefined = não mostrar. */
   distance?: number | null
+  /** Terminais com doca de carga externa, para o selo (só quando a nave precisa da doca). */
+  dockIds?: ReadonlySet<number>
 }) {
   const { t } = useI18n()
   const fresh = { now, warnHours, staleDays }
@@ -75,6 +78,7 @@ export function RouteCard({
         <dd>
           <div className="route-stop">
             <TerminalName id={r.buy.id_terminal} fallback={r.buy.terminal_name} />
+            {dockIds?.has(r.buy.id_terminal) && <span className="dock-tag">{t('routes.dockTag')}</span>}
           </div>
           <span className="num price">{formatAuec(r.buy.price_buy)}{t('routes.perScu')}</span>
           {' · '}
@@ -101,6 +105,7 @@ export function RouteCard({
         <dd>
           <div className="route-stop">
             <TerminalName id={r.sell.id_terminal} fallback={r.sell.terminal_name} />
+            {dockIds?.has(r.sell.id_terminal) && <span className="dock-tag">{t('routes.dockTag')}</span>}
           </div>
           <span className="num price">{formatAuec(r.sell.price_sell)}{t('routes.perScu')}</span>
           {' · '}

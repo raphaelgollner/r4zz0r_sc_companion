@@ -1,4 +1,4 @@
-import type { Commodity, PriceRow, Terminal } from '../data/types'
+import type { Commodity, PriceRow, Terminal, Vehicle } from '../data/types'
 import { avoidMatch, type AvoidEntry } from './avoid'
 import { riskAllowed, riskOf, type MaxRisk } from './risk'
 import { routeKey } from './routeMarks'
@@ -18,6 +18,8 @@ export interface RouteInput {
   onlyKeys?: ReadonlySet<string>
   /** Nível de perigo máximo aceito na compra e na venda. */
   maxRisk?: MaxRisk
+  /** Nave que só carrega em doca de carga externa: só terminais com doca (compra e venda). */
+  dockOnly?: boolean
   sortBy: 'profit' | 'roi'
 }
 
@@ -84,6 +86,12 @@ export function evaluateLeg(
   }
 }
 
+/** Terminal com doca de carga externa (UEX). Desconhecido conta como sem doca. */
+export const hasLoadingDock = (t: Terminal | undefined) => t?.has_loading_dock === 1
+
+/** Nave que só carrega em doca de carga externa (UEX; ex.: Hull C). */
+export const needsLoadingDock = (v: Vehicle | null | undefined) => v?.is_loading_dock === 1
+
 /** Filtros comuns das rotas: mercadoria permitida, terminal evitado (Evitar/Risco), rota oculta. */
 export function routeFilters(commodities: Commodity[], terminals: Map<number, Terminal>, input: RouteInput) {
   const avoid = input.avoid ?? []
@@ -94,7 +102,10 @@ export function routeFilters(commodities: Commodity[], terminals: Map<number, Te
       const c = byId.get(id)
       return !c || (input.excludeIllegal && c.is_illegal) ? null : c
     },
-    avoided: (id: number) => avoidMatch(terminals.get(id), avoid) || !riskAllowed(riskOf(terminals.get(id)), maxRisk),
+    avoided: (id: number) =>
+      avoidMatch(terminals.get(id), avoid) ||
+      !riskAllowed(riskOf(terminals.get(id)), maxRisk) ||
+      (!!input.dockOnly && !hasLoadingDock(terminals.get(id))),
     hidden: (key: string) => !!input.hiddenKeys?.has(key) || (!!input.onlyKeys && !input.onlyKeys.has(key)),
   }
 }

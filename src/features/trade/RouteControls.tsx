@@ -9,6 +9,7 @@ import { Tooltip } from '../../ui/Tooltip'
 import { AvoidPicker } from './AvoidPicker'
 import { SearchPicker } from '../../ui/SearchPicker'
 import { locationPath } from '../../domain/location'
+import { hasLoadingDock, needsLoadingDock } from '../../domain/routes'
 
 /**
  * Texto de um campo numérico: enquanto o campo está em foco, mantém exatamente o que foi digitado;
@@ -56,6 +57,7 @@ export function RouteControls({
   const [budgetText, setBudgetText, budgetBind] = useAmountText(prefs.budget)
   const [scuText, setScuText, scuBind] = useAmountText(scu)
   const tradeTerminals = useMemo(() => terminals.filter((x) => x.type === 'commodity' || x.type === 'commodity_raw'), [terminals])
+  const dockCount = useMemo(() => tradeTerminals.filter(hasLoadingDock).length, [tradeTerminals])
   const startTerminal = terminals.find((x) => x.id === prefs.pathStart) ?? null
   const systems = useMemo(
     () => [...new Set(terminals.map((x) => x.star_system_name).filter((s): s is string => !!s))].sort(),
@@ -168,6 +170,12 @@ export function RouteControls({
               <option value="safe">{t('routes.riskOnly', { level: t('risk.safe') })}</option>
             </select>
           </label>
+          {needsLoadingDock(ship) && (
+            <label className="check" title={t('routes.dockHint')}>
+              <input type="checkbox" checked={prefs.dockFilter} onChange={(e) => onPrefs({ dockFilter: e.target.checked })} />
+              {t('routes.dockOnly', { ship: ship!.name, n: dockCount })}
+            </label>
+          )}
           <label className="check">
             <input type="checkbox" checked={prefs.excludeIllegal} onChange={(e) => onPrefs({ excludeIllegal: e.target.checked })} />
             {t('routes.excludeIllegal')}

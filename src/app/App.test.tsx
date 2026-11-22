@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { createRateLimiter } from '../api/rateLimiter'
@@ -116,6 +116,20 @@ describe('link da org', () => {
     expect(link.compareDocumentPosition(lang) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     await userEvent.click(link)
     expect(open).toHaveBeenCalledWith('https://tayko.org', '_blank', 'noopener')
+    open.mockRestore()
+  })
+})
+
+describe('rodapé', () => {
+  test('mostra o aviso de app não oficial e o crédito do desenvolvedor com link', async () => {
+    localStorage.clear()
+    const open = vi.spyOn(window, 'open').mockReturnValue(null)
+    renderApp()
+    const footer = screen.getByRole('contentinfo')
+    expect(footer).toHaveTextContent('Star Citizen® é marca registrada da Cloud Imperium Games. App não oficial.')
+    expect(footer).toHaveTextContent('Desenvolvido de forma independente por Raphael Gollner')
+    await userEvent.click(within(footer).getByRole('button', { name: /raphaelgollner\.github\.io/ }))
+    expect(open).toHaveBeenCalledWith('https://raphaelgollner.github.io/', '_blank', 'noopener')
     open.mockRestore()
   })
 })

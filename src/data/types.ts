@@ -62,6 +62,8 @@ export interface Vehicle {
   scu: number
   crew?: string
   pad_type?: string | null
+  /** 1 = só carrega em doca de carga externa (ex.: Hull C). */
+  is_loading_dock?: number
   url_photo?: string | null
   is_cargo: number
   is_mining: number
@@ -131,6 +133,8 @@ export interface Terminal {
   outpost_name: string | null
   /** Facção que controla o local (UEX); base do nível de perigo. */
   faction_name?: string | null
+  /** 1 = tem doca de carga externa (naves como a Hull C só carregam nela). */
+  has_loading_dock?: number
 }
 
 export interface Planet {
