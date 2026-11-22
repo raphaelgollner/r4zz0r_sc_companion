@@ -25,7 +25,7 @@ Os instaladores da página [Releases](../../releases) são gerados pelo **GitHub
 1. **Hash SHA-256**: confira se o arquivo baixado é o publicado. No PowerShell:
 
    ```powershell
-   Get-FileHash ".\Tayko Corp Companion_0.9.0_x64-setup.exe"
+   Get-FileHash ".\Tayko.Corp.Companion_0.9.0_x64-setup.exe"
    ```
 
    O resultado deve ser igual ao do `SHA256SUMS.txt` e ao das notas da versão.
@@ -33,7 +33,7 @@ Os instaladores da página [Releases](../../releases) são gerados pelo **GitHub
 2. **Atestado de origem**: prova que o instalador saiu deste repositório, deste código, pelo GitHub Actions. Com o [GitHub CLI](https://cli.github.com/):
 
    ```powershell
-   gh attestation verify ".\Tayko Corp Companion_0.9.0_x64-setup.exe" --repo raphaelgollner/r4zz0r_sc_companion
+   gh attestation verify ".\Tayko.Corp.Companion_0.9.0_x64-setup.exe" --repo raphaelgollner/r4zz0r_sc_companion
    ```
 
 3. **Antivírus**: cada versão é enviada ao [VirusTotal](https://www.virustotal.com/); o link do relatório fica nas notas da versão. Como o app ainda não tem assinatura de código, um ou outro antivírus pode dar um alerta genérico, e o Windows mostra o aviso azul do SmartScreen ("Mais informações" → "Executar assim mesmo").

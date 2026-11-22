@@ -42,10 +42,12 @@ jobs:
         run: |
           $exe = Get-ChildItem src-tauri/target/release/bundle/nsis/*-setup.exe | Select-Object -First 1
           New-Item -ItemType Directory -Force out | Out-Null
-          Copy-Item $exe.FullName out/
+          # Sem espaços: é o nome que o GitHub dá ao arquivo na release, e o SHA256SUMS precisa bater.
+          $name = $exe.Name -replace ' ', '.'
+          Copy-Item $exe.FullName "out/$name"
           $h = (Get-FileHash $exe.FullName -Algorithm SHA256).Hash.ToLower()
-          "$h  $($exe.Name)" | Out-File -Encoding ascii out/SHA256SUMS.txt
-          "EXE_NAME=$($exe.Name)" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          "$h  $name" | Out-File -Encoding ascii out/SHA256SUMS.txt
+          "EXE_NAME=$name" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
           "EXE_HASH=$h" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
 
       - name: Atestado de origem
