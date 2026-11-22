@@ -1,0 +1,68 @@
+# Gera o instalador no GitHub, a partir deste código, e publica com hash SHA-256 e atestado de origem.
+# Dispara ao enviar uma tag vX.Y.Z (ex.: git tag v0.9.0 && git push origin v0.9.0).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write # criar a release
+  id-token: write # atestado de origem
+  attestations: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Testes
+        run: npm test
+
+      - name: Gerar o instalador
+        run: npx tauri build
+
+      - name: Hash SHA-256
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem src-tauri/target/release/bundle/nsis/*-setup.exe | Select-Object -First 1
+          New-Item -ItemType Directory -Force out | Out-Null
+          Copy-Item $exe.FullName out/
+          $h = (Get-FileHash $exe.FullName -Algorithm SHA256).Hash.ToLower()
+          "$h  $($exe.Name)" | Out-File -Encoding ascii out/SHA256SUMS.txt
+          "EXE_NAME=$($exe.Name)" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          "EXE_HASH=$h" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+
+      - name: Atestado de origem
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: out/*-setup.exe
+
+      - name: Publicar a release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $notes = @"
+          Instalador gerado pelo GitHub Actions a partir do commit ${{ github.sha }}.
+
+          **SHA-256** ``$env:EXE_HASH``
+
+          Como conferir: veja [SEGURANCA.md](https://github.com/${{ github.repository }}/blob/main/SEGURANCA.md).
+          "@
+          gh release create "${{ github.ref_name }}" "out/$env:EXE_NAME" out/SHA256SUMS.txt --title "${{ github.ref_name }}" --notes $notes
