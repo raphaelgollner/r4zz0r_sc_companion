@@ -3,7 +3,7 @@ import type { Commodity, PriceRow, Terminal, Vehicle } from '../../data/types'
 import { formatAuec } from '../../domain/format'
 import { bestPaths, greedyPaths, rankByDistance, rankRoundabouts, roundabouts, type DistanceOf } from '../../domain/path'
 import { activeMarks, routeKey, toggleMark, type MarkKind } from '../../domain/routeMarks'
-import { routeFilters, type RouteOption } from '../../domain/routes'
+import { hasLoadingDock, needsLoadingDock, routeFilters, type RouteOption } from '../../domain/routes'
 import { useI18n } from '../../i18n/i18n'
 import type { Prefs } from '../../store/prefs'
 import { useRouteMarks } from '../../store/routeMarks'
@@ -73,6 +73,10 @@ export function RoutesView({
 
   const routes = useMemo(() => (result?.ok ? result.routes : []), [result])
   // "Começar em" que sumiu da lista de terminais é ignorado; evitado (Evitar/Risco) é explicado.
+  const dockIds = useMemo(
+    () => (needsLoadingDock(ship) ? new Set(terminals.filter(hasLoadingDock).map((x) => x.id)) : undefined),
+    [ship, terminals],
+  )
   const startId = prefs.pathStart !== null && terminalMap.has(prefs.pathStart) ? prefs.pathStart : null
   const startAvoided = useMemo(
     () => startId !== null && routeFilters(commodities, terminalMap, input).avoided(startId),
@@ -139,6 +143,7 @@ export function RoutesView({
         onToggleMark={(kind: MarkKind) => setMark(key, toggleMark(marks[key], kind, r))}
         legLabel={extra.legLabel}
         distance={d}
+        dockIds={dockIds}
       />
     )
   }

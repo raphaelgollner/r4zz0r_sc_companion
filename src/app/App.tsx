@@ -8,6 +8,7 @@ import { ErrorBoundary } from '../ui/ErrorBoundary'
 import { openExternal } from '../ui/openExternal'
 
 export const ORG_URL = 'https://tayko.org'
+export const DEV_URL = 'https://raphaelgollner.github.io/'
 
 export type MainTab = 'home' | 'trade' | 'mining' | 'salvage' | 'ships' | 'fleet' | 'settings'
 export type TradeTab = 'routes' | 'commodities' | 'locations' | 'harvestables' | 'finder' | 'currencies'
@@ -66,7 +67,14 @@ function Footer() {
         <strong>{t('footer.data')}</strong>
         {prices.fetchedAt && <> · {t('footer.updated', { age: formatAge(prices.fetchedAt / 1000, Date.now(), lang) })}</>}
       </span>
-      <span>{t('footer.disclaimer')}</span>
+      <span className="footer-legal">
+        {t('footer.disclaimer')}
+        {' · '}
+        {t('footer.credit')}{' '}
+        <button type="button" className="btn-link footer-link" onClick={() => void openExternal(DEV_URL).catch(() => {})}>
+          raphaelgollner.github.io
+        </button>
+      </span>
     </footer>
   )
 }

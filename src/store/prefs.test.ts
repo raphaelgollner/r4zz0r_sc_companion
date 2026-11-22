@@ -7,7 +7,7 @@ describe('prefs', () => {
   test('sem nada salvo devolve o padrão', () => {
     expect(loadPrefs()).toEqual(DEFAULT_PREFS)
     expect(DEFAULT_PREFS).toEqual({
-      shipId: null, budget: 0, excludeIllegal: true, originSystem: '', sortBy: 'profit', warnHours: 24, staleDays: 7, scuOverrides: {}, avoid: [], maxRisk: 'any', routeMode: 'list', shortDistances: false, pathStart: null, pathLegs: 4, theme: 'cargo',
+      shipId: null, budget: 0, excludeIllegal: true, originSystem: '', sortBy: 'profit', warnHours: 24, staleDays: 7, scuOverrides: {}, avoid: [], maxRisk: 'any', routeMode: 'list', shortDistances: false, pathStart: null, pathLegs: 4, theme: 'cargo', dockFilter: true,
     })
   })
 

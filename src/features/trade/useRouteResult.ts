@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { Commodity, PriceRow, Terminal, Vehicle } from '../../data/types'
-import { computeRoutes, type RouteInput, type RouteResult } from '../../domain/routes'
+import { computeRoutes, needsLoadingDock, type RouteInput, type RouteResult } from '../../domain/routes'
 import type { TFunction } from '../../i18n/i18n'
 import { effectiveScu, type Prefs } from '../../store/prefs'
 
@@ -19,9 +19,10 @@ export function useRouteResult(
   const terminalMap = useMemo(() => new Map(terminals.map((x) => [x.id, x])), [terminals])
   const scu = effectiveScu(prefs, ship)
   const { budget, excludeIllegal, originSystem, sortBy, avoid, maxRisk } = prefs
+  const dockOnly = needsLoadingDock(ship) && prefs.dockFilter
   const input = useMemo<RouteInput>(
-    () => ({ shipScu: scu, budget, excludeIllegal, originSystem: originSystem || undefined, sortBy, avoid, maxRisk, hiddenKeys: keys.hiddenKeys, onlyKeys: keys.onlyKeys }),
-    [scu, budget, excludeIllegal, originSystem, sortBy, avoid, maxRisk, keys.hiddenKeys, keys.onlyKeys],
+    () => ({ shipScu: scu, budget, excludeIllegal, originSystem: originSystem || undefined, sortBy, avoid, maxRisk, dockOnly, hiddenKeys: keys.hiddenKeys, onlyKeys: keys.onlyKeys }),
+    [scu, budget, excludeIllegal, originSystem, sortBy, avoid, maxRisk, dockOnly, keys.hiddenKeys, keys.onlyKeys],
   )
   const result = useMemo(
     () => (ship ? computeRoutes(prices, commodities, terminalMap, input, limit) : null),
