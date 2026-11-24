@@ -51,6 +51,14 @@ describe('importToProgress', () => {
     expect(d.txs[1].terminalId).toBeUndefined()
   })
 
+  test('sem preço da UEX ainda, o terminal escolhido é estável; venda sem SCU não mostra SCU', () => {
+    const e = ev({ kind: 'sell', at: 10, amount: 3564, resource: IRON, scu: 0, pricePerScu: 0, place: 'Lorville' })
+    const d = importToProgress(imp([e]), { ...ctx, prices: [] })
+    expect(d.txs[0]).toMatchObject({ terminalId: 2 })
+    expect(d.txs[0].scu).toBeUndefined()
+    expect(d.txs[0].pricePerScu).toBeUndefined()
+  })
+
   test('loja, contrato e categorias', () => {
     const d = importToProgress(
       imp([ev({ kind: 'shop', at: 10, amount: -450, item: 'grin_multitool_01_tractorbeam' }), ev({ kind: 'reward', at: 11, amount: 44500 })]),

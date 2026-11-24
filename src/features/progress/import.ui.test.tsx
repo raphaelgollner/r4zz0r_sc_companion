@@ -10,6 +10,7 @@ import { HomeTabs } from './InicioScreen'
 import { DEFAULT_GAME_DIR, type ImportDeps, type SavedImport } from './importService'
 
 const IRON = 'f386a33c-ac9a-400a-a7b8-fe1fc7c8d270'
+const DIR = 'D:\\Games\\StarCitizen\\LIVE'
 const login = '<2026-11-23T20:32:48.672Z> [Notice] <AccountLoginCharacterStatus_Character> Character: Pilot_One 1 - updatedAt 1 - geid 1 - accountId 1 - name Pilot_One - state STATE_CURRENT [Team_GameServices][Login]'
 const start = '<2026-11-23T21:29:57.943Z> [Notice] <Calculate Route> | NOT AUTH | X|CSCItemNavigation::CalculateRoute|Projected Start Location is Everus Harbor for route to destination Y [Team_CGP4][QuantumTravel]'
 const buy = `<2026-11-23T21:20:00.000Z> [Notice] <CEntityComponentCommodityUIProvider::SendCommodityBuyRequest> Sending SShopCommodityBuyRequest - playerId[1] shopId[1] shopName[S] kioskId[1] price[276000.000000] shopPricePerCentiSCU[27.6] resourceGUID[${IRON}] autoLoading[1] quantity[10000.000000 cSCU] Cargo Box Data: boxSize[32.000000] | unitAmount[3] [Team]`
@@ -59,7 +60,7 @@ describe('IMPORTAÇÃO', () => {
     renderImport(deps)
     await userEvent.click(await screen.findByRole('button', { name: 'IMPORTAR' }))
     expect(deps.pickDir).toHaveBeenCalledWith('D:\\Games\\StarCitizen\\LIVE')
-    expect(deps.read).toHaveBeenCalledWith('D:\\Games\\StarCitizen\\LIVE')
+    expect(deps.read).toHaveBeenCalledWith('D:\\Games\\StarCitizen\\LIVE', [])
     expect(await screen.findByText('Pilot_One')).toBeInTheDocument()
     const row = screen.getAllByRole('row').find((r) => r.textContent?.includes('Iron'))!
     expect(row).toHaveTextContent('≈ Everus Harbor')
@@ -112,6 +113,26 @@ describe('IMPORTAÇÃO', () => {
     expect(deps.remove).toHaveBeenCalled()
   })
 
+  test('Wiki lenta ou fora do ar não segura a importação: os registros aparecem e são salvos antes dos nomes', async () => {
+    const deps = fakeDeps({ resolveName: vi.fn(() => new Promise<string | null>(() => {})) })
+    renderImport(deps)
+    await userEvent.click(await screen.findByRole('button', { name: 'IMPORTAR' }))
+    expect(await screen.findByText('Pilot_One')).toBeInTheDocument()
+    expect(screen.getAllByRole('row').some((r) => r.textContent?.includes(IRON))).toBe(true)
+    expect(deps.save).toHaveBeenCalled()
+  })
+
+  test('Atualizar não relê backups já importados', async () => {
+    const backup = { ...logFile([login, buy, start]), name: 'Game Build(1).log', first: '2026-11-20T10:00:00.000Z' }
+    const deps = fakeDeps({}, [logFile([login, buy, start]), backup])
+    renderImport(deps)
+    await userEvent.click(await screen.findByRole('button', { name: 'IMPORTAR' }))
+    await screen.findByText('Pilot_One')
+    expect(deps.read).toHaveBeenLastCalledWith(DIR, [])
+    await userEvent.click(screen.getByRole('button', { name: 'Atualizar importação' }))
+    await waitFor(() => expect(deps.read).toHaveBeenLastCalledWith(DIR, ['Game Build(1).log']))
+  })
+
   test('importação salva é carregada ao abrir', async () => {
     const deps = fakeDeps()
     renderImport(deps)
@@ -134,6 +155,7 @@ describe('subabas do INÍCIO', () => {
     expect(tabs.map((x) => x.textContent)).toEqual(['REGISTRO', 'IMPORTAÇÃO'])
     expect(screen.getByText('manual')).toBeInTheDocument()
     await userEvent.click(tabs[1])
-    expect(screen.getByText('importado')).toBeInTheDocument()
+    expect(screen.getByText('importado')).toBeVisible()
+    expect(screen.getByText('manual')).not.toBeVisible()
   })
 })

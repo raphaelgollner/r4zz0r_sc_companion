@@ -38,7 +38,7 @@ export interface ImportData {
 
 export const EMPTY_IMPORT: ImportData = { importedAt: null, player: null, sessions: [] }
 
-const FAIL_WINDOW_MS = 5_000
+const FAIL_WINDOW_MS = 15_000
 
 const field = (line: string, name: string) => line.match(new RegExp(`${name}\\[([^\\]]*)\\]`))?.[1]
 const num = (line: string, name: string) => {
@@ -58,7 +58,7 @@ const boxScu = (line: string) => {
   return total > 0 ? total : null
 }
 
-type Pending = { at: number; line: string; kind: 'buy' | 'sell' | 'shop' }
+type Pending = { at: number; line: string; kind: 'buy' | 'sell' | 'shop'; idx: number; kiosk: string | undefined }
 
 export function parseGameLog(file: RawLogFile): ParsedLog {
   const events: LogEvent[] = []
@@ -66,50 +66,58 @@ export function parseGameLog(file: RawLogFile): ParsedLog {
   let player: string | null = null
   const commodity: Pending[] = []
   const shops: Pending[] = []
-  const failedCommodity = new Set<Pending>()
+  const failed = new Set<Pending>()
+  const answered = new Set<Pending>()
   const okShops = new Set<Pending>()
 
-  for (const line of file.lines) {
+  file.lines.forEach((line, idx) => {
     const at = stamp(line)
-    if (at === null) continue
+    if (at === null) return
+    const pending = (kind: Pending['kind']): Pending => ({ at, line, kind, idx, kiosk: field(line, 'kioskId') })
     if (line.includes('AccountLoginCharacterStatus_Character')) {
       player = line.match(/ - name (\S+)/)?.[1] ?? line.match(/Character: (\S+)/)?.[1] ?? player
     } else if (line.includes('Projected Start Location is')) {
       const place = line.match(/Projected Start Location is (.+?) for route/)?.[1]?.trim()
       if (place) starts.push({ at, place })
-    } else if (line.includes('SendCommodityBuyRequest')) commodity.push({ at, line, kind: 'buy' })
-    else if (line.includes('SendCommoditySellRequest')) commodity.push({ at, line, kind: 'sell' })
+    } else if (line.includes('SendCommodityBuyRequest')) commodity.push(pending('buy'))
+    else if (line.includes('SendCommoditySellRequest')) commodity.push(pending('sell'))
     else if (line.includes('CommodityTransactionResponse') && line.includes('Error')) {
-      const type = field(line, 'type') === 'Selling' ? 'sell' : 'buy'
-      const req = [...commodity].reverse().find((p) => p.kind === type && at - p.at <= FAIL_WINDOW_MS)
-      if (req) failedCommodity.add(req)
-    } else if (line.includes('SendShopBuyRequest')) shops.push({ at, line, kind: 'shop' })
+      const type = field(line, 'type')
+      const kind = type === 'Selling' ? 'sell' : type === 'Buying' ? 'buy' : null
+      if (!kind) return
+      const req = [...commodity].reverse().find((p) => p.kind === kind && !failed.has(p) && at - p.at <= FAIL_WINDOW_MS)
+      if (req) failed.add(req)
+    } else if (line.includes('SendShopBuyRequest')) shops.push(pending('shop'))
     else if (line.includes('RmShopFlowResponse') && field(line, 'type') === 'Buying') {
-      const req = [...shops].reverse().find((p) => !okShops.has(p) && at - p.at <= FAIL_WINDOW_MS)
-      if (req && field(line, 'result') === 'Success') okShops.add(req)
+      const kiosk = field(line, 'kioskId')
+      const req = shops.find((p) => !answered.has(p) && p.kiosk === kiosk && at - p.at <= FAIL_WINDOW_MS)
+      if (!req) return
+      answered.add(req)
+      if (field(line, 'result') === 'Success') okShops.add(req)
     } else if (line.includes('Added notification "Awarded')) {
       const n = Number(line.match(/Awarded ([\d.,]+) aUEC/)?.[1]?.replace(/[.,]/g, ''))
-      if (Number.isFinite(n) && n > 0) events.push({ kind: 'reward', key: `${at}|reward|${n}`, at, amount: n })
+      if (Number.isFinite(n) && n > 0) events.push({ kind: 'reward', key: `${at}|reward|${n}|${idx}`, at, amount: n })
     }
-  }
+  })
 
   const placeAt = (at: number) => starts.find((s) => s.at >= at)?.place ?? [...starts].reverse().find((s) => s.at < at)?.place ?? null
 
   for (const p of commodity) {
-    if (failedCommodity.has(p)) continue
+    if (failed.has(p)) continue
     const resource = field(p.line, 'resourceGUID')
     if (!resource) continue
+    const key = (total: number) => `${p.at}|${p.kind}|${total}|${p.idx}`
     if (p.kind === 'buy') {
       const total = num(p.line, 'price')
       const cscu = num(p.line, 'quantity')
       if (!total || !cscu) continue
       const scu = cscu / 100
-      events.push({ kind: 'buy', key: `${p.at}|buy|${total}`, at: p.at, amount: -total, resource, scu, pricePerScu: total / scu, place: placeAt(p.at) })
+      events.push({ kind: 'buy', key: key(total), at: p.at, amount: -total, resource, scu, pricePerScu: total / scu, place: placeAt(p.at) })
     } else {
       const total = num(p.line, 'amount')
-      const scu = boxScu(p.line) ?? num(p.line, 'quantity')
-      if (!total || !scu) continue
-      events.push({ kind: 'sell', key: `${p.at}|sell|${total}`, at: p.at, amount: total, resource, scu, pricePerScu: total / scu, place: placeAt(p.at) })
+      if (!total) continue
+      const scu = boxScu(p.line) ?? 0
+      events.push({ kind: 'sell', key: key(total), at: p.at, amount: total, resource, scu, pricePerScu: scu ? total / scu : 0, place: placeAt(p.at) })
     }
   }
 
@@ -118,8 +126,7 @@ export function parseGameLog(file: RawLogFile): ParsedLog {
     const price = num(p.line, 'client_price')
     const item = field(p.line, 'itemName')
     if (!price || !item) continue
-    const qty = num(p.line, 'quantity') ?? 1
-    events.push({ kind: 'shop', key: `${p.at}|shop|${price}`, at: p.at, amount: -price * Math.max(qty, 1), item })
+    events.push({ kind: 'shop', key: `${p.at}|shop|${price}|${p.idx}`, at: p.at, amount: -price, item })
   }
 
   events.sort((a, b) => a.at - b.at)

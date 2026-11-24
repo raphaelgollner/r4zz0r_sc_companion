@@ -23,7 +23,8 @@ export function HomeTabs({ record, imported }: { record: () => React.ReactNode; 
         onChange={setTab}
         sub
       />
-      {tab === 'record' ? record() : imported()}
+      <div hidden={tab !== 'record'}>{record()}</div>
+      <div hidden={tab !== 'import'}>{imported()}</div>
     </>
   )
 }

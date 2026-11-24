@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Commodity, PriceRow, Terminal } from '../../data/types'
 import { mergeImport, parseGameLog } from '../../domain/gamelog'
 import { importToProgress } from '../../domain/importProgress'
@@ -10,10 +10,16 @@ import { DEFAULT_GAME_DIR, defaultImportDeps, EMPTY_SAVED, type ImportDeps, type
 import { SessionsPanel, SummaryPanel, TxTable } from './ProgressParts'
 import { signed, useDateFmt, useNow } from './progressFormat'
 
+const NO_COMMODITIES: Commodity[] = []
+const NO_TERMINALS: Terminal[] = []
+const NO_PRICES: PriceRow[] = []
+const NAME_BATCH = 4
+const failedNames = new Set<string>()
+
 export function ImportView({
-  commodities = [],
-  terminals = [],
-  prices = [],
+  commodities = NO_COMMODITIES,
+  terminals = NO_TERMINALS,
+  prices = NO_PRICES,
   deps = defaultImportDeps,
 }: {
   commodities?: Commodity[]
@@ -24,7 +30,13 @@ export function ImportView({
   const { t } = useI18n()
   const now = useNow()
   const dateFmt = useDateFmt()
-  const [saved, setSaved] = useState<SavedImport>(EMPTY_SAVED)
+  const [saved, setSavedState] = useState<SavedImport>(EMPTY_SAVED)
+  const savedRef = useRef(saved)
+  const mounted = useRef(true)
+  const setSaved = (v: SavedImport) => {
+    savedRef.current = v
+    if (mounted.current) setSavedState(v)
+  }
   const [ready, setReady] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,14 +44,16 @@ export function ImportView({
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    let active = true
+    mounted.current = true
     deps
       .load()
-      .then((v) => active && v && setSaved({ ...EMPTY_SAVED, ...v }))
+      .then((v) => {
+        if (v && mounted.current && savedRef.current === EMPTY_SAVED) setSaved({ ...EMPTY_SAVED, ...v })
+      })
       .catch(() => {})
-      .finally(() => active && setReady(true))
+      .finally(() => mounted.current && setReady(true))
     return () => {
-      active = false
+      mounted.current = false
     }
   }, [deps])
 
@@ -48,31 +62,48 @@ export function ImportView({
     [saved, commodities, terminals, prices],
   )
 
+  const resolveNames = async () => {
+    const pending = new Set<string>()
+    for (const s of savedRef.current.data.sessions)
+      for (const e of s.events) if ('resource' in e && !savedRef.current.names[e.resource] && !failedNames.has(e.resource)) pending.add(e.resource)
+    const list = [...pending]
+    for (let i = 0; i < list.length; i += NAME_BATCH) {
+      const batch = list.slice(i, i + NAME_BATCH)
+      const found = await Promise.allSettled(batch.map((g) => deps.resolveName(g)))
+      const names = { ...savedRef.current.names }
+      found.forEach((r, k) => {
+        if (r.status === 'fulfilled' && r.value) names[batch[k]] = r.value
+        else failedNames.add(batch[k])
+      })
+      const next = { ...savedRef.current, names }
+      setSaved(next)
+      await deps.save(next).catch(() => {})
+    }
+  }
+
   const run = async (dir: string) => {
     setBusy(true)
     setError(null)
     try {
-      const files = await deps.read(dir)
-      const merged = mergeImport(saved.data, files.map(parseGameLog), Date.now())
-      const names = { ...saved.names }
-      const guids = new Set(merged.sessions.flatMap((s) => s.events.flatMap((e) => ('resource' in e ? [e.resource] : []))))
-      for (const g of guids) {
-        if (names[g]) continue
-        const n = await deps.resolveName(g)
-        if (n) names[g] = n
-      }
-      const next = { data: merged, names, dir }
+      const current = savedRef.current
+      const skip = current.dir === dir ? current.files : []
+      const files = await deps.read(dir, skip)
+      const merged = mergeImport(current.data, files.map(parseGameLog), Date.now())
+      const read = files.map((f) => f.name).filter((n) => n !== 'Game.log')
+      const next = { ...current, data: merged, dir, files: [...new Set([...skip, ...read])] }
       setSaved(next)
       await deps.save(next).catch(() => {})
     } catch {
-      setError(t('import.readError'))
+      if (mounted.current) setError(t('import.readError'))
+      return
     } finally {
-      setBusy(false)
+      if (mounted.current) setBusy(false)
     }
+    void resolveNames()
   }
 
   const choose = async () => {
-    const start = saved.dir ?? (await deps.findDir().catch(() => null)) ?? DEFAULT_GAME_DIR
+    const start = savedRef.current.dir ?? (await deps.findDir().catch(() => null)) ?? DEFAULT_GAME_DIR
     const dir = await deps.pickDir(start).catch(() => null)
     if (dir) await run(dir)
   }

@@ -9,9 +9,10 @@ export interface SavedImport {
   data: ImportData
   names: Record<string, string>
   dir: string | null
+  files: string[]
 }
 
-export const EMPTY_SAVED: SavedImport = { data: EMPTY_IMPORT, names: {}, dir: null }
+export const EMPTY_SAVED: SavedImport = { data: EMPTY_IMPORT, names: {}, dir: null, files: [] }
 
 export interface ImportDeps {
   load: () => Promise<SavedImport | undefined>
@@ -19,7 +20,7 @@ export interface ImportDeps {
   remove: () => Promise<void>
   findDir: () => Promise<string | null>
   pickDir: (start: string) => Promise<string | null>
-  read: (dir: string) => Promise<RawLogFile[]>
+  read: (dir: string, skip: string[]) => Promise<RawLogFile[]>
   resolveName: (guid: string) => Promise<string | null>
 }
 
@@ -43,13 +44,13 @@ export const defaultImportDeps: ImportDeps = {
     const r = await open({ directory: true, multiple: false, defaultPath: start })
     return typeof r === 'string' ? r : null
   },
-  read: async (dir) => {
+  read: async (dir, skip) => {
     const { invoke } = await import('@tauri-apps/api/core')
-    return invoke<RawLogFile[]>('read_game_logs', { dir })
+    return invoke<RawLogFile[]>('read_game_logs', { dir, skip })
   },
   resolveName: async (guid) => {
     try {
-      const d = await fetchWiki<{ name?: string }>(`commodities/${encodeURIComponent(guid)}`)
+      const d = await fetchWiki<{ name?: string }>(`commodities/${encodeURIComponent(guid)}`, { fetchFn: (u, init) => fetch(u, { ...init, signal: AbortSignal.timeout(8_000) }) })
       return typeof d?.name === 'string' && d.name ? d.name : null
     } catch {
       return null

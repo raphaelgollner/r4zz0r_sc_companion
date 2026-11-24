@@ -36,9 +36,9 @@ export function importToProgress(imp: ImportData, ctx: ImportContext): ProgressD
       const price = (t: Terminal) => {
         const r = ctx.prices.find((p) => p.id_terminal === t.id && p.id_commodity === commodityId)
         const v = r ? (e.kind === 'buy' ? r.price_buy : r.price_sell) : 0
-        return v > 0 ? Math.abs(v - e.pricePerScu) : Infinity
+        return v > 0 && e.pricePerScu > 0 ? Math.abs(v - e.pricePerScu) : Number.MAX_VALUE
       }
-      best = [...here].sort((a, b) => price(a) - price(b))[0]
+      best = [...here].sort((a, b) => price(a) - price(b) || a.id - b.id)[0]
     }
     if (best) return { terminalId: best.id, terminalName: ESTIMATED + best.displayname }
     return { terminalId: fakeId('place:' + e.place), terminalName: ESTIMATED + e.place }
@@ -58,8 +58,8 @@ export function importToProgress(imp: ImportData, ctx: ImportContext): ProgressD
           description: '',
           commodityId,
           commodityName: c?.name ?? name,
-          scu: e.scu,
-          pricePerScu: e.pricePerScu,
+          scu: e.scu > 0 ? e.scu : undefined,
+          pricePerScu: e.pricePerScu > 0 ? e.pricePerScu : undefined,
           ...terminalFor(e, commodityId),
         })
       } else if (e.kind === 'shop') txs.push({ ...base, category: 'purchase', description: e.item })
