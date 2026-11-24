@@ -68,7 +68,7 @@ describe('OVERLAY › REGISTRO', () => {
   test('sem pasta do jogo: mostra onde escolher', async () => {
     renderOverlay([], async () => null)
     await userEvent.click(await screen.findByRole('button', { name: 'Iniciar sessão' }))
-    expect(await screen.findByRole('alert')).toHaveTextContent(/OVERLAY › AJUSTES/)
+    expect(await screen.findByRole('alert')).toHaveTextContent(/OVERLAY › IMPORTAÇÃO/)
   })
 
   test('Limpar dados pede confirmação e zera o OVERLAY', async () => {
@@ -79,7 +79,7 @@ describe('OVERLAY › REGISTRO', () => {
     expect(screen.getByTestId('overlay-balance')).toHaveTextContent('5.000 aUEC')
     await userEvent.click(screen.getByRole('button', { name: 'Limpar dados' }))
     const dialog = screen.getByRole('dialog')
-    expect(dialog).toHaveTextContent(/O INÍCIO, a importação em AJUSTES e o Game.log não mudam/)
+    expect(dialog).toHaveTextContent(/O INÍCIO, a aba IMPORTAÇÃO e o Game.log não mudam/)
     await userEvent.click(within(dialog).getByRole('button', { name: /Apagar|Limpar/ }))
     expect(screen.getByTestId('overlay-balance')).toHaveTextContent('0 aUEC')
   })

@@ -135,7 +135,7 @@ describe('rodapé', () => {
 })
 
 describe('aba OVERLAY', () => {
-  test('fica à esquerda do INÍCIO, com subabas REGISTRO e AJUSTES; INÍCIO não tem subabas', async () => {
+  test('fica à esquerda do INÍCIO, com subabas REGISTRO e IMPORTAÇÃO; INÍCIO não tem subabas', async () => {
     localStorage.clear()
     window.location.hash = ''
     render(
@@ -152,8 +152,8 @@ describe('aba OVERLAY', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'OVERLAY' }))
     expect(screen.getByText('AO VIVO')).toBeInTheDocument()
     const sub = screen.getAllByRole('tablist')[1]
-    expect(within(sub).getAllByRole('tab').map((x) => x.textContent)).toEqual(['REGISTRO', 'AJUSTES'])
-    await userEvent.click(within(sub).getByRole('tab', { name: 'AJUSTES' }))
+    expect(within(sub).getAllByRole('tab').map((x) => x.textContent)).toEqual(['REGISTRO', 'IMPORTAÇÃO'])
+    await userEvent.click(within(sub).getByRole('tab', { name: 'IMPORTAÇÃO' }))
     expect(screen.getByText('BRUTO')).toBeInTheDocument()
   })
 })
