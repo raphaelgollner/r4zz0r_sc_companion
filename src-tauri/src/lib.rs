@@ -5,7 +5,7 @@ pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_opener::init())
     .plugin(tauri_plugin_dialog::init())
-    .invoke_handler(tauri::generate_handler![gamelog::find_game_dir, gamelog::read_game_logs])
+    .invoke_handler(tauri::generate_handler![gamelog::find_game_dir, gamelog::read_game_logs, gamelog::read_game_log_tail])
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(

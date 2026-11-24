@@ -31,14 +31,14 @@ describe('App', () => {
   test('TRADE mostra as 6 sub-abas', async () => {
     renderApp()
     await userEvent.click(screen.getByRole('tab', { name: 'TRADE' }))
-    const subs = screen.getAllByRole('tab').map((t) => t.textContent).slice(7)
+    const subs = screen.getAllByRole('tab').map((t) => t.textContent).slice(8)
     expect(subs).toEqual(['Routes', 'Commodities', 'Locations', 'Harvestables', 'Price Finder', 'Currencies Index'])
     expect(screen.getByRole('tab', { name: 'Routes' })).toHaveAttribute('aria-selected', 'true')
   })
 
   test('abas na ordem nova', () => {
     renderApp()
-    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['INÍCIO', 'TRADE', 'MINERAÇÃO', 'SALVAGE', 'NAVES', 'FROTA', 'AJUSTES'])
+    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['OVERLAY', 'INÍCIO', 'TRADE', 'MINERAÇÃO', 'SALVAGE', 'NAVES', 'FROTA', 'AJUSTES'])
   })
 
   test('SALVAGE e FROTA habilitadas', () => {
@@ -131,5 +131,29 @@ describe('rodapé', () => {
     await userEvent.click(within(footer).getByRole('button', { name: /raphaelgollner\.github\.io/ }))
     expect(open).toHaveBeenCalledWith('https://raphaelgollner.github.io/', '_blank', 'noopener')
     open.mockRestore()
+  })
+})
+
+describe('aba OVERLAY', () => {
+  test('fica à esquerda do INÍCIO, com subabas REGISTRO e AJUSTES; INÍCIO não tem subabas', async () => {
+    localStorage.clear()
+    window.location.hash = ''
+    render(
+      <I18nProvider>
+        <UexProvider value={{ store: memoryStore(), fetchFn, limiter }}>
+          <App screens={{ home: () => <p>MANUAL</p>, overlay: { record: () => <p>AO VIVO</p>, settings: () => <p>BRUTO</p> } }} />
+        </UexProvider>
+      </I18nProvider>,
+    )
+    const main = screen.getAllByRole('tab').map((x) => x.textContent)
+    expect(main.slice(0, 2)).toEqual(['OVERLAY', 'INÍCIO'])
+    expect(screen.getByText('MANUAL')).toBeInTheDocument()
+    expect(screen.getAllByRole('tablist')).toHaveLength(1)
+    await userEvent.click(screen.getByRole('tab', { name: 'OVERLAY' }))
+    expect(screen.getByText('AO VIVO')).toBeInTheDocument()
+    const sub = screen.getAllByRole('tablist')[1]
+    expect(within(sub).getAllByRole('tab').map((x) => x.textContent)).toEqual(['REGISTRO', 'AJUSTES'])
+    await userEvent.click(within(sub).getByRole('tab', { name: 'AJUSTES' }))
+    expect(screen.getByText('BRUTO')).toBeInTheDocument()
   })
 })

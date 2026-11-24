@@ -6,7 +6,6 @@ import type { RawLogFile } from '../../domain/gamelog'
 import { I18nProvider } from '../../i18n/i18n'
 import { terminal } from '../../test/fixtures'
 import { ImportView } from './ImportView'
-import { HomeTabs } from './InicioScreen'
 import { DEFAULT_GAME_DIR, type ImportDeps, type SavedImport } from './importService'
 
 const IRON = 'f386a33c-ac9a-400a-a7b8-fe1fc7c8d270'
@@ -141,21 +140,5 @@ describe('IMPORTAÇÃO', () => {
     document.body.innerHTML = ''
     renderImport(deps)
     expect(await screen.findByText('Pilot_One')).toBeInTheDocument()
-  })
-})
-
-describe('subabas do INÍCIO', () => {
-  test('REGISTRO primeiro e ativo; IMPORTAÇÃO ao lado', async () => {
-    render(
-      <I18nProvider initial="pt">
-        <HomeTabs record={() => <p>manual</p>} imported={() => <p>importado</p>} />
-      </I18nProvider>,
-    )
-    const tabs = screen.getAllByRole('tab')
-    expect(tabs.map((x) => x.textContent)).toEqual(['REGISTRO', 'IMPORTAÇÃO'])
-    expect(screen.getByText('manual')).toBeInTheDocument()
-    await userEvent.click(tabs[1])
-    expect(screen.getByText('importado')).toBeVisible()
-    expect(screen.getByText('manual')).not.toBeVisible()
   })
 })
