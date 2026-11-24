@@ -1,28 +1,27 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   activeSession,
   addTx,
   balance,
   clearProgress,
-  commoditySummary,
   endSession,
-  placesVisited,
   removeTx,
   sessionSummary,
   setBalance,
   startSession,
   TX_CATEGORIES,
   updateTx,
-  type Session,
   type Tx,
   type TxCategory,
 } from '../../domain/progress'
 import type { Commodity, Terminal } from '../../data/types'
-import { formatAuec, formatScu, parseAmount } from '../../domain/format'
+import { formatAuec, parseAmount } from '../../domain/format'
 import { locationPath } from '../../domain/location'
 import { useI18n } from '../../i18n/i18n'
 import { useProgress } from '../../store/progress'
-import { DataTable, Panel, SectionLabel } from '../../ui/components'
+import { Panel, SectionLabel } from '../../ui/components'
+import { SessionsPanel, SummaryPanel, TxTable } from './ProgressParts'
+import { formatDuration, signed, useNow } from './progressFormat'
 import { Dialog } from '../../ui/Dialog'
 import { SearchPicker } from '../../ui/SearchPicker'
 
@@ -33,22 +32,6 @@ function toLocalInput(ms: number): string {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
-
-function formatDuration(ms: number): string {
-  const min = Math.max(0, Math.floor(ms / 60_000))
-  return `${Math.floor(min / 60)}h${String(min % 60).padStart(2, '0')}`
-}
-
-function useNow(intervalMs = 30_000) {
-  const [now, setNow] = useState(Date.now())
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), intervalMs)
-    return () => clearInterval(id)
-  }, [intervalMs])
-  return now
-}
-
-const signed = (n: number) => `${n > 0 ? '+' : n < 0 ? '−' : ''}${formatAuec(Math.abs(n))}`
 
 interface FormState {
   editingId: string | null
@@ -154,9 +137,6 @@ export function ProgressView({ commodities, terminals }: { commodities?: Commodi
 
   const describe = (x: Tx) => (x.kind === 'adjust' ? t('progress.adjust') : x.description || t(`cat.${x.category}`))
   const summarySession = sessionsById.get(filter) ?? session
-  const summaryTxs = summarySession ? data.txs.filter((x) => x.sessionId === summarySession.id) : []
-  const byCommodity = commoditySummary(summaryTxs)
-  const places = placesVisited(summaryTxs)
 
   return (
     <div className="progress-page">
@@ -346,75 +326,10 @@ export function ProgressView({ commodities, terminals }: { commodities?: Commodi
           </div>
         </Panel>
 
-        <div role="region" aria-label={t('progress.sessions')}>
-          <Panel>
-            <SectionLabel>{t('progress.sessions')}</SectionLabel>
-            <DataTable<Session>
-              rows={sessions}
-              rowKey={(s) => s.id}
-              empty={t('progress.noSessions')}
-              selectedKey={filter}
-              onRowClick={(s) => setFilter(s.id)}
-              columns={[
-                { key: 'd', header: t('progress.colDate'), render: (s) => dateFmt(s.startedAt) },
-                { key: 'dur', header: t('progress.duration'), render: (s) => (s.endedAt ? formatDuration(s.endedAt - s.startedAt) : `● ${formatDuration(now - s.startedAt)}`) },
-                { key: 'in', header: t('progress.income'), align: 'right', render: (s) => formatAuec(sessionSummary(s, data.txs, now).income) },
-                { key: 'out', header: t('progress.expense'), align: 'right', render: (s) => formatAuec(sessionSummary(s, data.txs, now).expense) },
-                {
-                  key: 'net',
-                  header: t('progress.net'),
-                  align: 'right',
-                  render: (s) => {
-                    const net = sessionSummary(s, data.txs, now).net
-                    return <span className={net >= 0 ? 'profit' : 'loss'}>{signed(net)}</span>
-                  },
-                },
-              ]}
-            />
-          </Panel>
-        </div>
+        <SessionsPanel sessions={sessions} txs={data.txs} now={now} selected={filter} onSelect={setFilter} />
       </div>
 
-      {summarySession && (
-        <div role="region" aria-label={t('progress.summary')}>
-          <Panel>
-            <SectionLabel>
-              {t('progress.summary')} · {dateFmt(summarySession.startedAt)}
-            </SectionLabel>
-            {byCommodity.length === 0 && places.length === 0 ? (
-              <p className="muted">{t('progress.summaryEmpty')}</p>
-            ) : (
-              <div className="grid-2">
-                <DataTable
-                  rows={byCommodity}
-                  rowKey={(c) => c.commodityId}
-                  empty={t('progress.summaryEmpty')}
-                  columns={[
-                    { key: 'n', header: t('progress.resource'), render: (c) => c.name },
-                    { key: 'b', header: t('progress.bought'), align: 'right', render: (c) => formatScu(c.boughtScu) },
-                    { key: 's', header: t('progress.sold'), align: 'right', render: (c) => formatScu(c.soldScu) },
-                    { key: 'net', header: t('progress.net'), align: 'right', render: (c) => <span className={c.net >= 0 ? 'profit' : 'loss'}>{signed(c.net)}</span> },
-                  ]}
-                />
-                <DataTable
-                  rows={places}
-                  rowKey={(p) => p.terminalId}
-                  empty={t('progress.summaryEmpty')}
-                  columns={[
-                    { key: 'p', header: t('progress.visited'), render: (p) => p.name },
-                    {
-                      key: 'a',
-                      header: t('progress.didThere'),
-                      render: (p) =>
-                        p.actions.length ? p.actions.map((a) => t(a.kind === 'buy' ? 'progress.boughtX' : 'progress.soldX', { name: a.commodity })).join(' · ') : '—',
-                    },
-                  ]}
-                />
-              </div>
-            )}
-          </Panel>
-        </div>
-      )}
+      {summarySession && <SummaryPanel session={summarySession} txs={data.txs} />}
 
       <Panel>
         <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
@@ -428,38 +343,21 @@ export function ProgressView({ commodities, terminals }: { commodities?: Commodi
             </select>
           </label>
         </div>
-        <DataTable<Tx>
-          rows={txs}
-          rowKey={(x) => x.id}
-          empty={t('progress.noTxs')}
-          columns={[
-            { key: 'at', header: t('progress.colDate'), render: (x) => dateFmt(x.at) },
-            { key: 'desc', header: t('progress.description'), render: (x) => describe(x) },
-            {
-              key: 'res',
-              header: t('progress.resource'),
-              render: (x) => (x.commodityName ? (x.scu ? `${x.commodityName} · ${formatScu(x.scu)}` : x.commodityName) : '—'),
-            },
-            { key: 'place', header: t('progress.place'), render: (x) => x.terminalName ?? '—' },
-            { key: 'cat', header: t('progress.category'), render: (x) => (x.kind === 'adjust' ? '—' : <span className="chip">{t(`cat.${x.category}`)}</span>) },
-            { key: 'val', header: t('progress.value'), align: 'right', render: (x) => <span className={x.amount >= 0 ? 'profit' : 'loss'}>{signed(x.amount)}</span> },
-            {
-              key: 'act',
-              header: '',
-              render: (x) => (
-                <span className="row-actions">
-                  {x.kind === 'normal' && (
-                    <button className="btn-link" onClick={() => edit(x)} aria-label={t('progress.editOf', { desc: describe(x) })}>
-                      {t('progress.edit')}
-                    </button>
-                  )}
-                  <button className="btn-link danger" onClick={() => setToDelete(x)} aria-label={t('progress.deleteOf', { desc: describe(x) })}>
-                    {t('progress.delete')}
-                  </button>
-                </span>
-              ),
-            },
-          ]}
+        <TxTable
+          txs={txs}
+          describe={describe}
+          actions={(x) => (
+            <span className="row-actions">
+              {x.kind === 'normal' && (
+                <button className="btn-link" onClick={() => edit(x)} aria-label={t('progress.editOf', { desc: describe(x) })}>
+                  {t('progress.edit')}
+                </button>
+              )}
+              <button className="btn-link danger" onClick={() => setToDelete(x)} aria-label={t('progress.deleteOf', { desc: describe(x) })}>
+                {t('progress.delete')}
+              </button>
+            </span>
+          )}
         />
       </Panel>
 
