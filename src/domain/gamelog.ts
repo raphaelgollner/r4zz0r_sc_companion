@@ -5,6 +5,11 @@ export interface RawLogFile {
   lines: string[]
 }
 
+export interface CargoBox {
+  size: number
+  count: number
+}
+
 interface Base {
   key: string
   at: number
@@ -12,7 +17,17 @@ interface Base {
 }
 
 export type LogEvent =
-  | (Base & { kind: 'buy' | 'sell'; resource: string; scu: number; pricePerScu: number; place: string | null })
+  | (Base & {
+      kind: 'buy' | 'sell'
+      resource: string
+      scu: number
+      pricePerScu: number
+      place: string | null
+      prevPlace?: string | null
+      autoLoad?: boolean
+      boxes?: CargoBox[]
+      ship?: string | null
+    })
   | (Base & { kind: 'shop'; item: string })
   | (Base & { kind: 'reward' })
 
@@ -51,18 +66,27 @@ const stamp = (line: string) => {
   return Number.isFinite(t) ? t : null
 }
 
-const boxScu = (line: string) => {
+const boxesOf = (line: string): CargoBox[] => {
   const data = line.split('Cargo Box Data:')[1] ?? ''
-  let total = 0
-  for (const m of data.matchAll(/boxSize\[([\d.]+)\]\s*\|\s*unitAmount\[([\d.]+)\]/g)) total += Number(m[1]) * Number(m[2])
-  return total > 0 ? total : null
+  const out: CargoBox[] = []
+  for (const m of data.matchAll(/boxSize\[([\d.]+)\]\s*\|\s*unitAmount\[([\d.]+)\]/g)) {
+    const size = Number(m[1])
+    const count = Number(m[2])
+    if (size > 0 && count > 0) out.push({ size, count })
+  }
+  return out
 }
+
+const boxScu = (boxes: CargoBox[]) => boxes.reduce((a, b) => a + b.size * b.count, 0) || null
+
+const shipOf = (line: string) => line.match(/\|\s*([A-Za-z0-9]+_[A-Za-z0-9_]+?)_\d{6,}\[\d+\]\s*\|/)?.[1] ?? null
 
 type Pending = { at: number; line: string; kind: 'buy' | 'sell' | 'shop'; idx: number; kiosk: string | undefined }
 
 export function parseGameLog(file: RawLogFile): ParsedLog {
   const events: LogEvent[] = []
   const starts: { at: number; place: string }[] = []
+  const ships: { at: number; ship: string }[] = []
   let player: string | null = null
   const commodity: Pending[] = []
   const shops: Pending[] = []
@@ -79,6 +103,8 @@ export function parseGameLog(file: RawLogFile): ParsedLog {
     } else if (line.includes('Projected Start Location is')) {
       const place = line.match(/Projected Start Location is (.+?) for route/)?.[1]?.trim()
       if (place) starts.push({ at, place })
+      const ship = shipOf(line)
+      if (ship) ships.push({ at, ship })
     } else if (line.includes('SendCommodityBuyRequest')) commodity.push(pending('buy'))
     else if (line.includes('SendCommoditySellRequest')) commodity.push(pending('sell'))
     else if (line.includes('CommodityTransactionResponse') && line.includes('Error')) {
@@ -100,24 +126,28 @@ export function parseGameLog(file: RawLogFile): ParsedLog {
     }
   })
 
-  const placeAt = (at: number) => starts.find((s) => s.at >= at)?.place ?? [...starts].reverse().find((s) => s.at < at)?.place ?? null
+  const nextPlace = (at: number) => starts.find((s) => s.at >= at)?.place ?? null
+  const prevPlace = (at: number) => [...starts].reverse().find((s) => s.at < at)?.place ?? null
+  const shipAt = (at: number) => [...ships].reverse().find((s) => s.at <= at)?.ship ?? ships.find((s) => s.at > at)?.ship ?? null
 
   for (const p of commodity) {
     if (failed.has(p)) continue
     const resource = field(p.line, 'resourceGUID')
     if (!resource) continue
     const key = (total: number) => `${p.at}|${p.kind}|${total}|${p.idx}`
+    const boxes = boxesOf(p.line)
+    const extra = { place: nextPlace(p.at), prevPlace: prevPlace(p.at), autoLoad: field(p.line, 'autoLoading') === '1', boxes, ship: shipAt(p.at) }
     if (p.kind === 'buy') {
       const total = num(p.line, 'price')
       const cscu = num(p.line, 'quantity')
       if (!total || !cscu) continue
       const scu = cscu / 100
-      events.push({ kind: 'buy', key: key(total), at: p.at, amount: -total, resource, scu, pricePerScu: total / scu, place: placeAt(p.at) })
+      events.push({ kind: 'buy', key: key(total), at: p.at, amount: -total, resource, scu, pricePerScu: total / scu, ...extra })
     } else {
       const total = num(p.line, 'amount')
       if (!total) continue
-      const scu = boxScu(p.line) ?? 0
-      events.push({ kind: 'sell', key: key(total), at: p.at, amount: total, resource, scu, pricePerScu: scu ? total / scu : 0, place: placeAt(p.at) })
+      const scu = boxScu(boxes) ?? 0
+      events.push({ kind: 'sell', key: key(total), at: p.at, amount: total, resource, scu, pricePerScu: scu ? total / scu : 0, ...extra })
     }
   }
 

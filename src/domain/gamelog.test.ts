@@ -56,7 +56,7 @@ describe('parseGameLog', () => {
     expect(two.events[0]).toMatchObject({ scu: 88 })
   })
 
-  test('local estimado: o próximo ponto de partida de salto; sem ele, o anterior', () => {
+  test('local: confirmado pelo próximo ponto de partida de salto; sem ele, fica o último salto antes como pista', () => {
     const p = parseGameLog(
       file([
         start('2026-11-23T21:00:53.201Z', 'ARC-L4 Faint Glen Station'),
@@ -65,7 +65,23 @@ describe('parseGameLog', () => {
         sell('2026-11-23T21:50:00.000Z', 2000, 1),
       ]),
     )
-    expect(p.events.map((e) => (e.kind === 'buy' || e.kind === 'sell' ? e.place : null))).toEqual(['Everus Harbor', 'Everus Harbor'])
+    const places = p.events.map((e) => (e.kind === 'buy' || e.kind === 'sell' ? [e.place, e.prevPlace] : null))
+    expect(places).toEqual([
+      ['Everus Harbor', 'ARC-L4 Faint Glen Station'],
+      [null, 'Everus Harbor'],
+    ])
+  })
+
+  test('auto load, caixas e nave de cada operação', () => {
+    const p = parseGameLog(
+      file([
+        start('2026-11-23T21:00:00.000Z', 'Everus Harbor'),
+        buy('2026-11-23T21:20:00.000Z', 1413121, 51200),
+        sell('2026-11-23T21:50:00.000Z', 7312, 16, IRON, '[boxSize[16] | unitAmount[1]]').replace('autoLoading[1]', 'autoLoading[0]'),
+      ]),
+    )
+    expect(p.events[0]).toMatchObject({ autoLoad: true, boxes: [{ size: 32, count: 16 }], ship: 'DRAK_Ironclad_Assault' })
+    expect(p.events[1]).toMatchObject({ autoLoad: false, boxes: [{ size: 16, count: 1 }], ship: 'DRAK_Ironclad_Assault' })
   })
 
   test('compras em loja só com resposta de sucesso; pagamentos de contrato; nome do jogador; sessão', () => {

@@ -1,4 +1,5 @@
 import { FleetScreen } from '../features/fleet/screens'
+import { OverlayRecordScreen, OverlaySettingsScreen } from '../features/overlay/screens'
 import { EquipmentScreen, GroundScreen, OresScreen, PlannerScreen, RefineriesScreen } from '../features/mining/screens'
 import { MaterialsScreen, SalvageEquipmentScreen, SalvagePlannerScreen, SalvageShipsScreen } from '../features/salvage/screens'
 import { InicioScreen } from '../features/progress/InicioScreen'
@@ -15,6 +16,7 @@ import {
 import type { Screens } from './App'
 
 export const screens: Screens = {
+  overlay: { record: () => <OverlayRecordScreen />, settings: () => <OverlaySettingsScreen /> },
   home: () => <InicioScreen />,
   ships: () => <ShipsScreen />,
   fleet: () => <FleetScreen />,

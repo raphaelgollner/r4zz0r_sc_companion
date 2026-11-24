@@ -6,6 +6,7 @@ import { TerminalsProvider } from './data/terminals'
 import { I18nProvider } from './i18n/i18n'
 import { FleetProvider } from './store/fleet'
 import { loadPrefs } from './store/prefs'
+import { OverlayProvider } from './store/overlay'
 import { ProgressProvider } from './store/progress'
 import { applyTheme } from './ui/themes'
 import './ui/fonts'
@@ -17,11 +18,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <I18nProvider>
       <ProgressProvider>
-        <FleetProvider>
-          <TerminalsProvider>
-            <App screens={screens} />
-          </TerminalsProvider>
-        </FleetProvider>
+        <OverlayProvider>
+          <FleetProvider>
+            <TerminalsProvider>
+              <App screens={screens} />
+            </TerminalsProvider>
+          </FleetProvider>
+        </OverlayProvider>
       </ProgressProvider>
     </I18nProvider>
   </StrictMode>,

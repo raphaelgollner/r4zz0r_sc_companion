@@ -59,6 +59,15 @@ describe('importToProgress', () => {
     expect(d.txs[0].pricePerScu).toBeUndefined()
   })
 
+  test('sem salto depois: o terminal cujo preço bate (até 3%), preferindo o sistema do último salto', () => {
+    const terms = [...terminals, terminal(4, { displayname: 'Ruin Station', star_system_name: 'Pyro', space_station_name: 'Ruin Station' })]
+    const pr = [...prices, row(4, { price_sell: 3565 })]
+    const e = ev({ kind: 'sell', at: 10, amount: 3564, resource: IRON, scu: 1, pricePerScu: 3564, place: null, prevPlace: 'Everus Harbor' })
+    expect(importToProgress(imp([e]), { ...ctx, terminals: terms, prices: pr }).txs[0]).toMatchObject({ terminalId: 3, terminalName: '≈ Lorville TDD' })
+    const far = ev({ kind: 'sell', at: 10, amount: 9999, resource: IRON, scu: 1, pricePerScu: 9999, place: null, prevPlace: 'Everus Harbor' })
+    expect(importToProgress(imp([far]), ctx).txs[0]).toMatchObject({ terminalId: 1, terminalName: '≈ Everus Harbor' })
+  })
+
   test('loja, contrato e categorias', () => {
     const d = importToProgress(
       imp([ev({ kind: 'shop', at: 10, amount: -450, item: 'grin_multitool_01_tractorbeam' }), ev({ kind: 'reward', at: 11, amount: 44500 })]),

@@ -10,6 +10,7 @@ export interface ImportContext {
 }
 
 export const ESTIMATED = '≈ '
+const PRICE_TOLERANCE = 0.03
 
 const norm = (s: string | null | undefined) => (s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 
@@ -28,8 +29,28 @@ export function importToProgress(imp: ImportData, ctx: ImportContext): ProgressD
     return synthetic.get(key)!
   }
 
-  const terminalFor = (e: Extract<LogEvent, { kind: 'buy' | 'sell' }>, commodityId: number) => {
-    if (!e.place) return { terminalId: undefined, terminalName: undefined }
+  const byPrice = (e: Extract<LogEvent, { kind: 'buy' | 'sell' }>, commodityId: number) => {
+    if (!(e.pricePerScu > 0)) return null
+    const hint = e.prevPlace ? tradeTerminals.find((t) => placeMatches(t, e.prevPlace!))?.star_system_name : null
+    const scored = ctx.prices
+      .filter((r) => r.id_commodity === commodityId)
+      .map((r) => {
+        const v = e.kind === 'buy' ? r.price_buy : r.price_sell
+        const t = tradeTerminals.find((x) => x.id === r.id_terminal)
+        return { t, diff: v > 0 ? Math.abs(v - e.pricePerScu) / e.pricePerScu : Infinity }
+      })
+      .filter((x): x is { t: Terminal; diff: number } => !!x.t && x.diff <= PRICE_TOLERANCE)
+      .sort((a, b) => Number(b.t.star_system_name === hint) - Number(a.t.star_system_name === hint) || a.diff - b.diff || a.t.id - b.t.id)
+    return scored[0]?.t ?? null
+  }
+
+  const terminalFor: (e: Extract<LogEvent, { kind: 'buy' | 'sell' }>, commodityId: number) => { terminalId: number | undefined; terminalName: string | undefined } = (e: Extract<LogEvent, { kind: 'buy' | 'sell' }>, commodityId: number) => {
+    if (!e.place) {
+      const guess = byPrice(e, commodityId)
+      if (guess) return { terminalId: guess.id, terminalName: ESTIMATED + guess.displayname }
+      if (!e.prevPlace) return { terminalId: undefined, terminalName: undefined }
+      return terminalFor({ ...e, place: e.prevPlace, prevPlace: null }, commodityId)
+    }
     const here = tradeTerminals.filter((t) => placeMatches(t, e.place!))
     let best = here[0]
     if (here.length > 1) {

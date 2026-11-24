@@ -10,19 +10,23 @@ import { openExternal } from '../ui/openExternal'
 export const ORG_URL = 'https://tayko.org'
 export const DEV_URL = 'https://raphaelgollner.github.io/'
 
-export type MainTab = 'home' | 'trade' | 'mining' | 'salvage' | 'ships' | 'fleet' | 'settings'
+export type MainTab = 'overlay' | 'home' | 'trade' | 'mining' | 'salvage' | 'ships' | 'fleet' | 'settings'
 export type TradeTab = 'routes' | 'commodities' | 'locations' | 'harvestables' | 'finder' | 'currencies'
 export type MiningTab = 'ores' | 'refineries' | 'planner' | 'equipment' | 'ground'
 export type SalvageTab = 'materials' | 'planner' | 'equipment' | 'ships'
 
+export type OverlayTab = 'record' | 'settings'
+
 export interface Nav {
   main: MainTab
+  overlay: OverlayTab
   trade: TradeTab
   mining: MiningTab
   salvage: SalvageTab
 }
 
 export interface Screens {
+  overlay?: Partial<Record<OverlayTab, () => ReactNode>>
   home?: () => ReactNode
   ships?: () => ReactNode
   fleet?: () => ReactNode
@@ -77,7 +81,8 @@ function Footer() {
   )
 }
 
-const MAIN: MainTab[] = ['home', 'trade', 'mining', 'salvage', 'ships', 'fleet', 'settings']
+const MAIN: MainTab[] = ['overlay', 'home', 'trade', 'mining', 'salvage', 'ships', 'fleet', 'settings']
+const OVERLAY: OverlayTab[] = ['record', 'settings']
 const TRADE: TradeTab[] = ['routes', 'commodities', 'locations', 'harvestables', 'finder', 'currencies']
 const MINING: MiningTab[] = ['ores', 'refineries', 'planner', 'equipment', 'ground']
 const SALVAGE: SalvageTab[] = ['materials', 'planner', 'equipment', 'ships']
@@ -86,6 +91,7 @@ function navFromHash(): Nav {
   const [main, sub] = window.location.hash.replace(/^#/, '').split('/')
   return {
     main: MAIN.includes(main as MainTab) ? (main as MainTab) : 'home',
+    overlay: OVERLAY.includes(sub as OverlayTab) ? (sub as OverlayTab) : 'record',
     trade: TRADE.includes(sub as TradeTab) ? (sub as TradeTab) : 'routes',
     mining: MINING.includes(sub as MiningTab) ? (sub as MiningTab) : 'ores',
     salvage: SALVAGE.includes(sub as SalvageTab) ? (sub as SalvageTab) : 'materials',
@@ -98,6 +104,7 @@ export default function App({ screens = {} }: { screens?: Screens }) {
   const go = (patch: Partial<Nav>) => setNav((n) => ({ ...n, ...patch }))
 
   const mainTabs: TabItem<MainTab>[] = [
+    { key: 'overlay', label: t('tab.overlay') },
     { key: 'home', label: t('tab.home') },
     { key: 'trade', label: t('tab.trade') },
     { key: 'mining', label: t('tab.mining') },
@@ -105,6 +112,11 @@ export default function App({ screens = {} }: { screens?: Screens }) {
     { key: 'ships', label: t('tab.ships') },
     { key: 'fleet', label: t('tab.fleet') },
     { key: 'settings', label: t('tab.settings') },
+  ]
+
+  const overlayTabs: TabItem<OverlayTab>[] = [
+    { key: 'record', label: t('overlay.tab.record') },
+    { key: 'settings', label: t('overlay.tab.settings') },
   ]
 
   const tradeTabs: TabItem<TradeTab>[] = [
@@ -132,7 +144,14 @@ export default function App({ screens = {} }: { screens?: Screens }) {
   ]
 
   let content: ReactNode = null
-  if (nav.main === 'home') content = screens.home?.()
+  if (nav.main === 'overlay')
+    content = (
+      <>
+        <Tabs items={overlayTabs} active={nav.overlay} onChange={(k) => go({ overlay: k })} sub />
+        {screens.overlay?.[nav.overlay]?.()}
+      </>
+    )
+  else if (nav.main === 'home') content = screens.home?.()
   else if (nav.main === 'ships') content = screens.ships?.()
   else if (nav.main === 'fleet') content = screens.fleet?.()
   else if (nav.main === 'settings') content = screens.settings?.()
@@ -163,7 +182,7 @@ export default function App({ screens = {} }: { screens?: Screens }) {
       <Header />
       <Tabs items={mainTabs} active={nav.main} onChange={(k) => go({ main: k })} />
       <main className="main">
-        <ErrorBoundary key={`${nav.main}/${nav.trade}/${nav.mining}/${nav.salvage}`}>{content}</ErrorBoundary>
+        <ErrorBoundary key={`${nav.main}/${nav.overlay}/${nav.trade}/${nav.mining}/${nav.salvage}`}>{content}</ErrorBoundary>
       </main>
       <Footer />
     </div>
