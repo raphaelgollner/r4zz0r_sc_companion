@@ -42,7 +42,7 @@ export function OverlayRecordView({
   const asked = useRef(new Set<string>())
 
   const names = useMemo(() => new Map(Object.entries(data.names ?? {})), [data.names])
-  const view = useMemo(() => overlayView(data, { names, commodities, terminals, prices, vehicles }, now), [data, names, commodities, terminals, prices, vehicles, now])
+  const view = useMemo(() => overlayView(data, { names, commodities, terminals, prices, vehicles }, now, lastRead), [data, names, commodities, terminals, prices, vehicles, now, lastRead])
 
   useEffect(() => {
     const guids = new Set<string>()
@@ -50,7 +50,9 @@ export function OverlayRecordView({
     const missing = [...guids].filter((g) => !names.has(g) && !asked.current.has(g))
     for (const g of missing) {
       asked.current.add(g)
-      void resolveName(g).then((n) => n && apply((d) => ({ ...d, names: { ...d.names, [g]: n } })))
+      void resolveName(g)
+        .then((n) => n && apply((d) => ({ ...d, names: { ...d.names, [g]: n } })))
+        .catch(() => {})
     }
   }, [data.sessions, names, resolveName, apply])
 
@@ -84,7 +86,7 @@ export function OverlayRecordView({
                 className="btn primary"
                 disabled={!Number.isFinite(parseAmount(balanceText))}
                 onClick={() => {
-                  apply((d) => setOverlayBalance(d, parseAmount(balanceText), total, Date.now(), newId()))
+                  apply((d) => setOverlayBalance(d, parseAmount(balanceText), Date.now(), newId()))
                   setEditingBalance(false)
                 }}
               >
@@ -131,7 +133,7 @@ export function OverlayRecordView({
               </div>
               <p className="muted">{t('overlay.delayNote')}</p>
               <div>
-                <button className="btn" onClick={() => end()}>
+                <button className="btn" onClick={() => void end()}>
                   {t('progress.end')}
                 </button>
               </div>

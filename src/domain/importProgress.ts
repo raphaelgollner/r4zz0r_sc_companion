@@ -11,6 +11,7 @@ export interface ImportContext {
 
 export const ESTIMATED = '≈ '
 const PRICE_TOLERANCE = 0.03
+const UNIQUE_MARGIN = 0.002
 
 const norm = (s: string | null | undefined) => (s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 
@@ -31,8 +32,8 @@ export function importToProgress(imp: ImportData, ctx: ImportContext): ProgressD
 
   const byPrice = (e: Extract<LogEvent, { kind: 'buy' | 'sell' }>, commodityId: number) => {
     if (!(e.pricePerScu > 0)) return null
-    const hint = e.prevPlace ? tradeTerminals.find((t) => placeMatches(t, e.prevPlace!))?.star_system_name : null
-    const scored = ctx.prices
+    const hint = systemOf(e.prevPlace)
+    const all = ctx.prices
       .filter((r) => r.id_commodity === commodityId)
       .map((r) => {
         const v = e.kind === 'buy' ? r.price_buy : r.price_sell
@@ -40,16 +41,22 @@ export function importToProgress(imp: ImportData, ctx: ImportContext): ProgressD
         return { t, diff: v > 0 ? Math.abs(v - e.pricePerScu) / e.pricePerScu : Infinity }
       })
       .filter((x): x is { t: Terminal; diff: number } => !!x.t && x.diff <= PRICE_TOLERANCE)
-      .sort((a, b) => Number(b.t.star_system_name === hint) - Number(a.t.star_system_name === hint) || a.diff - b.diff || a.t.id - b.t.id)
-    return scored[0]?.t ?? null
+    const inHint = hint ? all.filter((x) => x.t.star_system_name === hint) : []
+    const scored = (inHint.length ? inHint : all).sort((a, b) => a.diff - b.diff)
+    if (scored.length === 0) return null
+    if (scored.length > 1 && scored[1].diff - scored[0].diff < UNIQUE_MARGIN) return null
+    return scored[0].t
   }
 
-  const terminalFor: (e: Extract<LogEvent, { kind: 'buy' | 'sell' }>, commodityId: number) => { terminalId: number | undefined; terminalName: string | undefined } = (e: Extract<LogEvent, { kind: 'buy' | 'sell' }>, commodityId: number) => {
+  const systemOf = (place: string | null | undefined) => (place ? (tradeTerminals.find((t) => placeMatches(t, place))?.star_system_name ?? null) : null)
+
+  const terminalFor = (e: Extract<LogEvent, { kind: 'buy' | 'sell' }>, commodityId: number) => {
     if (!e.place) {
       const guess = byPrice(e, commodityId)
       if (guess) return { terminalId: guess.id, terminalName: ESTIMATED + guess.displayname }
-      if (!e.prevPlace) return { terminalId: undefined, terminalName: undefined }
-      return terminalFor({ ...e, place: e.prevPlace, prevPlace: null }, commodityId)
+      const system = systemOf(e.prevPlace)
+      if (system) return { terminalId: fakeId('sys:' + system), terminalName: ESTIMATED + system }
+      return { terminalId: undefined, terminalName: undefined }
     }
     const here = tradeTerminals.filter((t) => placeMatches(t, e.place!))
     let best = here[0]

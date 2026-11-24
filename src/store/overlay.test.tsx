@@ -60,7 +60,7 @@ describe('OverlayProvider', () => {
     await waitFor(() => expect(state()).toMatchObject({ n: 0, error: 'noDir' }))
   })
 
-  test('encerrar faz uma última leitura e para', async () => {
+  test('encerrar faz uma última leitura, segue lendo por 15 s (recusas do jogo) e depois para', async () => {
     const { live, tails } = setup()
     await waitFor(() => expect(state().n).toBe(0))
     await act(async () => screen.getByText('start').click())
@@ -68,8 +68,14 @@ describe('OverlayProvider', () => {
     tails.push({ first: 'f1', offset: 150, lines: ['z'] })
     await act(async () => screen.getByText('end').click())
     await waitFor(() => expect(state()).toMatchObject({ active: false, lines: 1 }))
+    tails.push({ first: 'f1', offset: 190, lines: ['recusa do jogo'] })
+    await waitFor(() => expect(state()).toMatchObject({ active: false, lines: 2 }))
+    const realNow = Date.now()
+    vi.spyOn(Date, 'now').mockReturnValue(realNow + 20_000)
+    await act(() => new Promise((r) => setTimeout(r, 40)))
     const calls = (live.tail as ReturnType<typeof vi.fn>).mock.calls.length
-    await new Promise((r) => setTimeout(r, 80))
+    await act(() => new Promise((r) => setTimeout(r, 80)))
     expect((live.tail as ReturnType<typeof vi.fn>).mock.calls.length).toBe(calls)
+    vi.restoreAllMocks()
   })
 })

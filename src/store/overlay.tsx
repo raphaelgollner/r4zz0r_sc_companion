@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { KVStore } from '../cache/store'
-import { activeOverlay, appendTail, EMPTY_OVERLAY, endOverlay, startOverlay, type OverlayData } from '../domain/overlay'
+import { activeOverlay, appendTail, CONFIRM_MS, EMPTY_OVERLAY, endOverlay, readingTarget, startOverlay, type LogTail, type OverlayData } from '../domain/overlay'
 import { defaultLiveDeps, overlayStore, type LiveDeps } from './overlayDeps'
 
 const KEY = 'data'
@@ -15,7 +15,7 @@ interface OverlayValue {
   ready: boolean
   apply: (fn: (d: OverlayData) => OverlayData) => void
   start: () => Promise<void>
-  end: () => void
+  end: () => Promise<void>
   lastRead: number | null
   error: LiveError
 }
@@ -32,7 +32,6 @@ export function OverlayProvider({ store, live = defaultLiveDeps, children }: { s
   const [error, setError] = useState<LiveError>(null)
   const ref = useRef(data)
   const dirRef = useRef<string | null>(null)
-  const busy = useRef(false)
 
   useEffect(() => {
     let active = true
@@ -63,51 +62,62 @@ export function OverlayProvider({ store, live = defaultLiveDeps, children }: { s
 
   const dir = useCallback(async () => (dirRef.current ??= await live.getDir().catch(() => null)), [live])
 
-  const poll = useCallback(async () => {
-    const s = activeOverlay(ref.current)
-    if (!s || busy.current) return
-    busy.current = true
+  const inflight = useRef<Promise<void> | null>(null)
+
+  const readOnce = useCallback(async () => {
+    const s = readingTarget(ref.current, Date.now())
+    if (!s) return
     try {
       const d = await dir()
       if (!d) return setError('noDir')
       let t = await live.tail(d, s.offset)
       if (s.fileFirst !== null && t.first !== s.fileFirst) t = await live.tail(d, 0)
-      apply((x) => appendTail(x, t))
+      apply((x) => appendTail(x, s.id, s.offset, t))
       setLastRead(Date.now())
       setError(null)
     } catch {
       setError('readFailed')
-    } finally {
-      busy.current = false
     }
   }, [apply, dir, live])
 
-  const active = !!activeOverlay(data)
+  const poll = useCallback(() => {
+    if (!inflight.current) inflight.current = readOnce().finally(() => (inflight.current = null))
+    return inflight.current
+  }, [readOnce])
+
+  const [closing, setClosing] = useState(false)
+  const reading = !!activeOverlay(data) || closing
   useEffect(() => {
-    if (!ready || !active) return
+    if (!ready || !reading) return
     const first = setTimeout(() => void poll(), 0)
     const id = setInterval(() => void poll(), live.pollMs ?? POLL_MS)
     return () => {
       clearTimeout(first)
       clearInterval(id)
     }
-  }, [ready, active, poll, live.pollMs])
+  }, [ready, reading, poll, live.pollMs])
 
   const start = useCallback(async () => {
     dirRef.current = null
     const d = await dir()
     if (!d) return setError('noDir')
+    let t: LogTail
     try {
-      const t = await live.tail(d, null)
-      apply((x) => startOverlay(x, Date.now(), newId(), { ...t, lines: [] }))
-      setError(null)
-    } catch {
-      setError('readFailed')
+      t = await live.tail(d, null)
+    } catch (e) {
+      if (String(e) !== 'no_logs') return setError('readFailed')
+      t = { first: null, offset: 0, lines: [] }
     }
+    apply((x) => startOverlay(x, Date.now(), newId(), { ...t, lines: [] }))
+    setError(null)
   }, [apply, dir, live])
 
-  const end = useCallback(() => {
-    void poll().finally(() => apply((x) => endOverlay(x, Date.now())))
+  const end = useCallback(async () => {
+    await inflight.current
+    await poll()
+    apply((x) => endOverlay(x, Date.now()))
+    setClosing(true)
+    setTimeout(() => setClosing(false), CONFIRM_MS + 1_000)
   }, [apply, poll])
 
   const value = useMemo(() => ({ data, ready, apply, start, end, lastRead, error }), [data, ready, apply, start, end, lastRead, error])
